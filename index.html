@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adjust Health — Performance Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700;1,900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
+
+/* SIDEBAR */
+.shell{display:flex;min-height:100vh;}
+.sb{width:340px;flex-shrink:0;background:#0d1117;border-right:1px solid #1c2733;overflow-y:auto;position:sticky;top:0;height:100vh;}
+.sbtop{background:#131b24;padding:10px 13px;border-bottom:2px solid #c6f135;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:10;}
+.sblogo{height:20px;object-fit:contain;mix-blend-mode:lighten;}
+.sbt h1{font-family:"Barlow Condensed",sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;}
+.sbt p{font-size:8px;color:#7a8fa6;letter-spacing:1px;text-transform:uppercase;}
+.fs{padding:8px 12px;border-bottom:1px solid #1c2733;}
+.fh{font-family:"Barlow Condensed",sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.fh::after{content:"";flex:1;height:1px;background:#1c2733;}
+.f{margin-bottom:4px;}
+.f label{display:block;font-size:8px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#7a8fa6;margin-bottom:2px;}
+.f input,.f select,.f textarea{width:100%;background:#131b24;border:1px solid #2a3a4a;color:#fff;padding:4px 7px;font-size:10px;font-family:"Barlow",sans-serif;border-radius:3px;}
+.f textarea{height:36px;resize:none;font-size:9px;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.mi{display:grid;grid-template-columns:1fr 62px;gap:4px;align-items:center;margin-bottom:3px;}
+.mi label{font-size:9px;color:#b8c8d8;}
+.mi input{text-align:center;padding:3px 4px;font-size:10px;font-weight:600;background:#131b24;border:1px solid #2a3a4a;color:#fff;border-radius:3px;}
+.sd{font-family:"Barlow Condensed",sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin:6px 0 3px;display:flex;align-items:center;gap:5px;}
+.sd::before{content:"";width:7px;height:2px;background:#c6f135;flex-shrink:0;}
+.ih{display:grid;grid-template-columns:1fr 36px 36px;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#c6f135;padding-bottom:3px;border-bottom:1px solid #1c2733;text-align:center;}
+.ih span:first-child{text-align:left;}
+.ir{display:grid;grid-template-columns:1fr 36px 36px;align-items:center;padding:3px 0;border-bottom:1px solid #1c2733;font-size:10px;color:#b8c8d8;}
+.ir label{display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.ir input[type=radio]{display:none;}
+.db{width:12px;height:12px;border-radius:50%;border:2px solid #2a3a4a;cursor:pointer;}
+.rj{margin-bottom:4px;}
+.rjl{font-size:8px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#b8c8d8;margin-bottom:2px;}
+.rr{display:grid;grid-template-columns:38px 1fr;gap:3px;align-items:center;margin-bottom:1px;}
+.rr .sl{font-size:8px;color:#7a8fa6;text-align:right;}
+.rr input{text-align:center;padding:3px 4px;font-size:10px;font-weight:600;background:#131b24;border:1px solid #2a3a4a;color:#fff;border-radius:3px;}
+.tgl{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;}
+.ti{display:flex;align-items:center;gap:3px;}
+.ti input[type=checkbox]{accent-color:#c6f135;width:11px;height:11px;}
+.ti label{font-size:9px;color:#b8c8d8;cursor:pointer;}
+.gbtn{display:block;width:calc(100% - 16px);margin:8px;padding:10px;background:#c6f135;color:#0d1117;font-family:"Barlow Condensed",sans-serif;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;}
+.gbtn:hover{background:#d8ff50;}
+.gbtn2{display:block;width:calc(100% - 16px);margin:0 8px 8px;padding:8px;background:transparent;color:#c6f135;font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:1px solid #c6f135;border-radius:4px;cursor:pointer;}
+.gbtn2:hover{background:rgba(198,241,53,.08);}
+
+/* ── FULL-SCREEN FORM UI ─────────────────────────────────────────── */
+#form-screen{position:fixed;inset:0;background:#06090d;z-index:100;display:flex;flex-direction:column;overflow:hidden;}
+#form-screen.hidden{display:none;}
+
+.fb-top{background:#0d1117;border-bottom:2px solid #c6f135;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;flex-shrink:0;}
+.fb-logo{display:flex;align-items:center;gap:10px;}
+.fb-logo img{height:22px;object-fit:contain;mix-blend-mode:lighten;}
+.fb-logo span{font-family:"Barlow Condensed",sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c6f135;}
+.fb-actions{display:flex;gap:10px;align-items:center;}
+.fb-btn{font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:9px 20px;border-radius:4px;cursor:pointer;border:none;transition:background .15s;}
+.fb-btn-outline{background:transparent;color:#c6f135;border:1px solid #c6f135;}
+.fb-btn-outline:hover{background:rgba(198,241,53,.08);}
+.fb-btn-primary{background:#c6f135;color:#0d1117;}
+.fb-btn-primary:hover{background:#d8ff50;}
+
+.fb-tabs{background:#0d1117;border-bottom:1px solid #1c2733;display:flex;padding:0 28px;flex-shrink:0;overflow-x:auto;}
+.fb-tab{font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;padding:13px 18px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:color .15s;}
+.fb-tab:hover{color:#b8c8d8;}
+.fb-tab.active{color:#c6f135;border-bottom-color:#c6f135;}
+
+.fb-body{flex:1;overflow-y:auto;padding:28px 32px;}
+.fb-panel{display:none;}
+.fb-panel.active{display:block;}
+
+.fb-sh{font-family:"Barlow Condensed",sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+.fb-sh::after{content:"";flex:1;height:1px;background:#1c2733;}
+
+.fb-grid{display:grid;gap:12px;margin-bottom:24px;}
+.fb-g2{grid-template-columns:1fr 1fr;}
+.fb-g3{grid-template-columns:1fr 1fr 1fr;}
+.fb-g4{grid-template-columns:1fr 1fr 1fr 1fr;}
+
+.fb-card{background:#0d1117;border:1px solid #1c2733;border-radius:6px;padding:14px 16px;}
+.fb-card label{display:block;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:8px;}
+.fb-card input,.fb-card select,.fb-card textarea{width:100%;background:#131b24;border:1px solid #2a3a4a;color:#fff;padding:10px 12px;font-size:15px;font-family:"Barlow",sans-serif;border-radius:4px;outline:none;transition:border-color .15s;}
+.fb-card input:focus,.fb-card select:focus,.fb-card textarea:focus{border-color:#c6f135;}
+.fb-card input[type=number]{font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:700;text-align:center;}
+.fb-card textarea{font-size:13px;min-height:80px;resize:vertical;}
+.fb-card select{font-size:13px;cursor:pointer;}
+
+.fb-lr{background:#0d1117;border:1px solid #1c2733;border-radius:6px;padding:14px 16px;}
+.fb-lr .fb-lrlbl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:12px;}
+.fb-lr .fb-lrrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fb-lr .fb-lrrow>div{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.fb-lr .fb-lrrow>div span{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;}
+.fb-lr .fb-lrrow input{width:100%;background:#131b24;border:1px solid #2a3a4a;color:#fff;padding:10px 4px;font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:700;text-align:center;border-radius:4px;outline:none;transition:border-color .15s;}
+.fb-lr .fb-lrrow input:focus{border-color:#c6f135;}
+
+.inj-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px;}
+.inj-chip{background:#0d1117;border:2px solid #1c2733;border-radius:8px;padding:16px 10px;text-align:center;cursor:pointer;transition:all .15s;user-select:none;}
+.inj-chip:hover{border-color:#3a4f63;}
+.inj-chip .ic-label{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:10px;}
+.inj-chip .ic-dot{width:16px;height:16px;border-radius:50%;background:#2a3a4a;margin:0 auto 6px;transition:background .15s;}
+.inj-chip .ic-status{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#3a4f63;}
+.inj-chip.pass{border-color:#4cdb7a;background:rgba(76,219,122,.08);}
+.inj-chip.pass .ic-dot{background:#4cdb7a;}
+.inj-chip.pass .ic-label,.inj-chip.pass .ic-status{color:#4cdb7a;}
+.inj-chip.fail{border-color:#e05252;background:rgba(224,82,82,.08);}
+.inj-chip.fail .ic-dot{background:#e05252;}
+.inj-chip.fail .ic-label,.inj-chip.fail .ic-status{color:#e05252;}
+
+.ft-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.ft-chip{background:#0d1117;border:1px solid #1c2733;border-radius:6px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.ft-chip input[type=checkbox]{accent-color:#c6f135;width:18px;height:18px;flex-shrink:0;cursor:pointer;}
+.ft-chip label{font-size:11px;color:#b8c8d8;cursor:pointer;line-height:1.3;}
+.ft-chip:has(input:checked){border-color:#c6f135;background:rgba(198,241,53,.05);}
+
+@media print{#form-screen,#preview-screen>div:first-child{display:none!important;}}
+
+/* ── PREVIEW AREA */
+.ra{flex:1;background:#06090d;padding:20px;overflow-y:auto;}
+.ri{width:834px;margin:0 auto;}
+.phwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;}
+.phwrap .ico{font-size:36px;opacity:.15;margin-bottom:12px;}
+.phwrap h2{font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;}
+.phwrap p{font-size:11px;color:#2a3a4a;margin-top:4px;}
+.pages{display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
+
+/* =============================================
+   A4 PAGE — 794 x 1123px
+   Each page is a fixed-size flex column.
+   stripe (4px) + header (68px) + body (flex:1) + footer (26px)
+   = 4 + 68 + body + 26 = 1123
+   body = 1025px
+   body padding 20px top+bottom = 985px usable
+   ============================================= */
+.page{
+  width:794px;height:1123px;
+  background:#0d1117;
+  border:1px solid #1c2733;
+  overflow:hidden;flex-shrink:0;
+  display:flex;flex-direction:column;
+}
+.pstripe{height:4px;background:#c6f135;flex-shrink:0;}
+.phdr{
+  height:80px;background:#131b24;
+  border-bottom:2px solid #c6f135;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 28px 12px;flex-shrink:0;
+}
+.ptitle{font-family:"Barlow Condensed",sans-serif;font-size:54px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1;}
+.psub{font-size:10px;color:#c6f135;font-style:italic;margin-top:3px;}
+.pnum{background:#c6f135;color:#0d1117;font-family:"Barlow Condensed",sans-serif;font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
+
+/* BODY: fills remaining space, sections distribute evenly */
+.pbody{
+  flex:1;min-height:0;
+  padding:20px 28px;
+  display:flex;flex-direction:column;
+  gap:0;overflow:hidden;
+}
+
+/* Each section in body expands to fill equal share */
+.psec{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;
+  justify-content:flex-start;
+  overflow:hidden;
+}
+.psec+.psec{border-top:1px solid #1c2733;padding-top:12px;margin-top:12px;}
+
+.pfooter{
+  height:26px;background:#131b24;border-top:1px solid #1c2733;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;flex-shrink:0;
+}
+.pftag{font-family:"Barlow Condensed",sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;}
+.pflogo{height:11px;object-fit:contain;mix-blend-mode:lighten;opacity:.4;}
+
+/* =============================================
+   COMPONENTS — all sizes explicit
+   ============================================= */
+.slbl{font-family:"Barlow Condensed",sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-shrink:0;}
+.slbl::before{content:"";width:14px;height:2px;background:#c6f135;flex-shrink:0;}
+.nbox{background:#131b24;border-left:3px solid #c6f135;padding:9px 12px;font-size:10px;color:#b8c8d8;line-height:1.55;flex-shrink:0;}
+.nbox strong{color:#ffffff;}
+
+/* Rating badges */
+.rb{display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;line-height:1.4;}
+.rg{background:rgba(76,219,122,.18);color:#4cdb7a;}
+.ra{background:rgba(245,166,35,.18);color:#f5a623;}
+.rp{background:rgba(224,82,82,.18);color:#e05252;}
+.rn{background:#1c2733;color:#7a8fa6;}
+
+/* Metric card */
+.mc{background:#131b24;border-left:4px solid #c6f135;padding:12px 14px;position:relative;min-width:0;overflow:hidden;}
+.ml{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;}
+.mv{font-family:"Barlow Condensed",sans-serif;font-size:32px;font-weight:700;color:#ffffff;line-height:1;}
+.mu{font-size:10px;color:#7a8fa6;margin-top:3px;}
+.mi2{font-size:10px;font-style:italic;margin-top:5px;border-top:1px solid #1c2733;padding-top:5px;}
+.mc-bdg{position:absolute;top:7px;right:7px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;letter-spacing:.5px;text-transform:uppercase;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
+
+/* Tables */
+.itbl{width:100%;border-collapse:collapse;}
+.itbl tr{height:28px;}
+.itbl td{padding:0 10px;border-bottom:1px solid #1c2733;vertical-align:middle;font-size:12px;color:#ffffff;}
+.itbl td:first-child{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#7a8fa6;width:42%;}
+
+.injtbl{width:100%;border-collapse:collapse;}
+.injtbl thead th{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c6f135;padding:0 8px 5px;border-bottom:1px solid #1c2733;text-align:center;}
+.injtbl thead th:first-child{text-align:left;}
+.injtbl tbody td{padding:6px 8px;border-bottom:1px solid #1c2733;font-size:12px;color:#b8c8d8;vertical-align:middle;}
+.injtbl tbody td:not(:first-child){text-align:center;}
+.dot{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid #2a3a4a;}
+.dot.pass{background:#4cdb7a;border-color:#4cdb7a;}
+.dot.fail{background:#e05252;border-color:#e05252;}
+
+.dtbl{width:100%;border-collapse:collapse;table-layout:fixed;}
+.dtbl thead th{background:#131b24;color:#c6f135;padding:7px 8px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.dtbl thead th:not(:first-child){text-align:center;}
+.dtbl tbody td{padding:6px 8px;border-bottom:1px solid #1c2733;font-size:11px;color:#b8c8d8;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;}
+.dtbl tbody td:first-child{white-space:normal;font-size:10px;}
+.dtbl .dv{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:700;text-align:center;}
+.dtbl .dc{text-align:center;}
+.dtbl .sh td{background:#1c2733;padding:4px 8px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c6f135;}
+
+/* Hero */
+.hero{background:#131b24;display:flex;border:1px solid #1c2733;overflow:hidden;}
+.hnum{padding:16px 20px;border-right:1px solid #1c2733;text-align:center;width:110px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.hlbl{font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;}
+.hval{font-family:"Barlow Condensed",sans-serif;font-size:56px;font-weight:900;line-height:1;}
+.hsub{font-size:11px;color:#7a8fa6;margin-top:2px;}
+.hbody{padding:12px 16px;flex:1;min-width:0;}
+.hhead{font-size:12px;font-weight:700;color:#ffffff;margin-bottom:6px;}
+
+/* Domain strip */
+.dstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;}
+.dm{text-align:center;background:#1c2733;padding:10px 4px;}
+.dml{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;}
+.dmv{font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:700;line-height:1;}
+.dmb{height:3px;background:#2a3a4a;overflow:hidden;margin-top:5px;}
+.dmf{height:100%;}
+
+/* Spinal bars */
+.spbrow{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.spblbl{font-size:12px;color:#b8c8d8;width:150px;flex-shrink:0;}
+.spbtrk{flex:1;height:14px;border-radius:7px;background:#1c2733;overflow:hidden;}
+.spbfil{height:100%;border-radius:7px;}
+.spbpct{font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:700;width:58px;text-align:right;flex-shrink:0;}
+
+/* Speedo section */
+.sprow{display:flex;gap:16px;align-items:center;}
+.spinfo{flex:1;min-width:0;}
+.spbig{font-family:"Barlow Condensed",sans-serif;font-size:52px;font-weight:700;line-height:1;margin-bottom:6px;}
+.spnote{font-size:10px;color:#7a8fa6;line-height:1.5;margin-bottom:10px;}
+.bmg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+.bm{padding:9px 11px;border-left:3px solid;}
+.bml{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.bmv{font-size:13px;font-weight:600;color:#ffffff;}
+
+/* Summary score bars */
+.sbrow{display:grid;grid-template-columns:130px 1fr 96px;align-items:center;gap:10px;margin-bottom:9px;}
+.sblbl{font-size:12px;color:#b8c8d8;font-weight:500;}
+.sbtrk{height:11px;border-radius:5px;overflow:hidden;background:#1c2733;}
+.sbfil{height:100%;border-radius:5px;}
+.sbnums{display:flex;align-items:center;gap:5px;}
+.sbval{font-family:"Barlow Condensed",sans-serif;font-size:19px;font-weight:700;}
+
+/* KDA */
+.kda{background:#131b24;padding:12px 14px;border-top:3px solid #c6f135;}
+.kdatop{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.kdan{width:24px;height:24px;border-radius:50%;background:#c6f135;color:#0d1117;font-family:"Barlow Condensed",sans-serif;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kdatitle{font-family:"Barlow Condensed",sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;}
+.kdadetail{font-size:10px;color:#7a8fa6;line-height:1.5;}
+.div{height:1px;background:#1c2733;flex-shrink:0;}
+
+/* PRINT */
+@media print{
+  @page{size:210mm 297mm;margin:0;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  body{background:#0d1117!important;}
+  .sb,.gbtn,.gbtn2{display:none!important;}
+  .shell{display:block;}
+  .ra{padding:0!important;overflow:visible!important;}
+  .ri{width:100%!important;margin:0!important;}
+  .pages{gap:0!important;align-items:stretch!important;}
+  .page{width:210mm!important;height:297mm!important;border:none!important;page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid;}
+  .page:last-child{page-break-after:avoid;break-after:avoid;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══════════ FULL-SCREEN DATA ENTRY FORM ═══════════ -->
+<div id="form-screen">
+
+  <div class="fb-top">
+    <div class="fb-logo">
+      <img id="sblogo" src="" alt="">
+      <span>Performance Report</span>
+    </div>
+    <div class="fb-actions">
+      <button class="fb-btn fb-btn-outline" onclick="loadDemo()">🎯 Load Demo</button>
+      <button class="fb-btn fb-btn-outline" onclick="clearForm()">↺ Clear</button>
+      <button class="fb-btn fb-btn-primary" onclick="genAndShow()">⚡ Generate Report</button>
+    </div>
+  </div>
+
+  <div class="fb-tabs">
+    <div class="fb-tab active" onclick="showTab(0)">① Athlete</div>
+    <div class="fb-tab" onclick="showTab(1)">② Injury Screen</div>
+    <div class="fb-tab" onclick="showTab(2)">③ Mobility</div>
+    <div class="fb-tab" onclick="showTab(3)">④ Power</div>
+    <div class="fb-tab" onclick="showTab(4)">⑤ Strength</div>
+    <div class="fb-tab" onclick="showTab(5)">⑥ Energy Systems</div>
+    <div class="fb-tab" onclick="showTab(6)">⑦ Summary</div>
+  </div>
+
+  <div class="fb-body">
+
+  <div class="fb-panel active" id="tab0">
+    <div class="fb-sh">Athlete Details</div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-card" style="grid-column:span 2;"><label>Athlete Name</label><input id="fn" type="text" placeholder="Full name" style="font-size:18px;font-weight:600;"></div>
+      <div class="fb-card"><label>Clinician</label><input id="fclin" type="text" placeholder="Your name"></div>
+      <div class="fb-card"><label>Assessment Date</label><input id="fd" type="date"></div>
+      <div class="fb-card"><label>Date of Birth</label><input id="fdob" type="date"></div>
+      <div class="fb-card"><label>Specific Sport</label><input id="fsport" type="text" placeholder="e.g. AFL, Basketball"></div>
+      <div class="fb-card"><label>Club / Team</label><input id="fclub" type="text" placeholder="Club or team name"></div>
+      <div class="fb-card"><label>Email</label><input id="femail" type="email" placeholder="athlete@email.com"></div>
+    </div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-card"><label>Sex</label><select id="fsex"><option value="m">Male</option><option value="f">Female</option></select></div>
+      <div class="fb-card" style="grid-column:span 2;"><label>Sport Category</label><select id="fcat"><option value="">Select...</option><option value="field">Field Sports (AFL, Rugby, Soccer)</option><option value="court">Court Sports (Basketball, Netball)</option><option value="endurance">Endurance Sports</option><option value="combat">Combat Sports</option><option value="strength">Strength &amp; Power</option><option value="general">General Health / Rehab</option></select></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;"><button class="fb-btn fb-btn-primary" onclick="showTab(1)">Next: Injury Screen →</button></div>
+  </div>
+
+  <div class="fb-panel" id="tab1">
+    <div class="fb-sh">Injury Screening — tap each region to toggle Pass / Fail</div>
+    <div class="inj-grid" id="injchips"></div>
+    <div class="fb-card" style="max-width:600px;"><label>Screening Comments</label><textarea id="finjc" placeholder="Note any failed regions, current complaints or precautions..."></textarea></div>
+    <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(0)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(2)">Next: Mobility →</button></div>
+  </div>
+
+  <div class="fb-panel" id="tab2">
+    <div class="fb-sh">Spinal — % of Normal Range</div>
+    <div class="fb-grid fb-g3" style="max-width:700px;">
+      <div class="fb-card"><label>Cervical Rotation (%)</label><input id="fcerv" type="number" min="0" max="100" placeholder="—"></div>
+      <div class="fb-card"><label>Thoracic Rotation (%)</label><input id="fthor" type="number" min="0" max="100" placeholder="—"></div>
+      <div class="fb-card"><label>Lumbar Flexion (%)</label><input id="flumb" type="number" min="0" max="100" placeholder="—"></div>
+    </div>
+    <div class="fb-sh">Upper Limb (°)</div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-lr"><div class="fb-lrlbl">Shoulder ER (°) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="msher-l" placeholder="—"></div><div><span>R</span><input type="number" id="msher-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Shoulder IR (°) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mshir-l" placeholder="—"></div><div><span>R</span><input type="number" id="mshir-r" placeholder="—"></div></div></div>
+    </div>
+    <div class="fb-sh">Lower Limb</div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-lr"><div class="fb-lrlbl">Hip Flexion (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mhipf-l" placeholder="—"></div><div><span>R</span><input type="number" id="mhipf-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Hip Int. Rotation (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mhipir-l" placeholder="—"></div><div><span>R</span><input type="number" id="mhipir-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Hip Ext. Rotation (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mhiper-l" placeholder="—"></div><div><span>R</span><input type="number" id="mhiper-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Hip Flexor — Thomas (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mtho-l" placeholder="—"></div><div><span>R</span><input type="number" id="mtho-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Ankle Dorsiflexion (°) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">knee-to-wall WB</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mank-l" placeholder="—"></div><div><span>R</span><input type="number" id="mank-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">SLR Test (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mslr-l" placeholder="—"></div><div><span>R</span><input type="number" id="mslr-r" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Knee-to-Wall (cm)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mktw-l" step="0.5" placeholder="—"></div><div><span>R</span><input type="number" id="mktw-r" step="0.5" placeholder="—"></div></div></div>
+    </div>
+    <div class="fb-card" style="max-width:600px;"><label>Mobility Notes</label><textarea id="fmobc" placeholder="Clinical observations..."></textarea></div>
+    <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(1)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(3)">Next: Power →</button></div>
+  </div>
+
+  <div class="fb-panel" id="tab3">
+    <div class="fb-sh">Vertical — VALD Force Decks</div>
+    <div class="fb-grid fb-g4">
+      <div class="fb-card"><label>CMJ Height (cm)</label><input id="fcmjh" type="number" step="0.1" placeholder="—"></div>
+      <div class="fb-card"><label>CMJ Rel. Peak Power (W/kg)</label><input id="fcmjrpp" type="number" step="0.1" placeholder="—"></div>
+      <div class="fb-card"><label>Squat Jump Height (cm)</label><input id="fsjh" type="number" step="0.1" placeholder="—"></div>
+      <div class="fb-card"><label>RSI Mod (Drop Jump)</label><input id="frsi" type="number" step="0.01" placeholder="—"></div>
+    </div>
+    <div class="fb-sh">Horizontal</div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-card"><label>Broad Jump (m)</label><input id="fbj" type="number" step="0.01" placeholder="—"></div>
+      <div class="fb-card"><label>SL Broad Jump — Left (m)</label><input id="fslbl" type="number" step="0.01" placeholder="—"></div>
+      <div class="fb-card"><label>SL Broad Jump — Right (m)</label><input id="fslbr" type="number" step="0.01" placeholder="—"></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(2)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(4)">Next: Strength →</button></div>
+  </div>
+
+  <div class="fb-panel" id="tab4">
+    <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Knee Flexion (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkfl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fkfr" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Hip Abduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhabdl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhabdr" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Hip Adduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhaddl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhaddr" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Shoulder I Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsil" placeholder="—"></div><div><span>R</span><input type="number" id="fsir" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Shoulder Y Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsyl" placeholder="—"></div><div><span>R</span><input type="number" id="fsyr" placeholder="—"></div></div></div>
+    </div>
+    <div class="fb-sh">IMTP</div>
+    <div class="fb-grid fb-g4">
+      <div class="fb-card"><label>Peak Force (N/kg)</label><input id="fimtp" type="number" step="0.01" placeholder="—"></div>
+      <div class="fb-card"><label>RFD 0–200ms (N/s)</label><input id="frfd" type="number" placeholder="—"></div>
+    </div>
+    <div class="fb-sh">Functional Strength — select tests performed</div>
+    <div class="ft-grid" id="ftgl"></div>
+    <div class="fb-grid fb-g4" id="finputs"></div>
+    <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(3)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(5)">Next: Energy Systems →</button></div>
+  </div>
+
+  <div class="fb-panel" id="tab5">
+    <div class="fb-sh">Speed — PCr System</div>
+    <div class="fb-grid fb-g3" style="max-width:700px;">
+      <div class="fb-card"><label>Test Type</label><select id="fspdtype" onchange="onSpd()"><option value="10m">10m Sprint</option><option value="20m">20m Sprint</option><option value="40m">40m Sprint</option><option value="505">505 Agility</option><option value="lane">Lane Agility</option></select></div>
+      <div class="fb-card"><label id="fspdlbl">10m Sprint (sec)</label><input id="fspdval" type="number" step="0.01" placeholder="—"></div>
+    </div>
+    <div class="fb-sh">Aerobic Capacity</div>
+    <div class="fb-grid fb-g3" style="max-width:700px;">
+      <div class="fb-card"><label>Test Type</label><select id="fcaptype" onchange="onCap()"><option value="mas">Treadmill Ramp MAS (km/h)</option><option value="wb">Watt Bike 3min Peak (W)</option><option value="run6">6min Run Time Trial (m)</option><option value="row">2km Row (min)</option><option value="yoyo">Yo-Yo IRT Level 1</option><option value="cooper">Cooper 12min Run (m)</option></select></div>
+      <div class="fb-card"><label id="fcaplbl">MAS (km/h)</label><input id="fcapval" type="number" step="0.1" placeholder="—"></div>
+      <div class="fb-card" style="display:flex;align-items:center;"><div id="fcapnote" style="font-size:11px;color:#7a8fa6;font-style:italic;line-height:1.5;">Start 8km/h +1km/h per min.</div></div>
+    </div>
+    <div class="fb-sh">Anaerobic — Run (optional)</div>
+    <div class="fb-grid fb-g3" style="max-width:700px;">
+      <div class="fb-card"><label>Run Test</label><select id="fanatype" onchange="onAna()"><option value="rsa">RSA 5×30m</option></select></div>
+      <div class="fb-card"><label id="fanalbest">Best Sprint Time (sec)</label><input id="fanabest" type="number" step="0.01" placeholder="—"></div>
+      <div class="fb-card"><label id="fanaldec">Fatigue Decrement (%)</label><input id="fanadec" type="number" step="0.1" placeholder="—"></div>
+    </div>
+    <div class="fb-sh">Anaerobic — Bike (optional)</div>
+    <div class="fb-grid fb-g3" style="max-width:700px;">
+      <div class="fb-card"><label>Bike Test</label><select id="fanabtype" onchange="onAnaB()"><option value="wb10">Watt Bike 10s Peak</option></select></div>
+      <div class="fb-card"><label id="fanaBlbl">Peak Power (W)</label><input id="fanabval" type="number" placeholder="—"></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(4)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(6)">Next: Summary →</button></div>
+  </div>
+
+  <div class="fb-panel" id="tab6">
+    <div class="fb-sh">Key Development Areas</div>
+    <div class="fb-grid fb-g3">
+      <div class="fb-card"><label>Priority 1 — Title</label><input id="fkd1t" type="text" placeholder="e.g. Ankle Dorsiflexion Restriction"></div>
+      <div class="fb-card" style="grid-column:span 2;"><label>Priority 1 — Detail</label><input id="fkd1d" type="text" placeholder="Plain-English explanation and prescription..."></div>
+      <div class="fb-card"><label>Priority 2 — Title</label><input id="fkd2t" type="text"></div>
+      <div class="fb-card" style="grid-column:span 2;"><label>Priority 2 — Detail</label><input id="fkd2d" type="text"></div>
+      <div class="fb-card"><label>Priority 3 — Title</label><input id="fkd3t" type="text"></div>
+      <div class="fb-card" style="grid-column:span 2;"><label>Priority 3 — Detail</label><input id="fkd3d" type="text"></div>
+    </div>
+    <div class="fb-card" style="max-width:900px;"><label>Clinician Summary</label><textarea id="fsummary" style="min-height:120px;" placeholder="Overall clinical interpretation — key strengths, limiters, and recommended training focus..."></textarea></div>
+    <div style="display:flex;gap:12px;margin-top:24px;align-items:center;">
+      <button class="fb-btn fb-btn-outline" onclick="showTab(5)">← Back</button>
+      <button class="fb-btn fb-btn-primary" onclick="genAndShow()" style="padding:14px 36px;font-size:15px;letter-spacing:3px;">⚡ Generate Report</button>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ PREVIEW AREA ═══════════ -->
+<div id="preview-screen" style="display:none;background:#06090d;min-height:100vh;">
+  <div style="background:#0d1117;border-bottom:2px solid #c6f135;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;position:sticky;top:0;z-index:50;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img id="sblogo2" src="" style="height:22px;object-fit:contain;mix-blend-mode:lighten;" alt="">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c6f135;">Report Preview</span>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="fb-btn fb-btn-outline" onclick="showForm()">← Edit Data</button>
+      <button class="fb-btn fb-btn-primary" onclick="doPrint()">📄 Save as PDF</button>
+    </div>
+  </div>
+  <div style="padding:24px;">
+    <div style="width:834px;margin:0 auto;">
+      <div class="phwrap" id="phwrap" style="display:none;"></div>
+      <div class="pages" id="pages" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const LOGO="/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCALUBAADASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAgJBQcBBAYDAv/EAFUQAQABAwMBBAQHCgoIBAUFAAABAgMEBQYRBwgSITFBUXSxEyI1N2FxsgkUGDI2VnOBkZIVFyNCUlSEk6HBFjNTVWJylNEnNENEJCVjZOEmgqLw8f/EABsBAQACAwEBAAAAAAAAAAAAAAAEBQIDBgEH/8QAMREBAAIBAgUBBwMEAwEAAAAAAAECAwQRBRIhMUEGExQyUXGBkSKhwRYjM1JhsfBD/9oADAMBAAIRAxEAPwCGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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";
+document.getElementById("sblogo").src="data:image/jpeg;base64,"+LOGO;
+
+const INJ=["Neck","Back","Shoulders","Hips","Knees","Ankles"];
+// ROM norms — athletic population 18–35yr, field/court sport
+// Sources: Roach & Miles hip norms, Konor et al. shoulder athlete norms, Hoch & McKeon ankle DF, Norkin & White goniometry
+const ROMS_M={
+  sher:{n:"Shoulder ER",good:95,avg:75,lo:false,u:"°"},
+  shir:{n:"Shoulder IR",good:65,avg:50,lo:false,u:"°"},
+  hipf:{n:"Hip Flexion",good:120,avg:100,lo:false,u:"°"},
+  hipir:{n:"Hip Int. Rot.",good:40,avg:25,lo:false,u:"°"},
+  hiper:{n:"Hip Ext. Rot.",good:45,avg:30,lo:false,u:"°"},
+  tho:{n:"Hip Flexor (Thomas)",good:5,avg:12,lo:true,u:"°"},
+  ank:{n:"Ankle DF",good:40,avg:28,lo:false,u:"°"},
+  slr:{n:"SLR Test",good:75,avg:60,lo:false,u:"°"},
+  ktw:{n:"Knee-to-Wall",good:11,avg:7,lo:false,u:"cm"}
+};
+const ROMS_F={
+  sher:{n:"Shoulder ER",good:100,avg:80,lo:false,u:"°"},
+  shir:{n:"Shoulder IR",good:70,avg:55,lo:false,u:"°"},
+  hipf:{n:"Hip Flexion",good:125,avg:105,lo:false,u:"°"},
+  hipir:{n:"Hip Int. Rot.",good:45,avg:30,lo:false,u:"°"},
+  hiper:{n:"Hip Ext. Rot.",good:50,avg:35,lo:false,u:"°"},
+  tho:{n:"Hip Flexor (Thomas)",good:5,avg:12,lo:true,u:"°"},
+  ank:{n:"Ankle DF",good:42,avg:30,lo:false,u:"°"},
+  slr:{n:"SLR Test",good:80,avg:65,lo:false,u:"°"},
+  ktw:{n:"Knee-to-Wall",good:11,avg:7,lo:false,u:"cm"}
+};
+const ROMS=()=>v("fsex")==="f"?ROMS_F:ROMS_M;
+// Power norms — sex split
+// M: Meylan et al. CMJ, McMahon RSI, Broad jump field sport norms
+// F: ~25-30% lower CMJ, RSI female athlete literature
+const POWD_M={cmj:{good:36,avg:28},sjh:{good:32,avg:24},rsi:{good:1.5,avg:1.0},bj:{good:2.20,avg:1.90},sl:{good:1.90,avg:1.60},rpp:{good:55,avg:45}};
+const POWD_F={cmj:{good:28,avg:20},sjh:{good:24,avg:17},rsi:{good:1.2,avg:0.8},bj:{good:1.90,avg:1.60},sl:{good:1.50,avg:1.20},rpp:{good:42,avg:34}};
+const POWD=()=>v("fsex")==="f"?POWD_F:POWD_M;
+const FT=[{id:"sq",l:"3RM Back Squat",u:"kg",bw:false},{id:"bp",l:"3RM Bench Press",u:"kg",bw:false},{id:"dl",l:"3RM Deadlift",u:"kg",bw:false},{id:"pc",l:"1RM Power Clean",u:"kg",bw:false},{id:"cj",l:"1RM Clean & Jerk",u:"kg",bw:false},{id:"sn",l:"1RM Snatch",u:"kg",bw:false},{id:"pu",l:"Max Push-Ups",u:"reps",bw:false},{id:"pul",l:"Max Pull-Ups",u:"reps",bw:false},{id:"chu",l:"Max Chin-Ups",u:"reps",bw:false},{id:"dip",l:"Max Dips",u:"reps",bw:false},{id:"plk",l:"Plank Hold",u:"sec",bw:false},{id:"clfl",l:"SL Calf Raise L",u:"reps",bw:false},{id:"clfr",l:"SL Calf Raise R",u:"reps",bw:false}];
+// Sex-split norms — M=male field sport athlete, F=female field sport athlete
+// Sprint: Haugen et al. 2012/2019, Buchheit RSA, Castagna Yo-Yo, ACSM aerobic
+// Power: Meylan CMJ norms, RSI literature review McMahon 2018
+// Strength: Comfort IMTP, Coombs & Garbutt isokinetic athlete norms
+
+const SPDC_M={"10m":{l:"10m Sprint",u:"sec",note:"10m standing start — acceleration.",el:"<1.65s",go:"1.65–1.80s",de:">1.80s",good:1.65,avg:1.80},"20m":{l:"20m Sprint",u:"sec",note:"20m — acceleration + transition.",el:"<2.80s",go:"2.80–3.10s",de:">3.10s",good:2.80,avg:3.10},"40m":{l:"40m Sprint",u:"sec",note:"40m — max velocity test.",el:"<4.80s",go:"4.80–5.20s",de:">5.20s",good:4.80,avg:5.20},"505":{l:"505 Agility",u:"sec",note:"5+10+5m with 180° turn.",el:"<2.20s",go:"2.20–2.50s",de:">2.50s",good:2.20,avg:2.50},"lane":{l:"Lane Agility",u:"sec",note:"NBA lane agility — lateral COD.",el:"<10.5s",go:"10.5–11.5s",de:">11.5s",good:10.5,avg:11.5}};
+const SPDC_F={"10m":{l:"10m Sprint",u:"sec",note:"10m standing start — acceleration.",el:"<1.85s",go:"1.85–2.00s",de:">2.00s",good:1.85,avg:2.00},"20m":{l:"20m Sprint",u:"sec",note:"20m — acceleration + transition.",el:"<3.10s",go:"3.10–3.40s",de:">3.40s",good:3.10,avg:3.40},"40m":{l:"40m Sprint",u:"sec",note:"40m — max velocity test.",el:"<5.20s",go:"5.20–5.60s",de:">5.60s",good:5.20,avg:5.60},"505":{l:"505 Agility",u:"sec",note:"5+10+5m with 180° turn.",el:"<2.40s",go:"2.40–2.70s",de:">2.70s",good:2.40,avg:2.70},"lane":{l:"Lane Agility",u:"sec",note:"NBA lane agility — lateral COD.",el:"<11.5s",go:"11.5–12.5s",de:">12.5s",good:11.5,avg:12.5}};
+const SPDC=k=>v("fsex")==="f"?SPDC_F[k]||SPDC_F["10m"]:SPDC_M[k]||SPDC_M["10m"];
+
+const CAPC_M={mas:{l:"Treadmill Ramp MAS",u:"km/h",note:"Start 8km/h +1km/h per min. MAS = last completed stage.",good:18,avg:14,hi:true,el:">18 km/h",go:"14–18 km/h",de:"<14 km/h"},wb:{l:"Watt Bike 3min Peak",u:"W",note:"3-min all-out effort.",good:400,avg:300,hi:true,el:">400 W",go:"300–400 W",de:"<300 W"},run6:{l:"6min Run Time Trial",u:"m",note:"Total distance in 6 minutes.",good:1800,avg:1400,hi:true,el:">1800m",go:"1400–1800m",de:"<1400m"},row:{l:"2km Row Time Trial",u:"min",note:"Concept2. Enter decimal minutes.",good:7.0,avg:8.5,hi:false,el:"<7:00",go:"7:00–8:30",de:">8:30"},yoyo:{l:"Yo-Yo IRT Level 1",u:"level",note:"Yo-Yo Intermittent Recovery Test L1.",good:17,avg:14,hi:true,el:">Level 17",go:"Level 14–17",de:"<Level 14"},cooper:{l:"Cooper 12min Run",u:"m",note:"Total distance in 12 minutes.",good:3000,avg:2400,hi:true,el:">3000m",go:"2400–3000m",de:"<2400m"}};
+const CAPC_F={mas:{l:"Treadmill Ramp MAS",u:"km/h",note:"Start 8km/h +1km/h per min.",good:15,avg:12,hi:true,el:">15 km/h",go:"12–15 km/h",de:"<12 km/h"},wb:{l:"Watt Bike 3min Peak",u:"W",note:"3-min all-out effort.",good:280,avg:210,hi:true,el:">280 W",go:"210–280 W",de:"<210 W"},run6:{l:"6min Run Time Trial",u:"m",note:"Total distance in 6 minutes.",good:1550,avg:1200,hi:true,el:">1550m",go:"1200–1550m",de:"<1200m"},row:{l:"2km Row Time Trial",u:"min",note:"Concept2. Enter decimal minutes.",good:8.0,avg:9.5,hi:false,el:"<8:00",go:"8:00–9:30",de:">9:30"},yoyo:{l:"Yo-Yo IRT Level 1",u:"level",note:"Yo-Yo Intermittent Recovery Test L1.",good:14,avg:11,hi:true,el:">Level 14",go:"Level 11–14",de:"<Level 11"},cooper:{l:"Cooper 12min Run",u:"m",note:"Total distance in 12 minutes.",good:2600,avg:2100,hi:true,el:">2600m",go:"2100–2600m",de:"<2100m"}};
+const CAPC=k=>v("fsex")==="f"?CAPC_F[k]||CAPC_F["mas"]:CAPC_M[k]||CAPC_M["mas"];
+
+const ANAC_M={"rsa":{l:"RSA 5×30m",u:"sec",note:"5×30m sprint. Best time = peak speed. Decrement = fatigue index.",good:3.9,avg:4.3,lo:true,el:"<3.9s",go:"3.9–4.3s",de:">4.3s"},"wb10":{l:"Watt Bike 10s Peak",u:"W",note:"10s maximal sprint. Peak power output.",good:900,avg:650,lo:false,el:">900 W",go:"650–900 W",de:"<650 W"}};
+const ANAC_F={"rsa":{l:"RSA 5×30m",u:"sec",note:"5×30m sprint. Best time = peak speed. Decrement = fatigue index.",good:4.3,avg:4.8,lo:true,el:"<4.3s",go:"4.3–4.8s",de:">4.8s"},"wb10":{l:"Watt Bike 10s Peak",u:"W",note:"10s maximal sprint. Peak power output.",good:620,avg:450,lo:false,el:">620 W",go:"450–620 W",de:"<450 W"}};
+const ANAC=k=>v("fsex")==="f"?ANAC_F[k]||ANAC_F["rsa"]:ANAC_M[k]||ANAC_M["rsa"];
+
+// Functional strength — M norms (absolute kg or reps)
+const FTNW_M={sq:[1.5,1.2],dl:[1.8,1.4],pc:[1.0,.75],cj:[1.1,.85],sn:[.85,.65]};
+const FTNW_F={sq:[1.1,.85],dl:[1.3,1.0],pc:[.7,.5],cj:[.75,.55],sn:[.65,.45]};
+const FTNR_M={pu:[40,25],pul:[15,8],chu:[12,6],dip:[20,10],plk:[120,60],clfl:[25,15],clfr:[25,15]};
+const FTNR_F={pu:[25,12],pul:[8,3],chu:[6,2],dip:[12,5],plk:[90,45],clfl:[20,12],clfr:[20,12]};
+const FTNW=()=>v("fsex")==="f"?FTNW_F:FTNW_M;
+const FTNR=()=>v("fsex")==="f"?FTNR_F:FTNR_M;
+
+// ── localStorage auto-save ───────────────────────────────────────────────────
+const SAVE_KEY="adjustv8";
+function saveState(){
+  const data={};
+  document.querySelectorAll("#form-screen input:not([type=checkbox]):not([type=radio]),#form-screen select,#form-screen textarea").forEach(el=>{if(el.id)data[el.id]=el.value;});
+  document.querySelectorAll("#form-screen input[type=checkbox]").forEach(el=>{if(el.id)data[el.id]=el.checked;});
+  // injury state
+  data.__inj=JSON.stringify(_injState);
+  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+}
+function restoreState(){
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw)return;
+  try{
+    const data=JSON.parse(raw);
+    Object.entries(data).forEach(([id,val])=>{
+      if(id==="__inj"){const s=JSON.parse(val);Object.assign(_injState,s);INJ.forEach(r=>_updateChip(r));return;}
+      const el=document.getElementById(id);
+      if(!el)return;
+      if(el.type==="checkbox")el.checked=val;
+      else el.value=val;
+    });
+    onSpd();onCap();onAna();onAnaB();onFT();
+  }catch(e){}
+}
+// Auto-save on any input change
+document.addEventListener("input",saveState);
+document.addEventListener("change",saveState);
+
+// ── Tab navigation ───────────────────────────────────────────────────────────
+function showTab(n){
+  document.querySelectorAll(".fb-tab").forEach((t,i)=>t.classList.toggle("active",i===n));
+  document.querySelectorAll(".fb-panel").forEach((p,i)=>p.classList.toggle("active",i===n));
+}
+function showForm(){
+  document.getElementById("form-screen").style.display="flex";
+  document.getElementById("preview-screen").style.display="none";
+}
+function genAndShow(){
+  gen();
+  document.getElementById("form-screen").style.display="none";
+  document.getElementById("preview-screen").style.display="block";
+  document.getElementById("pages").style.display="flex";
+  document.getElementById("phwrap").style.display="none";
+  const l=document.getElementById("sblogo2");
+  if(l)l.src=document.getElementById("sblogo").src;
+}
+function clearForm(){
+  if(!confirm("Clear all form data?"))return;
+  document.querySelectorAll("#form-screen input,#form-screen select,#form-screen textarea").forEach(el=>{
+    if(el.type==="checkbox"||el.type==="radio")el.checked=false;
+    else el.value="";
+  });
+  INJ.forEach(r=>{_injState[r]="none";_updateChip(r);});
+  document.querySelectorAll(".ft-chip input[type=checkbox]").forEach(cb=>{cb.checked=false;cb.dispatchEvent(new Event("change"));});
+}
+
+// ── Injury chips — tap to cycle none→pass→fail→none ──────────────────────────
+const _injState={};
+INJ.forEach(r=>_injState[r]="none");
+function _updateChip(r){
+  const chip=document.getElementById("injchip-"+r);
+  if(!chip)return;
+  const st=_injState[r];
+  chip.className="inj-chip"+(st==="pass"?" pass":st==="fail"?" fail":"");
+  chip.querySelector(".ic-status").textContent=st==="pass"?"Pass ✓":st==="fail"?"Fail ✗":"—";
+}
+function toggleInj(r){
+  _injState[r]=_injState[r]==="none"?"pass":_injState[r]==="pass"?"fail":"none";
+  _updateChip(r);
+}
+(function(){
+  const g=document.getElementById("injchips");
+  INJ.forEach(r=>{
+    g.innerHTML+=`<div class="inj-chip" id="injchip-${r}" onclick="toggleInj('${r}')"><div class="ic-label">${r}</div><div class="ic-dot"></div><div class="ic-status">—</div></div>`;
+  });
+})();
+
+// ── Functional test chips ─────────────────────────────────────────────────────
+(function(){
+  const tg=document.getElementById("ftgl"),inp=document.getElementById("finputs");
+  FT.forEach(t=>{
+    tg.innerHTML+=`<div class="ft-chip"><input type="checkbox" id="chk${t.id}" onchange="onFT()"><label for="chk${t.id}">${t.l.replace(/3RM |1RM |Max /,"")}</label></div>`;
+    inp.innerHTML+=`<div class="fb-card" id="fi${t.id}" style="display:none;"><label>${t.l} (${t.u})</label><input id="f${t.id}" type="number" step="0.01" placeholder="—"></div>`;
+  });
+})();
+
+// ── Keyboard shortcut P/F on injury tab ──────────────────────────────────────
+document.addEventListener("keydown",function(e){
+  const panel=document.getElementById("tab1");
+  if(!panel||!panel.classList.contains("active"))return;
+  const untouched=INJ.find(r=>_injState[r]==="none");
+  if(!untouched)return;
+  if(e.key==="p"||e.key==="P"){_injState[untouched]="pass";_updateChip(untouched);saveState();}
+  if(e.key==="f"||e.key==="F"){_injState[untouched]="fail";_updateChip(untouched);saveState();}
+});
+
+// ── Progress tick in tab labels ───────────────────────────────────────────────
+function updateProgress(){
+  const tabs=document.querySelectorAll(".fb-tab");
+  document.querySelectorAll(".fb-panel").forEach((panel,i)=>{
+    const filled=[...panel.querySelectorAll("input:not([type=checkbox]),textarea")].filter(el=>el.value&&el.value.trim()!=="").length;
+    const tab=tabs[i];if(!tab)return;
+    const base=tab.getAttribute("data-label")||(tab.setAttribute("data-label",tab.textContent),tab.textContent);
+    tab.textContent=filled>0?base+" ✓":base;
+  });
+}
+document.addEventListener("input",updateProgress);
+document.addEventListener("change",updateProgress);
+
+// ── Restore saved state + init on load ───────────────────────────────────────
+restoreState();
+updateProgress();
+
+function onFT(){FT.forEach(t=>{const c=document.getElementById("chk"+t.id),i=document.getElementById("fi"+t.id);if(i)i.style.display=c&&c.checked?"block":"none";});}
+function onSpd(){const k=v("fspdtype")||"10m";const t=SPDC(k);if(t)document.getElementById("fspdlbl").textContent=t.l+" ("+t.u+")";}
+function onCap(){const k=v("fcaptype")||"mas";const t=CAPC(k);if(!t)return;document.getElementById("fcaplbl").textContent=t.l+" ("+t.u+")";document.getElementById("fcapnote").textContent=t.note;}
+function onAna(){const k=v("fanatype")||"rsa";const t=ANAC(k);if(!t)return;document.getElementById("fanalbest").textContent=t.l+" Best ("+t.u+")";}
+function onAnaB(){const k=v("fanabtype")||"wb10";const t=ANAC(k);if(!t)return;document.getElementById("fanaBlbl").textContent=t.l+" ("+t.u+")";}
+
+const v=id=>(document.getElementById(id)?.value||"").trim();
+const nv=id=>parseFloat(document.getElementById(id)?.value)||0;
+const injR=r=>_injState[r]||"none";
+const gmob=(k,s)=>parseFloat(document.getElementById(`m${k}-${s}`)?.value)||0;
+const rat=(val,nm)=>nm.lo?(val<=nm.good?"g":val<=nm.avg?"a":"p"):(val>=nm.good?"g":val>=nm.avg?"a":"p");
+const rCol=r=>r==="g"?"#4cdb7a":r==="a"?"#f5a623":"#e05252";
+const rCls=r=>r==="g"?"rg":r==="a"?"ra":"rp";
+const rLbl=r=>r==="g"?"Good":r==="a"?"Average":"Poor";
+const domCol=s=>s===null?"#7a8fa6":s>=7.5?"#c6f135":s>=5?"#f5a623":"#e05252";
+const lsi=(a,b)=>(!a||!b)?null:Math.round((Math.min(a,b)/Math.max(a,b))*100);
+const lsiCls=v=>v===null?"rn":v>=90?"rg":v>=85?"ra":"rp";
+
+function sc(val,good,avg,lo=false){
+  if(!val||isNaN(val))return null;
+  if(lo){if(val<=good)return 10;if(val<=avg)return 5+((avg-val)/(avg-good))*5;return Math.max(0,5-(val-avg)*3);}
+  if(val>=good)return 10;if(val>=avg)return 5+((val-avg)/(good-avg))*5;return Math.max(0,(val/avg)*5);
+}
+
+function speedo(val,mn,mx,unit,col,W=200,H=158){
+  if(!val)return`<div style="width:${W}px;height:${H}px;display:flex;align-items:center;justify-content:center;color:#7a8fa6;font-size:11px;flex-shrink:0;">Not Tested</div>`;
+  const pct=Math.min(Math.max((val-mn)/(mx-mn),0),1);
+  const ang=-135+pct*270,rad=ang*Math.PI/180;
+  const cx=W/2,cy=Math.round(H*0.63),r=Math.round(Math.min(cx,cy)-16);
+  const nx=cx+r*.75*Math.sin(rad),ny=cy-r*.75*Math.cos(rad);
+  const a0r=(-135)*Math.PI/180,a1r=(135)*Math.PI/180;
+  const lx0=(cx+r*Math.sin(a0r)).toFixed(1),ly0=(cy-r*Math.cos(a0r)+14).toFixed(1);
+  const lx1=(cx+r*Math.sin(a1r)).toFixed(1),ly1=(cy-r*Math.cos(a1r)+14).toFixed(1);
+  function arc(sp,ep,c2,sw=14){const a1=(-135+sp*270)*Math.PI/180,a2=(-135+ep*270)*Math.PI/180;const x1=cx+r*Math.sin(a1),y1=cy-r*Math.cos(a1),x2=cx+r*Math.sin(a2),y2=cy-r*Math.cos(a2);return`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${ep-sp>0.5?1:0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="${c2}" stroke-width="${sw}" fill="none" stroke-linecap="round"/>`;}
+  return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0;">${arc(0,1,"#1c2733",14)}${arc(0,.33,"#e05252")}${arc(.33,.66,"#f5a623")}${arc(.66,1,"#4cdb7a")}<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="${col}" stroke-width="3" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="7" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="3" fill="#0d1117"/><text x="${cx}" y="${cy+28}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="20" font-weight="700">${typeof val==="number"?val.toFixed(val<10?2:1):val}${unit}</text><text x="${lx0}" y="${ly0}" text-anchor="middle" fill="#7a8fa6" font-size="9" font-family="Barlow,sans-serif">${+parseFloat(mn.toFixed(1))}</text><text x="${lx1}" y="${ly1}" text-anchor="middle" fill="#7a8fa6" font-size="9" font-family="Barlow,sans-serif">${+parseFloat(mx.toFixed(1))}</text></svg>`;
+}
+
+function gauge(val,good,avg,unit){
+  if(!val)return`<div style="width:100px;height:82px;display:flex;align-items:center;justify-content:center;color:#7a8fa6;font-size:9px;">—</div>`;
+  const pct=Math.min(val/(good*1.1),1),col=val>=good?"#4cdb7a":val>=avg?"#f5a623":"#e05252";
+  const r=36,cx=50,sw=8,ci=2*Math.PI*r;
+  return`<svg width="100" height="82" viewBox="0 0 100 82" style="flex-shrink:0;"><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="#1c2733" stroke-width="${sw}" stroke-dasharray="${ci*.75} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-225 ${cx} ${cx})"/><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${pct*ci*.75} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-225 ${cx} ${cx})"/><text x="${cx}" y="${cx+3}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="15" font-weight="700">${parseFloat(val).toFixed(2)}</text><text x="${cx}" y="${cx+14}" text-anchor="middle" fill="#7a8fa6" font-size="8" font-family="Barlow,sans-serif">${unit}</text></svg>`;
+}
+
+function rsiTarget(val){
+  if(!val)return`<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;color:#7a8fa6;font-size:11px;flex-shrink:0;">Not Tested</div>`;
+  const col=val>=1.5?"#c6f135":val>=1.0?"#f5a623":"#e05252";
+  const cx=80,cy=80;
+  // Concentric rings — purely visual, zero text
+  const rings=[
+    {r:68,fill:"#131b24",stroke:"#1c2733"},
+    {r:54,fill:"#131b24",stroke:"#1c2733"},
+    {r:40,fill:"rgba(198,241,53,.05)",stroke:"rgba(198,241,53,.15)"},
+    {r:26,fill:"rgba(245,166,35,.05)",stroke:"rgba(245,166,35,.15)"},
+    {r:12,fill:"rgba(224,82,82,.05)",stroke:"rgba(224,82,82,.15)"}
+  ];
+  const ringsSvg=rings.map(rg=>`<circle cx="${cx}" cy="${cy}" r="${rg.r}" fill="${rg.fill}" stroke="${rg.stroke}" stroke-width="1.5"/>`).join('');
+  const dotR=Math.min((val/2.5)*68,68);
+  const dotX=(cx+dotR).toFixed(1);
+  const glow=`<circle cx="${dotX}" cy="${cy}" r="16" fill="${col}" opacity=".12"/>`;
+  const pulse=`<circle cx="${dotX}" cy="${cy}" r="12" fill="none" stroke="${col}" stroke-width="1.5" opacity=".4"/>`;
+  const dot=`<circle cx="${dotX}" cy="${cy}" r="8" fill="${col}"/>`;
+  const score=`<text x="${cx}" y="${cy+6}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="20" font-weight="700">${val.toFixed(2)}</text>`;
+  return`<svg width="160" height="160" viewBox="0 0 160 160" style="flex-shrink:0;">${ringsSvg}${glow}${pulse}${dot}${score}</svg>`;
+}
+
+function energyZoneBars(spdScore,anaScore,capScore){
+  const W=200,H=120,pad=16,barW=38,gap=14,baseline=H-24;
+  const zones=[
+    {lbl:"PCr",score:spdScore,col:spdScore===null?"#2a3a4a":spdScore>=7.5?"#c6f135":spdScore>=5?"#f5a623":"#e05252"},
+    {lbl:"Anaerob.",score:anaScore,col:anaScore===null?"#2a3a4a":"#a78bfa"},
+    {lbl:"Aerobic",score:capScore,col:capScore===null?"#2a3a4a":capScore>=7.5?"#4cdb7a":capScore>=5?"#f5a623":"#e05252"}
+  ];
+  const maxH=baseline-18;
+  let bars="";
+  zones.forEach((z,i)=>{
+    const x=pad+i*(barW+gap);
+    const h=z.score!==null?Math.round((z.score/10)*maxH):8;
+    const y=baseline-h;
+    const fillOpacity=z.score===null?0.2:0.85;
+    bars+=`<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${z.col}" opacity="${fillOpacity}" rx="3"/>`;
+    if(z.score!==null){
+      bars+=`<text x="${x+barW/2}" y="${y-5}" text-anchor="middle" fill="${z.col}" font-family="Barlow Condensed,sans-serif" font-size="13" font-weight="700">${z.score.toFixed(1)}</text>`;
+    } else {
+      bars+=`<text x="${x+barW/2}" y="${y-5}" text-anchor="middle" fill="#3a4f63" font-family="Barlow Condensed,sans-serif" font-size="10">—</text>`;
+    }
+    bars+=`<text x="${x+barW/2}" y="${baseline+12}" text-anchor="middle" fill="#7a8fa6" font-family="Barlow,sans-serif" font-size="8">${z.lbl}</text>`;
+  });
+  // baseline
+  bars+=`<line x1="${pad}" y1="${baseline}" x2="${W-pad}" y2="${baseline}" stroke="#2a3a4a" stroke-width="1"/>`;
+  // score scale lines
+  [2.5,5,7.5,10].forEach(v=>{
+    const y=baseline-Math.round((v/10)*maxH);
+    bars+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#1c2733" stroke-width="1" stroke-dasharray="3,3"/>`;
+    bars+=`<text x="${pad-3}" y="${y+3}" text-anchor="end" fill="#3a4f63" font-size="7" font-family="Barlow,sans-serif">${v}</text>`;
+  });
+  return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0;">${bars}</svg>`;
+}
+
+function foot(){return`<div class="pfooter"><span class="pftag">Adjust Health</span><img src="data:image/jpeg;base64,${LOGO}" class="pflogo"></div>`;}
+
+function romRow(k,nm){
+  const vL=gmob(k,"l"),vR=gmob(k,"r"),hL=vL>0,hR=vR>0;
+  const rL=hL?rat(vL,nm):null,rR=hR?rat(vR,nm):null,ls=lsi(hL?vL:null,hR?vR:null);
+  return`<tr><td>${nm.n}</td><td class="dv" style="color:${hL?rCol(rL):"#7a8fa6"};">${hL?vL+nm.u:"—"}</td><td class="dc">${hL?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${hR?rCol(rR):"#7a8fa6"};">${hR?vR+nm.u:"—"}</td><td class="dc">${hR?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
+}
+
+function isoRow(lbl,lV,rV,good,avg){
+  const nm={good,avg,lo:false};const rL=lV?rat(lV,nm):null,rR=rV?rat(rV,nm):null,ls=lsi(lV,rV);
+  return`<tr><td>${lbl}</td><td class="dv" style="color:${lV?rCol(rL):"#7a8fa6"};">${lV?lV.toFixed(2):"—"}</td><td class="dc">${lV?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${rV?rCol(rR):"#7a8fa6"};">${rV?rV.toFixed(2):"—"}</td><td class="dc">${rV?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
+}
+
+function spbar(lbl,pct){
+  if(!pct)return"";
+  const col=pct>=75?"#4cdb7a":pct>=50?"#f5a623":"#e05252";
+  return`<div class="spbrow"><div class="spblbl">${lbl}</div><div class="spbtrk"><div class="spbfil" style="width:${pct}%;background:${col};"></div></div><div class="spbpct" style="color:${col};">${pct}%</div><span class="rb ${pct>=75?"rg":pct>=50?"ra":"rp"}" style="margin-left:8px;">${pct>=75?"Good":pct>=50?"Avg":"Poor"}</span></div>`;
+}
+
+function fcard(item,bw){
+  let col="#c6f135",badge="";
+  const fw=FTNW(),fr=FTNR();
+  if(fw[item.id]){const[g,a]=fw[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Strong":item.val>=a?"Avg":"Developing"}</span>`;}
+  else if(fr[item.id]){const[g,a]=fr[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Good":item.val>=a?"Avg":"Developing"}</span>`;}
+  return`<div class="mc" style="border-left-color:${col};">${badge}<div class="ml">${item.l}</div><div class="mv" style="color:${col};font-size:30px;">${item.val}</div><div class="mu">${item.u}</div></div>`;
+}
+
+function loadDemo(){
+  // Athlete details
+  document.getElementById("fn").value="Jordan Mitchell";
+  document.getElementById("fd").value="2024-11-18";
+  document.getElementById("fdob").value="1999-03-14";
+  document.getElementById("fsex").value="m";
+  document.getElementById("fcat").value="field";
+  document.getElementById("fsport").value="AFL";
+  document.getElementById("fclub").value="Brisbane Lions Academy";
+  document.getElementById("femail").value="j.mitchell@example.com";
+
+  document.getElementById("fclin").value="Dr. Sarah Chen";
+
+  // Injury screening — Neck, Back pass; Knees fail
+  ["Neck","Back","Shoulders","Hips","Ankles"].forEach(r=>{_injState[r]="pass";_updateChip(r);});
+  _injState["Knees"]="fail";_updateChip("Knees");
+  document.getElementById("finjc").value="Right knee — history of patellar tendinopathy. Cleared for full testing with load monitoring.";
+
+  // Mobility
+  document.getElementById("fcerv").value="90";
+  document.getElementById("fthor").value="75";
+  document.getElementById("flumb").value="85";
+  document.getElementById("msher-l").value="88";document.getElementById("msher-r").value="82";
+  document.getElementById("mshir-l").value="62";document.getElementById("mshir-r").value="58";
+  document.getElementById("mhipf-l").value="118";document.getElementById("mhipf-r").value="112";
+  document.getElementById("mhipir-l").value="32";document.getElementById("mhipir-r").value="28";
+  document.getElementById("mhiper-l").value="40";document.getElementById("mhiper-r").value="38";
+  document.getElementById("mtho-l").value="8";document.getElementById("mtho-r").value="10";
+  document.getElementById("mank-l").value="38";document.getElementById("mank-r").value="35";
+  document.getElementById("mslr-l").value="74";document.getElementById("mslr-r").value="70";
+  document.getElementById("mktw-l").value="9.5";document.getElementById("mktw-r").value="8.5";
+  document.getElementById("fmobc").value="Mild bilateral hip flexor tightness. Right ankle DF restricted — mobility work prescribed.";
+
+  // Power
+  document.getElementById("fcmjh").value="38.4";
+  document.getElementById("fcmjrpp").value="52.1";
+  document.getElementById("fsjh").value="34.2";
+  document.getElementById("frsi").value="1.28";
+  document.getElementById("fbj").value="2.38";
+  document.getElementById("fslbl").value="1.82";
+  document.getElementById("fslbr").value="1.76";
+
+  // Strength — Isokinetic
+  document.getElementById("fkel").value="3.12";document.getElementById("fker").value="3.28";
+  document.getElementById("fkfl").value="2.04";document.getElementById("fkfr").value="1.98";
+  document.getElementById("fhabdl").value="1.88";document.getElementById("fhabdr").value="1.94";
+  document.getElementById("fhaddl").value="1.62";document.getElementById("fhaddr").value="1.58";
+  document.getElementById("fsil").value="198";document.getElementById("fsir").value="210";
+  document.getElementById("fsyl").value="162";document.getElementById("fsyr").value="174";
+  document.getElementById("fimtp").value="2.74";
+  document.getElementById("frfd").value="4200";
+
+  // Functional strength — select tests
+  ["sq","dl","pu","pul"].forEach(id=>{
+    const cb=document.getElementById("chk"+id);
+    if(cb){cb.checked=true;cb.dispatchEvent(new Event("change"));}
+  });
+  document.getElementById("fsq").value="140";
+  document.getElementById("fdl").value="172";
+  document.getElementById("fpu").value="32";
+  document.getElementById("fpul").value="14";
+
+  // Speed
+  document.getElementById("fspdtype").value="10m"; onSpd();
+  document.getElementById("fspdval").value="1.72";
+
+  // Anaerobic — RSA
+  document.getElementById("fanatype").value="rsa5"; onAna();
+  document.getElementById("fanabest").value="4.08";
+  document.getElementById("fanadec").value="6.2";
+
+  // Aerobic capacity
+  document.getElementById("fcaptype").value="mas"; onCap();
+  document.getElementById("fcapval").value="16.5";
+
+  // Key development areas
+  document.getElementById("fkd1t").value="Ankle Dorsiflexion Restriction";
+  document.getElementById("fkd1d").value="Bilateral restriction (R > L) limiting force transfer in athletic positions. Eccentric calf loading + joint mobilisation 3×/week.";
+  document.getElementById("fkd2t").value="Reactive Strength & Drop Jump";
+  document.getElementById("fkd2d").value="RSI Mod 1.28 — below target of 1.5. Progressive plyometric loading protocol: depth jumps, hurdle hops, 8-week cycle.";
+  document.getElementById("fkd3t").value="Aerobic Base Development";
+  document.getElementById("fkd3d").value="MAS 16.5 km/h — good but room to grow. Zone 2 cardio 3×/week + weekly MAS intervals to push toward elite threshold.";
+  document.getElementById("fsummary").value="Jordan presents as a well-rounded field sport athlete with good strength and power foundations. Key limiters are reactive strength (RSI), ankle mobility, and aerobic ceiling. Structured 12-week block targeting these areas is expected to yield significant performance gains ahead of preseason.";
+
+  // Generate immediately
+  gen();
+}
+
+function gen(){
+  const name=v("fn")||"Athlete";
+  const sport=v("fsport")||"—";
+  const bw=null;
+  const ds=s=>s?new Date(s+" ").toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"}):"—";
+  const dateStr=ds(v("fd")),dobStr=v("fdob")?new Date(v("fdob")+" ").toLocaleDateString("en-AU"):"—";
+
+  const cmjH=nv("fcmjh"),cmjRPP=nv("fcmjrpp"),sjH=nv("fsjh");
+  const eur=(cmjH&&sjH)?cmjH/sjH:null;
+  const rsi=nv("frsi"),bj=nv("fbj"),slL=nv("fslbl"),slR=nv("fslbr");
+  const keL=nv("fkel"),keR=nv("fker"),kfL=nv("fkfl"),kfR=nv("fkfr");
+  const habdL=nv("fhabdl"),habdR=nv("fhabdr"),haddL=nv("fhaddl"),haddR=nv("fhaddr");
+  const siL=nv("fsil"),siR=nv("fsir"),syL=nv("fsyl"),syR=nv("fsyr");
+  const hqL=(keL&&kfL)?Math.round((kfL/keL)*100):null,hqR=(keR&&kfR)?Math.round((kfR/keR)*100):null;
+  const imtp=nv("fimtp"),rfd=nv("frfd");
+  const fd=FT.map(t=>{const c=document.getElementById("chk"+t.id);if(!c||!c.checked)return null;const val=nv("f"+t.id);if(!val)return null;return{...t,val};}).filter(Boolean);
+  const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
+  const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
+  const ak=v("fanatype")||"rsa",av=nv("fanabest"),adec=nv("fanadec"),at=ANAC(ak);
+  const abk=v("fanabtype")||"wb10",abv=nv("fanabval"),abt=ANAC(abk);
+  const S_ana_run=av?Math.round(sc(av,at.good,at.avg,at.lo)*10)/10:null;
+  const S_ana_bike=abv?Math.round(sc(abv,abt.good,abt.avg,abt.lo)*10)/10:null;
+  const S_ana=S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike;
+  const cerv=nv("fcerv"),thor=nv("fthor"),lumb=nv("flumb");
+
+  let mG=0,mA=0,mP=0,mN=0;
+  Object.entries(ROMS()).forEach(([k,nm])=>{["l","r"].forEach(s=>{const val=gmob(k,s);if(val>0){mN++;const r=rat(val,nm);if(r==="g")mG++;else if(r==="a")mA++;else mP++;}});});
+
+  const S={};
+  S.mob=mN>0?Math.round(((mG*10+mA*5+mP*2)/(mN*10))*100)/10:null;
+  const _pw=POWD();
+  const pArr=[sc(cmjH,_pw.cmj.good,_pw.cmj.avg),sc(eur,1.10,1.00),sc(rsi,_pw.rsi.good,_pw.rsi.avg),sc(bj,_pw.bj.good,_pw.bj.avg)].filter(x=>x!==null);
+  S.pow=pArr.length?Math.round(pArr.reduce((a,b)=>a+b)/pArr.length*10)/10:null;
+  const _sf=v("fsex")==="f";
+  const sArr=[sc(imtp,_sf?2.5:3.0,_sf?2.0:2.5)].filter(x=>x!==null);
+  S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
+  S.spd=sv?Math.round(sc(sv,st.good,st.avg,true)*10)/10:null;
+  S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
+  const all=[S.mob,S.pow,S.str,S.spd,S.cap].filter(x=>x!==null);
+  S.ov=all.length?Math.round(all.reduce((a,b)=>a+b)/all.length*10)/10:null;
+  const kdas=[[v("fkd1t"),v("fkd1d")],[v("fkd2t"),v("fkd2d")],[v("fkd3t"),v("fkd3d")]].filter(([t])=>t);
+
+  document.getElementById("phwrap").style.display="none";
+  const pages=document.getElementById("pages");
+  pages.style.display="flex";
+
+  pages.innerHTML=`
+
+<div class="page" style="position:relative;justify-content:center;align-items:center;text-align:center;background:#0d1117;display:flex;flex-direction:column;">
+  <div class="pstripe" style="position:absolute;top:0;left:0;right:0;"></div>
+  <img src="data:image/jpeg;base64,${LOGO}" style="height:72px;object-fit:contain;mix-blend-mode:lighten;margin-bottom:32px;">
+  <div style="width:52px;height:3px;background:#c6f135;margin:0 auto 24px;"></div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:110px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:.9;letter-spacing:-2px;">Performance</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:130px;font-weight:900;font-style:italic;text-transform:uppercase;color:#c6f135;line-height:.85;margin-bottom:48px;letter-spacing:-3px;">Report</div>
+  <div style="border:2px solid #c6f135;padding:14px 56px;margin-bottom:12px;display:inline-block;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#ffffff;">${name}</div>
+  </div>
+  <div style="font-size:11px;color:#7a8fa6;letter-spacing:2px;">${dateStr}</div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:34px;background:#131b24;border-top:2px solid #c6f135;display:flex;align-items:center;justify-content:space-between;padding:0 28px;">
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#c6f135;text-transform:uppercase;">Get Better. Get Moving. Get Strong.</span>
+    <img src="data:image/jpeg;base64,${LOGO}" style="height:11px;object-fit:contain;mix-blend-mode:lighten;opacity:.4;">
+  </div>
+</div>
+
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Athlete Profile</div><div class="psub">Personal details, injury screen & overall performance score</div></div><div class="pnum">Page 1</div></div>
+  <div class="pbody">
+
+    <!-- SECTION 1: Hero name strip + key stats in a dark banner -->
+    <div class="psec" style="flex:0 0 auto;">
+      <div style="background:#131b24;border:1px solid #1c2733;display:flex;align-items:stretch;overflow:hidden;">
+        <!-- Name + sport block -->
+        <div style="flex:1;padding:18px 22px;border-right:1px solid #1c2733;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:6px;">Athlete</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1;letter-spacing:-1px;margin-bottom:4px;">${name}</div>
+          <div style="font-size:11px;color:#c6f135;font-weight:600;letter-spacing:1px;">${sport!=="—"?sport:""} ${v("fclub")?"· "+v("fclub"):""}</div>
+        </div>
+        <!-- Stat tiles -->
+        ${[["DOB",dobStr],["Sex",v("fsex")==="f"?"Female":"Male"],["Sport",sport!=="—"?sport:"—"],["Assessor",v("fclin")||"—"],["Date",dateStr]].map(([lbl,val])=>`<div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:0;"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;white-space:nowrap;">${lbl}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#ffffff;white-space:nowrap;">${val}</div></div>`).join("")}
+      </div>
+    </div>
+
+    <!-- SECTION 2: Injury screening row + overall score side by side -->
+    <div class="psec" style="flex:0 0 auto;padding-top:12px;">
+      <div style="display:grid;grid-template-columns:1fr 200px;gap:14px;">
+        <!-- Injury screening — horizontal chips -->
+        <div>
+          <div class="slbl" style="margin-bottom:10px;">Injury Screening</div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;">
+            ${INJ.map(r=>{const res=injR(r);const pass=res==="pass",fail=res==="fail";const bg=pass?"rgba(76,219,122,.12)":fail?"rgba(224,82,82,.12)":"#131b24";const border=pass?"#4cdb7a":fail?"#e05252":"#2a3a4a";const dot_col=pass?"#4cdb7a":fail?"#e05252":"#3a4f63";return`<div style="background:${bg};border:1px solid ${border};padding:10px 8px;text-align:center;"><div style="width:10px;height:10px;border-radius:50%;background:${dot_col};margin:0 auto 5px;"></div><div style="font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:${pass?"#4cdb7a":fail?"#e05252":"#7a8fa6"};">${r}</div><div style="font-size:8px;color:${dot_col};margin-top:2px;">${pass?"Pass":fail?"Fail":"—"}</div></div>`;}).join("")}
+          </div>
+          ${v("finjc")?`<div class="nbox" style="margin-top:8px;font-size:10px;">${v("finjc")}</div>`:""}
+        </div>
+        <!-- Overall score tile -->
+        <div style="background:#131b24;border:1px solid #1c2733;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;text-align:center;">
+          <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:6px;">Overall Score</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;line-height:1;color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div>
+          <div style="font-size:9px;color:#7a8fa6;margin-top:2px;">out of 10</div>
+          <div style="width:40px;height:2px;background:#c6f135;margin:10px auto;"></div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.4;">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete":S.ov>=5?"Good foundation":"Key areas for development"):"Complete assessment"}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Domain score tiles -->
+    <div class="psec" style="flex:0 0 auto;padding-top:12px;">
+      <div class="slbl" style="margin-bottom:10px;">Domain Scores</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+        ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Cap.",S.cap]].map(([l,s])=>{const col=domCol(s);const pct=s!==null?s*10:0;return`<div style="background:#131b24;border:1px solid #1c2733;border-top:3px solid ${col};padding:14px 12px;text-align:center;"><div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:8px;">${l}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:${col};line-height:1;margin-bottom:6px;">${s!==null?s.toFixed(1):"—"}</div><div style="height:4px;background:#1c2733;border-radius:2px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${col};"></div></div>${s!==null?`<div style="margin-top:6px;"><span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span></div>`:""}</div>`;}).join("")}
+      </div>
+    </div>
+
+    <!-- SECTION 4: Clinician notes -->
+    <div class="psec" style="padding-top:12px;">
+      <div style="background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;height:100%;display:flex;flex-direction:column;justify-content:center;">
+        <div class="slbl" style="margin-bottom:8px;">Clinician Notes</div>
+        <div style="font-size:11px;color:#b8c8d8;line-height:1.75;">${v("fsummary")||"Add your clinical summary in the sidebar — it will appear here."}</div>
+      </div>
+    </div>
+
+  </div>
+  ${foot()}
+</div>
+
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Mobility</div><div class="psub">Range of motion vs published normative ranges</div></div><div class="pnum">Page 2</div></div>
+  <div class="pbody">
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox"><strong>How to read:</strong> Rated vs normative data. <span class="rb rg">Good</span> at/above norm &nbsp;<span class="rb ra">Average</span> within range &nbsp;<span class="rb rp">Poor</span> below norm. LSI target &gt;90%.</div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div class="slbl">Spinal Range — % of Normal</div>
+      <div style="background:#131b24;padding:14px 16px;border-left:2px solid #2a3a4a;">
+        ${spbar("Cervical Rotation",cerv)}
+        ${spbar("Thoracic Rotation",thor)}
+        ${spbar("Lumbar Flexion",lumb)}
+      </div>
+    </div>
+    <div class="psec" style="flex:1;margin-top:12px;overflow:hidden;">
+      <table class="dtbl" style="height:100%;">
+        <thead><tr><th style="width:160px;">Region</th><th style="width:70px;">Left</th><th style="width:84px;">Rating</th><th style="width:70px;">Right</th><th style="width:84px;">Rating</th><th style="width:62px;">LSI</th></tr></thead>
+        <tbody>
+          <tr class="sh"><td colspan="6">Upper Limb</td></tr>
+          ${romRow("sher",ROMS().sher)}
+          ${romRow("shir",ROMS().shir)}
+          <tr class="sh"><td colspan="6">Lower Limb</td></tr>
+          ${romRow("hipf",ROMS().hipf)}
+          ${romRow("hipir",ROMS().hipir)}
+          ${romRow("hiper",ROMS().hiper)}
+          ${romRow("tho",ROMS().tho)}
+          ${romRow("ank",ROMS().ank)}
+          ${romRow("slr",ROMS().slr)}
+          ${romRow("ktw",ROMS().ktw)}
+        </tbody>
+      </table>
+    </div>
+    <div class="psec" style="flex:0 0 auto;margin-top:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #1c2733;">
+        <div style="display:flex;gap:16px;font-size:12px;"><span style="color:#4cdb7a;font-weight:600;">${mG} Good</span><span style="color:#f5a623;font-weight:600;">${mA} Average</span><span style="color:#e05252;font-weight:600;">${mP} Poor</span><span style="color:#7a8fa6;">(${mN} measurements)</span></div>
+        ${S.mob!==null?`<span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${domCol(S.mob)};">Mobility: ${S.mob.toFixed(1)}/10</span>`:""}
+      </div>
+      ${v("fmobc")?`<div class="nbox">${v("fmobc")}</div>`:""}
+    </div>
+  </div>
+  ${foot()}
+</div>
+
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page 3</div></div>
+  <div class="pbody">
+    <div class="psec">
+      <div class="slbl">Countermovement Jump (CMJ)</div>
+      <div class="nbox" style="margin-bottom:10px;"><strong>CMJ</strong> measures explosive power. <strong>Jump height</strong> is the primary indicator. <strong>Relative power (W/kg)</strong> is the VALD standard — normalises for body size. <strong>EUR</strong> = CMJ ÷ SJ; target &gt;1.10.</div>
+      <div class="g3">
+        <div class="mc">
+          ${cmjH?`<span class="mc-bdg rb ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"rg":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"ra":"rp"}">${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"Excellent":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"Average":"Needs Work"}</span>`:""}
+          <div class="ml">Jump Height</div><div class="mv">${cmjH?cmjH.toFixed(1):"—"}</div><div class="mu">cm | Norm: &gt;36cm excellent</div>
+          ${cmjH?`<div class="mi2" style="color:${domCol(sc(cmjH,36,28))};">${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"✓ Excellent.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"→ Average — plyometrics prescribed.":"↑ Below norm — hip extension focus."}</div>`:""}
+        </div>
+        <div class="mc">
+          <div class="ml">Relative Peak Power</div><div class="mv">${cmjRPP?cmjRPP.toFixed(1):"—"}</div><div class="mu">W/kg | VALD standard</div>
+          <div class="mi2" style="color:#7a8fa6;">Excellent: &gt;55 W/kg | Good: 45–55</div>
+        </div>
+        <div class="mc" style="border-left-color:${eur!==null?(eur>=1.10?"#4cdb7a":eur>=1.00?"#f5a623":"#e05252"):"#c6f135"};">
+          ${eur!==null?`<span class="mc-bdg rb ${eur>=1.10?"rg":eur>=1.00?"ra":"rp"}">${eur>=1.10?"Good SSC":eur>=1.00?"Average":"Poor SSC"}</span>`:""}
+          <div class="ml">EUR (CMJ ÷ SJ)</div><div class="mv">${eur!==null?eur.toFixed(2):"—"}</div><div class="mu">SJ: ${sjH?sjH+" cm":"—"} | Target &gt;1.10</div>
+          ${eur!==null?`<div class="mi2" style="color:${eur>=1.10?"#4cdb7a":eur>=1.00?"#f5a623":"#e05252"};">${eur>=1.10?"✓ Good elastic energy use.":eur>=1.00?"→ Eccentric loading will help.":"↑ Eccentric work is a priority."}</div>`:""}
+        </div>
+      </div>
+    </div>
+    <div class="psec">
+      <div class="slbl">Reactive Strength — Drop Jump RSI Mod</div>
+      <div class="sprow">
+        ${rsiTarget(rsi)}
+        <div class="spinfo">
+          <div class="spbig" style="color:${rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"};">${rsi?rsi.toFixed(2):"—"}<span style="font-size:18px;color:#7a8fa6;font-weight:400;"> RSI Mod</span></div>
+          <div class="spnote">Jump height ÷ contact time. Measures reactive power and tendon stiffness — critical for sprinting and COD.</div>
+          <div class="bmg">
+            <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">&gt;1.50</div></div>
+            <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">1.00–1.50</div></div>
+            <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Developing</div><div class="bmv">&lt;1.00</div></div>
+          </div>
+          ${rsi?`<div class="nbox">${rsi>=POWD().rsi.good?"<strong>✓ Excellent</strong> — reactive power is a clear strength.":rsi>=POWD().rsi.avg?"<strong>→ Good</strong> — plyometric progressions will improve this.":"<strong>↑ Developing</strong> — plyometric foundations recommended."}</div>`:""}
+        </div>
+      </div>
+    </div>
+    <div class="psec">
+      <div class="slbl">Horizontal Projection — Broad Jump</div>
+      <div class="nbox" style="margin-bottom:10px;"><strong>Broad Jump</strong> measures hip extensor force projection. SL values reveal asymmetry. <strong>LSI target: &gt;90%.</strong></div>
+      <div class="g3">
+        <div class="mc">
+          ${bj?`<span class="mc-bdg rb ${sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"rg":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"ra":"rp"}">${sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"Excellent":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"Good":"Developing"}</span>`:""}
+          <div class="ml">Bilateral Broad Jump</div><div class="mv">${bj?bj.toFixed(2):"—"}</div><div class="mu">metres | Norm: &gt;2.20m</div>
+        </div>
+        <div class="mc"><div class="ml">SL Broad Jump — Left</div><div class="mv">${slL?slL.toFixed(2):"—"}</div><div class="mu">metres</div></div>
+        <div class="mc">
+          <div class="ml">SL Broad Jump — Right</div><div class="mv">${slR?slR.toFixed(2):"—"}</div><div class="mu">metres</div>
+          ${slL&&slR?`<div class="mi2" style="color:${lsi(slL,slR)>=90?"#4cdb7a":"#e05252"};">LSI: ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"Symmetrical":"Asymmetry noted"}</div>`:""}
+        </div>
+      </div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Power Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm, excellent explosive power.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average — plyometrics prescribed.":"below norm — hip extension focus."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average — eccentric loading recommended.":"poor — eccentric work priority."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive power.":rsi>=POWD().rsi.avg?"good — plyometrics will improve this.":"developing — plyometric foundations recommended."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry — single-leg loading prescribed."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>
+  </div>
+  ${foot()}
+</div>
+
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Strength</div><div class="psub">Isokinetic dynamometry & IMTP — rated vs published norms</div></div><div class="pnum">Page 4</div></div>
+  <div class="pbody">
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox">Rated vs normative data. <strong>LSI target &gt;90%</strong> — asymmetry below this threshold should be monitored and corrected through targeted loading.</div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry</div>
+      <table class="dtbl">
+        <thead><tr><th style="width:230px;">Test</th><th style="width:60px;">Left</th><th style="width:74px;">Rating</th><th style="width:60px;">Right</th><th style="width:74px;">Rating</th><th style="width:56px;">LSI</th></tr></thead>
+        <tbody>
+          ${(()=>{const f=v("fsex")==="f";return[
+            isoRow("Knee Extension (Nm/kg)",keL,keR,f?2.8:3.5,f?2.0:2.5),
+            isoRow("Knee Flexion (Nm/kg)",kfL,kfR,f?2.0:2.5,f?1.4:1.8),
+            isoRow("Hip Abduction (Nm/kg)",habdL,habdR,f?1.8:2.2,f?1.3:1.6),
+            isoRow("Hip Adduction (Nm/kg)",haddL,haddR,f?1.6:2.0,f?1.2:1.5)
+          ].join("");})()}
+          ${(()=>{const f=v("fsex")==="f";return[
+            isoRow("Shoulder I Test (N)",siL,siR,f?160:220,f?110:150),
+            isoRow("Shoulder Y Test (N)",syL,syR,f?130:180,f?90:120)
+          ].join("");})()}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:8px;">IMTP — Isometric Mid-Thigh Pull</div>
+      <div class="g2">
+        <div style="background:#131b24;border-left:4px solid ${imtp>=(v("fsex")==="f"?2.5:3.0)?"#4cdb7a":imtp>=(v("fsex")==="f"?2.0:2.5)?"#f5a623":"#e05252"};padding:14px;display:flex;gap:12px;align-items:center;">
+          ${gauge(imtp,v("fsex")==="f"?2.5:3.0,v("fsex")==="f"?2.0:2.5,"N/kg")}
+          <div>
+            <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">Relative Peak Force</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp?imtp.toFixed(2):"—"}<span style="font-size:13px;color:#7a8fa6;"> N/kg</span></div>
+            <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">Excellent: &gt;3.0 | Good: 2.5–3.0 | Developing: &lt;2.5</div>
+            ${imtp?`<div style="font-size:10px;font-style:italic;margin-top:4px;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp>=3.0?"✓ Excellent isometric strength.":imtp>=2.5?"→ Good — targeted strength work will push this.":"↑ Maximal strength is a key priority."}</div>`:""}
+          </div>
+        </div>
+        <div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">RFD 0–200ms</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${rfd?rfd.toLocaleString():"—"}<span style="font-size:13px;color:#7a8fa6;"> N/s</span></div>
+          <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">Rate of force development. Elite: &gt;5,000 N/s.</div>
+          ${rfd?`<div style="font-size:10px;font-style:italic;margin-top:4px;color:${rfd>=5000?"#4cdb7a":rfd>=3500?"#f5a623":"#e05252"};">${rfd>=5000?"✓ Excellent RFD.":rfd>=3500?"→ Good — plyometrics will improve.":"↑ Below elite benchmark."}</div>`:""}
+        </div>
+      </div>
+    </div>
+    <div class="psec" style="flex:1;">
+      <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
+      <div class="nbox" style="margin-bottom:8px;"><strong>Relative strength</strong> (kg ÷ BW) normalises across athlete sizes. BW: ${bw?bw+" kg":"not entered"}.</div>
+      ${fd.length>0?`<div class="g3">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
+    </div>
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry — monitor loading."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry — hamstring work prescribed."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry — hip stabiliser loading recommended."}`:null,imtp?`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good — strength work will push above 3.0.":"developing — maximal strength is a key priority."}`:null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){const[g,a]=fw[item.id];return`${item.l} ${item.val}kg — ${item.val>=g?"strong.":item.val>=a?"good — progressive loading prescribed.":"developing — strength priority."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.l} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
+  </div>
+  ${foot()}
+</div>
+
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page 6</div></div>
+  <div class="pbody">
+
+    <!-- System zone header cards -->
+    <div class="psec" style="flex:0 0 auto;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+        <div style="background:#131b24;border-top:3px solid #38bdf8;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">PCr — Speed</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">0–10s · Explosive single efforts · ATP-PCr resynthesis</div>
+        </div>
+        <div style="background:#131b24;border-top:3px solid #a78bfa;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:4px;">Anaerobic</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">10–120s · High-intensity repeat efforts · Glycolytic pathway</div>
+        </div>
+        <div style="background:#131b24;border-top:3px solid #2dd4bf;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">Aerobic</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">2+ min · Sustained oxidative effort · Underpins recovery</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PCr test row -->
+    <div class="psec" style="flex:1;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;height:100%;">
+        <!-- Gauge -->
+        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
+          ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd!==null?(S.spd>=5?"#c6f135":"#e05252"):"#7a8fa6",170,130)}
+        </div>
+        <!-- Big number + label -->
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">${st.l}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.spd)};line-height:1;">${sv?sv.toFixed(2):"—"}</div>
+          <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${st.u}</div>
+          ${S.spd!==null?`<span class="rb ${S.spd>=7.5?"rg":S.spd>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.spd>=7.5?"Excellent":S.spd>=5?"Good":"Developing"}</span>`:""}
+        </div>
+        <!-- Benchmarks -->
+        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:140px;flex-shrink:0;">
+          <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Elite</div><div class="bmv">${st.el}</div></div>
+          <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">${st.go}</div></div>
+          <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Average</div><div class="bmv">${st.de}</div></div>
+        </div>
+        <!-- Note -->
+        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${st.note}</div>
+          ${sv?`<div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.spd>=7.5?"<strong style='color:#c6f135;'>✓ Excellent</strong> — elite-level acceleration. Maintain with weekly maximal sprint sessions.":S.spd>=5?"<strong style='color:#f5a623;'>→ Good</strong> — sprint progressions will push to elite. 6–8×20m accelerations 2–3×/week.":"<strong style='color:#e05252;'>↑ Priority</strong> — acceleration work prescribed. A-march/skip drills, sled push 2×/week."}</div>`:""} 
+        </div>
+      </div>
+    </div>
+
+    <!-- Aerobic test row -->
+    <div class="psec" style="flex:1;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;height:100%;">
+        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
+          ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap!==null?(S.cap>=5?"#c6f135":"#e05252"):"#7a8fa6",170,130)}
+        </div>
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">${ct.l}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.cap)};line-height:1;">${cv||"—"}</div>
+          <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${ct.u}</div>
+          ${S.cap!==null?`<span class="rb ${S.cap>=7.5?"rg":S.cap>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.cap>=7.5?"Excellent":S.cap>=5?"Good":"Developing"}</span>`:""}
+        </div>
+        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:140px;flex-shrink:0;">
+          <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">${ct.el}</div></div>
+          <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">${ct.go}</div></div>
+          <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Developing</div><div class="bmv">${ct.de}</div></div>
+        </div>
+        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${ct.note}</div>
+          ${cv?`<div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.cap>=7.5?"<strong style='color:#4cdb7a;'>✓ Excellent</strong> — elite aerobic capacity. Maintain with zone 2 sessions + sport-specific intervals.":S.cap>=5?"<strong style='color:#f5a623;'>→ Good base</strong> — zone 2 training 3×/week will drive adaptation. Add tempo intervals.":"<strong style='color:#e05252;'>↑ Aerobic development required</strong> — foundational conditioning work prescribed. 4×/week low-intensity."}</div>`:""}
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom: domain bars + prescriptions -->
+    <div class="psec" style="flex:0 0 auto;">
+      <div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:10px;align-items:stretch;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Domain Profile</div>
+          ${energyZoneBars(S.spd,S_ana,S.cap)}
+        </div>
+        <div style="background:#131b24;border-left:3px solid #38bdf8;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#38bdf8;margin-bottom:5px;">PCr / Speed Prescription</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.6;">${sv?(S.spd>=7.5?"Maintain speed base. Weekly maximal sprint sessions and loaded jump training to preserve elite output.":S.spd>=5?"Progress sprint volume: 6–8×20m accelerations 2–3×/week. Add resisted sprints and plyometric loading.":"Acceleration focus: A-march/skip drills, sled push 2×/week. 4–6×10m from static start. Re-test in 6 weeks."):"Enter speed result to generate prescription."}</div>
+        </div>
+        <div style="background:#131b24;border-left:3px solid #2dd4bf;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#2dd4bf;margin-bottom:5px;">Aerobic Prescription</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.6;">${cv?(S.cap>=7.5?"Aerobic base is elite. Maintain with 2×/week zone 2. Prioritise sport-specific interval quality and recovery management.":S.cap>=5?"Build aerobic capacity: 3×/week zone 2 (30–45 min). Add 1×/week tempo intervals at 80–85% HRmax.":"Aerobic priority: 4×/week low-intensity steady state. Begin with 20–30 min continuous. Reassess in 8 weeks."):"Enter aerobic result to generate prescription."}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  ${foot()}
+</div>
+
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">Performance profile — vs published normative data</div></div><div class="pnum">Page 7</div></div>
+  <div class="pbody">
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="hero">
+        <div class="hnum"><div class="hlbl">Overall</div><div class="hval" style="color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div><div class="hsub">out of 10</div></div>
+        <div class="hbody">
+          <div class="hhead">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete":S.ov>=5?"Good foundation — targeted development will drive significant gains":"Key areas identified for focused development"):"—"}</div>
+          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;margin-top:4px;">${v("fsummary")||"Clinician summary notes will appear here."}</div>
+        </div>
+      </div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;padding-top:14px;">
+      <div style="display:grid;grid-template-columns:1fr 240px;gap:20px;">
+        <div>
+          <div class="slbl" style="margin-bottom:10px;">Domain Scores</div>
+          ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Capacity",S.cap]].map(([lbl,s])=>`<div class="sbrow"><div class="sblbl">${lbl}</div><div class="sbtrk"><div class="sbfil" style="width:${s!==null?s*10:0}%;background:${s!==null?(s>=5?"#c6f135":"#e05252"):"#7a8fa6"};"></div></div><div class="sbnums"><div class="sbval" style="color:${s!==null?(s>=5?"#c6f135":"#e05252"):"#7a8fa6"};">${s!==null?s.toFixed(1):"—"}<span style="font-size:9px;color:#7a8fa6;">/10</span></div>${s!==null?`<span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span>`:""}</div></div>`).join("")}
+          <div style="padding:7px 10px;background:#1c2733;font-size:9px;color:#7a8fa6;margin-top:6px;">Scores vs VALD, ACSM &amp; Norkin &amp; White normative data. <span class="rb rg">Strong</span>≥7.5 <span class="rb ra">Avg</span>5–7.4 <span class="rb rp">Focus</span>&lt;5</div>
+        </div>
+        <div>
+          <div class="slbl" style="margin-bottom:8px;">Radar Profile</div>
+          <div id="radar-svg" style="width:236px;height:240px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="psec">
+      <div class="slbl" style="margin-bottom:12px;">Key Development Areas</div>
+      ${kdas.length?`<div style="display:flex;flex-direction:column;gap:10px;height:100%;">${kdas.map(([t,d],i)=>`<div style="flex:1;background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;display:flex;align-items:center;gap:14px;min-height:0;"><div style="width:34px;height:34px;border-radius:50%;background:#c6f135;color:#0d1117;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div><div style="flex:1;min-width:0;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:#ffffff;letter-spacing:1px;margin-bottom:5px;">${t}</div>${d?`<div style="font-size:12px;color:#b8c8d8;line-height:1.5;">${d}</div>`:""}</div></div>`).join("")}</div>`:`<div style="background:#131b24;border-left:4px solid #2a3a4a;padding:18px;color:#7a8fa6;font-size:11px;">Add key development areas in the sidebar.</div>`}
+    </div>
+  </div>
+  ${foot()}
+</div>
+
+  `;
+
+  // Inline SVG radar — no Chart.js dependency, instant render
+  (()=>{
+    const el=document.getElementById("radar-svg");
+    if(!el)return;
+    const scores=[S.mob??0,S.pow??0,S.str??0,S.spd??0,S.cap??0];
+    const labels=["Mobility","Power","Strength","Speed","Capacity"];
+    const cx=118,cy=118,maxR=90;
+    const n=5;
+    let grid="",axes="",poly="",pts="",lbls="";
+    // Grid rings
+    [2,4,6,8,10].forEach(v=>{
+      const r=(v/10)*maxR;
+      const pts2=Array.from({length:n},(_,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;return`${(cx+r*Math.cos(a)).toFixed(1)},${(cy+r*Math.sin(a)).toFixed(1)}`;}).join(" ");
+      grid+=`<polygon points="${pts2}" fill="none" stroke="#1c2733" stroke-width="1"/>`;
+      if(v===5||v===10)grid+=`<text x="${(cx+(r+3)).toFixed(1)}" y="${(cy-2).toFixed(1)}" fill="#2a3a4a" font-size="7" font-family="Barlow,sans-serif">${v}</text>`;
+    });
+    // Axes and labels
+    for(let i=0;i<n;i++){
+      const a=(i/n)*Math.PI*2-Math.PI/2;
+      const ex=(cx+maxR*Math.cos(a)).toFixed(1),ey=(cy+maxR*Math.sin(a)).toFixed(1);
+      axes+=`<line x1="${cx}" y1="${cy}" x2="${ex}" y2="${ey}" stroke="#2a3a4a" stroke-width="1"/>`;
+      const lx=(cx+(maxR+14)*Math.cos(a)).toFixed(1),ly=(cy+(maxR+14)*Math.sin(a)+4).toFixed(1);
+      lbls+=`<text x="${lx}" y="${ly}" text-anchor="middle" fill="#b8c8d8" font-size="10" font-family="Barlow Condensed,sans-serif" font-weight="600">${labels[i]}</text>`;
+    }
+    // Data polygon
+    const polyPts=scores.map((s,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;const r=(s/10)*maxR;return`${(cx+r*Math.cos(a)).toFixed(1)},${(cy+r*Math.sin(a)).toFixed(1)}`;}).join(" ");
+    poly=`<polygon points="${polyPts}" fill="rgba(198,241,53,0.12)" stroke="#c6f135" stroke-width="2"/>`;
+    // Data points
+    pts=scores.map((s,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;const r=(s/10)*maxR;return`<circle cx="${(cx+r*Math.cos(a)).toFixed(1)}" cy="${(cy+r*Math.sin(a)).toFixed(1)}" r="4" fill="#c6f135" stroke="#0d1117" stroke-width="1.5"/>`;}).join("");
+    el.innerHTML=`<svg width="236" height="240" viewBox="0 0 236 240">${grid}${axes}${poly}${pts}${lbls}</svg>`;
+  })();
+}
+
+function doPrint(){
+  const p=document.getElementById("pages");
+  if(!p||p.style.display==="none"){alert("Generate the preview first.");return;}
+  const d=document.createElement("div");
+  d.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;";
+  d.innerHTML=`<div style="background:#131b24;border:2px solid #c6f135;padding:26px 34px;border-radius:8px;text-align:center;max-width:380px;"><div style="font-family:Barlow Condensed,sans-serif;font-size:20px;font-weight:700;color:#c6f135;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">Save as PDF</div><div style="color:#b8c8d8;font-size:12px;line-height:1.9;margin-bottom:16px;"><strong style="color:#fff;">1.</strong> Destination → Save as PDF<br><strong style="color:#fff;">2.</strong> Margins → None<br><strong style="color:#fff;">3.</strong> ✅ Background graphics ON<br><strong style="color:#fff;">4.</strong> Click Save</div><button onclick="this.parentElement.parentElement.remove();window.print();" style="background:#c6f135;color:#0d1117;font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:9px 22px;border:none;border-radius:4px;cursor:pointer;">Print Now</button></div>`;
+  document.body.appendChild(d);
+}
+</script>
+</div><!-- shell -->
+</body>
+</html>
