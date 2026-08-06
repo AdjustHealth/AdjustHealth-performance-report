@@ -921,7 +921,7 @@ function gen(){
   <div class="pstripe" style="position:absolute;top:0;left:0;right:0;"></div>
   <img src="data:image/jpeg;base64,${LOGO}" style="height:72px;object-fit:contain;mix-blend-mode:lighten;margin-bottom:32px;">
   <div style="width:52px;height:3px;background:#c6f135;margin:0 auto 24px;"></div>
-  <div style="font-family:'Barlow Condensed',sans-serif;font-size:110px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:.9;letter-spacing:-2px;">Performance</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:92px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:.9;letter-spacing:-2px;">Performance</div>
   <div style="font-family:'Barlow Condensed',sans-serif;font-size:130px;font-weight:900;font-style:italic;text-transform:uppercase;color:#c6f135;line-height:.85;margin-bottom:48px;letter-spacing:-3px;">Report</div>
   <div style="border:2px solid #c6f135;padding:14px 56px;margin-bottom:12px;display:inline-block;">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#ffffff;">${name}</div>
@@ -983,10 +983,10 @@ function gen(){
     </div>
 
     <!-- SECTION 4: Clinician notes -->
-    <div class="psec" style="padding-top:12px;">
-      <div style="background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;height:100%;display:flex;flex-direction:column;justify-content:center;">
+    <div class="psec" style="padding-top:12px;justify-content:center;">
+      <div style="background:#131b24;border-left:4px solid #c6f135;padding:16px 20px;">
         <div class="slbl" style="margin-bottom:8px;">Clinician Notes</div>
-        <div style="font-size:11px;color:#b8c8d8;line-height:1.75;">${v("fsummary")||"Add your clinical summary in the sidebar — it will appear here."}</div>
+        <div style="font-size:12px;color:#b8c8d8;line-height:1.8;">${v("fsummary")||"Add your clinical summary in the sidebar — it will appear here."}</div>
       </div>
     </div>
 
@@ -1009,8 +1009,8 @@ function gen(){
         ${spbar("Lumbar Flexion",lumb)}
       </div>
     </div>
-    <div class="psec" style="flex:1;margin-top:12px;overflow:hidden;">
-      <table class="dtbl" style="height:100%;">
+    <div class="psec" style="flex:1;margin-top:12px;overflow:hidden;justify-content:center;">
+      <table class="dtbl">
         <thead><tr><th style="width:160px;">Region</th><th style="width:70px;">Left</th><th style="width:84px;">Rating</th><th style="width:70px;">Right</th><th style="width:84px;">Rating</th><th style="width:62px;">LSI</th></tr></thead>
         <tbody>
           <tr class="sh"><td colspan="6">Upper Limb</td></tr>
@@ -1144,10 +1144,10 @@ function gen(){
         </div>
       </div>
     </div>
-    <div class="psec" style="flex:1;">
+    <div class="psec" style="flex:1;justify-content:center;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
       <div class="nbox" style="margin-bottom:8px;"><strong>Relative strength</strong> (kg ÷ BW) normalises across athlete sizes. BW: ${bw?bw+" kg":"not entered"}.</div>
-      ${fd.length>0?`<div class="g3">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
+      ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
     </div>
     <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry — monitor loading."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry — hamstring work prescribed."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry — hip stabiliser loading recommended."}`:null,imtp?`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good — strength work will push above 3.0.":"developing — maximal strength is a key priority."}`:null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){const[g,a]=fw[item.id];return`${item.l} ${item.val}kg — ${item.val>=g?"strong.":item.val>=a?"good — progressive loading prescribed.":"developing — strength priority."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.l} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
   </div>
@@ -1182,7 +1182,7 @@ function gen(){
       <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;height:100%;">
         <!-- Gauge -->
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd!==null?(S.spd>=5?"#c6f135":"#e05252"):"#7a8fa6",170,130)}
+          ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd!==null?(S.spd>=5?"#c6f135":"#e05252"):"#7a8fa6",200,158)}
         </div>
         <!-- Big number + label -->
         <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
@@ -1209,7 +1209,7 @@ function gen(){
     <div class="psec" style="flex:1;">
       <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;height:100%;">
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap!==null?(S.cap>=5?"#c6f135":"#e05252"):"#7a8fa6",170,130)}
+          ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap!==null?(S.cap>=5?"#c6f135":"#e05252"):"#7a8fa6",200,158)}
         </div>
         <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">${ct.l}</div>
