@@ -722,26 +722,26 @@ function rsiTarget(val){
 }
 
 function energyZoneBars(spdScore,anaScore,capScore){
-  const W=200,H=120,pad=16,barW=38,gap=14,baseline=H-24;
+  const W=200,H=150,pad=18,barW=44,gap=16,baseline=H-28;
   const zones=[
     {lbl:"PCr",score:spdScore,col:spdScore===null?"#2a3a4a":spdScore>=7.5?"#c6f135":spdScore>=5?"#f5a623":"#e05252"},
     {lbl:"Anaerob.",score:anaScore,col:anaScore===null?"#2a3a4a":"#a78bfa"},
     {lbl:"Aerobic",score:capScore,col:capScore===null?"#2a3a4a":capScore>=7.5?"#4cdb7a":capScore>=5?"#f5a623":"#e05252"}
   ];
-  const maxH=baseline-18;
+  const maxH=baseline-22;
   let bars="";
   zones.forEach((z,i)=>{
     const x=pad+i*(barW+gap);
     const h=z.score!==null?Math.round((z.score/10)*maxH):8;
     const y=baseline-h;
     const fillOpacity=z.score===null?0.2:0.85;
-    bars+=`<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${z.col}" opacity="${fillOpacity}" rx="3"/>`;
+    bars+=`<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${z.col}" opacity="${fillOpacity}" rx="4"/>`;
     if(z.score!==null){
-      bars+=`<text x="${x+barW/2}" y="${y-5}" text-anchor="middle" fill="${z.col}" font-family="Barlow Condensed,sans-serif" font-size="13" font-weight="700">${z.score.toFixed(1)}</text>`;
+      bars+=`<text x="${x+barW/2}" y="${y-7}" text-anchor="middle" fill="${z.col}" font-family="Barlow Condensed,sans-serif" font-size="16" font-weight="700">${z.score.toFixed(1)}</text>`;
     } else {
-      bars+=`<text x="${x+barW/2}" y="${y-5}" text-anchor="middle" fill="#3a4f63" font-family="Barlow Condensed,sans-serif" font-size="10">—</text>`;
+      bars+=`<text x="${x+barW/2}" y="${y-7}" text-anchor="middle" fill="#3a4f63" font-family="Barlow Condensed,sans-serif" font-size="11">—</text>`;
     }
-    bars+=`<text x="${x+barW/2}" y="${baseline+12}" text-anchor="middle" fill="#7a8fa6" font-family="Barlow,sans-serif" font-size="8">${z.lbl}</text>`;
+    bars+=`<text x="${x+barW/2}" y="${baseline+15}" text-anchor="middle" fill="#b8c8d8" font-family="Barlow,sans-serif" font-size="9.5">${z.lbl}</text>`;
   });
   // baseline
   bars+=`<line x1="${pad}" y1="${baseline}" x2="${W-pad}" y2="${baseline}" stroke="#2a3a4a" stroke-width="1"/>`;
@@ -749,7 +749,7 @@ function energyZoneBars(spdScore,anaScore,capScore){
   [2.5,5,7.5,10].forEach(v=>{
     const y=baseline-Math.round((v/10)*maxH);
     bars+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#1c2733" stroke-width="1" stroke-dasharray="3,3"/>`;
-    bars+=`<text x="${pad-3}" y="${y+3}" text-anchor="end" fill="#3a4f63" font-size="7" font-family="Barlow,sans-serif">${v}</text>`;
+    bars+=`<text x="${pad-4}" y="${y+3}" text-anchor="end" fill="#3a4f63" font-size="8" font-family="Barlow,sans-serif">${v}</text>`;
   });
   return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0;">${bars}</svg>`;
 }
@@ -1042,7 +1042,7 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page 3</div></div>
   <div class="pbody">
-    <div class="psec">
+    <div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Countermovement Jump (CMJ)</div>
       <div class="nbox" style="margin-bottom:10px;"><strong>CMJ</strong> measures explosive power. <strong>Jump height</strong> is the primary indicator. <strong>Relative power (W/kg)</strong> is the VALD standard — normalises for body size. <strong>EUR</strong> = CMJ ÷ SJ; target &gt;1.10.</div>
       <div class="g3">
@@ -1062,7 +1062,7 @@ function gen(){
         </div>
       </div>
     </div>
-    <div class="psec">
+    <div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Reactive Strength — Drop Jump RSI Mod</div>
       <div class="sprow">
         ${rsiTarget(rsi)}
@@ -1078,7 +1078,7 @@ function gen(){
         </div>
       </div>
     </div>
-    <div class="psec">
+    <div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Horizontal Projection — Broad Jump</div>
       <div class="nbox" style="margin-bottom:10px;"><strong>Broad Jump</strong> measures hip extensor force projection. SL values reveal asymmetry. <strong>LSI target: &gt;90%.</strong></div>
       <div class="g3">
@@ -1093,7 +1093,7 @@ function gen(){
         </div>
       </div>
     </div>
-    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Power Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm, excellent explosive power.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average — plyometrics prescribed.":"below norm — hip extension focus."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average — eccentric loading recommended.":"poor — eccentric work priority."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive power.":rsi>=POWD().rsi.avg?"good — plyometrics will improve this.":"developing — plyometric foundations recommended."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry — single-leg loading prescribed."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>
+    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm, excellent explosive power.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average — plyometrics prescribed.":"below norm — hip extension focus."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average — eccentric loading recommended.":"poor — eccentric work priority."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive power.":rsi>=POWD().rsi.avg?"good — plyometrics will improve this.":"developing — plyometric foundations recommended."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry — single-leg loading prescribed."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>
   </div>
   ${foot()}
 </div>
@@ -1231,9 +1231,9 @@ function gen(){
 
     <!-- Bottom: domain bars + prescriptions -->
     <div class="psec" style="flex:0 0 auto;">
-      <div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:10px;align-items:stretch;">
-        <div style="display:flex;flex-direction:column;gap:4px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Domain Profile</div>
+      <div style="display:grid;grid-template-columns:230px 1fr 1fr;gap:10px;align-items:stretch;">
+        <div style="background:#131b24;border-left:3px solid #c6f135;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;margin-bottom:6px;">Domain Profile</div>
           ${energyZoneBars(S.spd,S_ana,S.cap)}
         </div>
         <div style="background:#131b24;border-left:3px solid #38bdf8;padding:10px 14px;">
