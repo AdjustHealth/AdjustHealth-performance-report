@@ -751,15 +751,24 @@ function foot(){return`<div class="pfooter"><span class="pftag">Adjust Health</s
 
 function romRow(k,nm){
   const vL=gmob(k,"l"),vR=gmob(k,"r"),hL=vL>0,hR=vR>0;
+  if(!hL&&!hR)return""; // neither side tested — leave this measure off the report
   const rL=hL?rat(vL,nm):null,rR=hR?rat(vR,nm):null,ls=lsi(hL?vL:null,hR?vR:null);
   return`<tr><td>${nm.n}</td><td class="dv" style="color:${hL?rCol(rL):"#7a8fa6"};">${hL?vL+nm.u:"—"}</td><td class="dc">${hL?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${hR?rCol(rR):"#7a8fa6"};">${hR?vR+nm.u:"—"}</td><td class="dc">${hR?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
 }
 
 function isoRow(lbl,lV,rV,good,avg){
+  if(!lV&&!rV)return""; // neither side tested — leave this measure off the report
   const nm={good,avg,lo:false};const rL=lV?rat(lV,nm):null,rR=rV?rat(rV,nm):null,ls=lsi(lV,rV);
   return`<tr><td>${lbl}</td><td class="dv" style="color:${lV?rCol(rL):"#7a8fa6"};">${lV?lV.toFixed(2):"—"}</td><td class="dc">${lV?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${rV?rCol(rR):"#7a8fa6"};">${rV?rV.toFixed(2):"—"}</td><td class="dc">${rV?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
 }
 
+// Renders only the cards that have data — an untested item just doesn't appear,
+// so a blank field is the way to leave any individual test off the report.
+function cardGrid(cards,emptyMsg){
+  const list=cards.filter(Boolean);
+  if(!list.length)return`<div class="nbox" style="color:#7a8fa6;">${emptyMsg}</div>`;
+  return`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">${list.join("")}</div>`;
+}
 function spbar(lbl,pct){
   if(!pct)return"";
   const col=pct>=75?"#4cdb7a":pct>=50?"#f5a623":"#e05252";
@@ -1061,57 +1070,57 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page ${pnumPower}</div></div>
   <div class="pbody">
-    <div class="psec" style="flex:0 0 auto;">
+    ${(cmjH||cmjRPP||eur!==null)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Countermovement Jump (CMJ)</div>
       <div class="nbox" style="margin-bottom:10px;"><strong>CMJ</strong> measures explosive power. <strong>Jump height</strong> is the primary indicator. <strong>Relative power (W/kg)</strong> is the VALD standard — normalises for body size. <strong>EUR</strong> = CMJ ÷ SJ; target &gt;1.10.</div>
-      <div class="g3">
-        <div class="mc">
-          ${cmjH?`<span class="mc-bdg rb ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"rg":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"ra":"rp"}">${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"Excellent":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"Average":"Needs Work"}</span>`:""}
-          <div class="ml">Jump Height</div><div class="mv">${cmjH?cmjH.toFixed(1):"—"}</div><div class="mu">cm | Norm: &gt;36cm excellent</div>
-          ${cmjH?`<div class="mi2" style="color:${domCol(sc(cmjH,36,28))};">${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"✓ Excellent.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"→ Average — plyometrics prescribed.":"↑ Below norm — hip extension focus."}</div>`:""}
-        </div>
-        <div class="mc">
-          <div class="ml">Relative Peak Power</div><div class="mv">${cmjRPP?cmjRPP.toFixed(1):"—"}</div><div class="mu">W/kg | VALD standard</div>
+      ${cardGrid([
+        cmjH?`<div class="mc">
+          <span class="mc-bdg rb ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"rg":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"ra":"rp"}">${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"Excellent":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"Average":"Needs Work"}</span>
+          <div class="ml">Jump Height</div><div class="mv">${cmjH.toFixed(1)}</div><div class="mu">cm | Norm: &gt;36cm excellent</div>
+          <div class="mi2" style="color:${domCol(sc(cmjH,36,28))};">${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"✓ Excellent.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"→ Average — plyometrics prescribed.":"↑ Below norm — hip extension focus."}</div>
+        </div>`:null,
+        cmjRPP?`<div class="mc">
+          <div class="ml">Relative Peak Power</div><div class="mv">${cmjRPP.toFixed(1)}</div><div class="mu">W/kg | VALD standard</div>
           <div class="mi2" style="color:#7a8fa6;">Excellent: &gt;55 W/kg | Good: 45–55</div>
-        </div>
-        <div class="mc" style="border-left-color:${eur!==null?(eur>=1.10?"#4cdb7a":eur>=1.00?"#f5a623":"#e05252"):"#c6f135"};">
-          ${eur!==null?`<span class="mc-bdg rb ${eur>=1.10?"rg":eur>=1.00?"ra":"rp"}">${eur>=1.10?"Good SSC":eur>=1.00?"Average":"Poor SSC"}</span>`:""}
-          <div class="ml">EUR (CMJ ÷ SJ)</div><div class="mv">${eur!==null?eur.toFixed(2):"—"}</div><div class="mu">SJ: ${sjH?sjH+" cm":"—"} | Target &gt;1.10</div>
-          ${eur!==null?`<div class="mi2" style="color:${eur>=1.10?"#4cdb7a":eur>=1.00?"#f5a623":"#e05252"};">${eur>=1.10?"✓ Good elastic energy use.":eur>=1.00?"→ Eccentric loading will help.":"↑ Eccentric work is a priority."}</div>`:""}
-        </div>
-      </div>
-    </div>
-    <div class="psec" style="flex:0 0 auto;">
+        </div>`:null,
+        eur!==null?`<div class="mc" style="border-left-color:${eur>=1.10?"#4cdb7a":eur>=1.00?"#f5a623":"#e05252"};">
+          <span class="mc-bdg rb ${eur>=1.10?"rg":eur>=1.00?"ra":"rp"}">${eur>=1.10?"Good SSC":eur>=1.00?"Average":"Poor SSC"}</span>
+          <div class="ml">EUR (CMJ ÷ SJ)</div><div class="mv">${eur.toFixed(2)}</div><div class="mu">SJ: ${sjH} cm | Target &gt;1.10</div>
+          <div class="mi2" style="color:${eur>=1.10?"#4cdb7a":eur>=1.00?"#f5a623":"#e05252"};">${eur>=1.10?"✓ Good elastic energy use.":eur>=1.00?"→ Eccentric loading will help.":"↑ Eccentric work is a priority."}</div>
+        </div>`:null
+      ],"No CMJ tests recorded.")}
+    </div>`:""}
+    ${rsi?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Reactive Strength — Drop Jump RSI Mod</div>
       <div class="sprow">
-        ${speedo(rsi,0,2.0,"",rsi?(rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"):"#7a8fa6",200,158)}
+        ${speedo(rsi,0,2.0,"",rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252",200,158)}
         <div class="spinfo">
-          <div class="spbig" style="color:${rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"};">${rsi?rsi.toFixed(2):"—"}<span style="font-size:18px;color:#7a8fa6;font-weight:400;"> RSI Mod</span></div>
+          <div class="spbig" style="color:${rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"};">${rsi.toFixed(2)}<span style="font-size:18px;color:#7a8fa6;font-weight:400;"> RSI Mod</span></div>
           <div class="spnote">Jump height ÷ contact time. Measures reactive power and tendon stiffness — critical for sprinting and COD.</div>
           <div class="bmg">
             <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">&gt;1.50</div></div>
             <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">1.00–1.50</div></div>
             <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Developing</div><div class="bmv">&lt;1.00</div></div>
           </div>
-          ${rsi?`<div class="nbox">${rsi>=POWD().rsi.good?"<strong>✓ Excellent</strong> — reactive power is a clear strength.":rsi>=POWD().rsi.avg?"<strong>→ Good</strong> — plyometric progressions will improve this.":"<strong>↑ Developing</strong> — plyometric foundations recommended."}</div>`:""}
+          <div class="nbox">${rsi>=POWD().rsi.good?"<strong>✓ Excellent</strong> — reactive power is a clear strength.":rsi>=POWD().rsi.avg?"<strong>→ Good</strong> — plyometric progressions will improve this.":"<strong>↑ Developing</strong> — plyometric foundations recommended."}</div>
         </div>
       </div>
-    </div>
-    <div class="psec" style="flex:0 0 auto;">
+    </div>`:""}
+    ${(bj||slL||slR)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Horizontal Projection — Broad Jump</div>
       <div class="nbox" style="margin-bottom:10px;"><strong>Broad Jump</strong> measures hip extensor force projection. SL values reveal asymmetry. <strong>LSI target: &gt;90%.</strong></div>
-      <div class="g3">
-        <div class="mc">
-          ${bj?`<span class="mc-bdg rb ${sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"rg":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"ra":"rp"}">${sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"Excellent":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"Good":"Developing"}</span>`:""}
-          <div class="ml">Bilateral Broad Jump</div><div class="mv">${bj?bj.toFixed(2):"—"}</div><div class="mu">metres | Norm: &gt;2.20m</div>
-        </div>
-        <div class="mc"><div class="ml">SL Broad Jump — Left</div><div class="mv">${slL?slL.toFixed(2):"—"}</div><div class="mu">metres</div></div>
-        <div class="mc">
-          <div class="ml">SL Broad Jump — Right</div><div class="mv">${slR?slR.toFixed(2):"—"}</div><div class="mu">metres</div>
+      ${cardGrid([
+        bj?`<div class="mc">
+          <span class="mc-bdg rb ${sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"rg":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"ra":"rp"}">${sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"Excellent":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"Good":"Developing"}</span>
+          <div class="ml">Bilateral Broad Jump</div><div class="mv">${bj.toFixed(2)}</div><div class="mu">metres | Norm: &gt;2.20m</div>
+        </div>`:null,
+        slL?`<div class="mc"><div class="ml">SL Broad Jump — Left</div><div class="mv">${slL.toFixed(2)}</div><div class="mu">metres</div></div>`:null,
+        slR?`<div class="mc">
+          <div class="ml">SL Broad Jump — Right</div><div class="mv">${slR.toFixed(2)}</div><div class="mu">metres</div>
           ${slL&&slR?`<div class="mi2" style="color:${lsi(slL,slR)>=90?"#4cdb7a":"#e05252"};">LSI: ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"Symmetrical":"Asymmetry noted"}</div>`:""}
-        </div>
-      </div>
-    </div>
+        </div>`:null
+      ],"No broad jump tests recorded.")}
+    </div>`:""}
     <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm, excellent explosive power.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average — plyometrics prescribed.":"below norm — hip extension focus."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average — eccentric loading recommended.":"poor — eccentric work priority."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive power.":rsi>=POWD().rsi.avg?"good — plyometrics will improve this.":"developing — plyometric foundations recommended."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry — single-leg loading prescribed."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>
   </div>
   ${foot()}
@@ -1146,26 +1155,26 @@ function gen(){
       </table>
     </div>
 
-    <div class="psec" style="flex:0 0 auto;">
+    ${(imtp||rfd)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">IMTP — Isometric Mid-Thigh Pull</div>
-      <div class="g2">
-        <div style="background:#131b24;border-left:4px solid ${imtp>=(v("fsex")==="f"?2.5:3.0)?"#4cdb7a":imtp>=(v("fsex")==="f"?2.0:2.5)?"#f5a623":"#e05252"};padding:14px;display:flex;gap:12px;align-items:center;">
+      ${cardGrid([
+        imtp?`<div style="background:#131b24;border-left:4px solid ${imtp>=(v("fsex")==="f"?2.5:3.0)?"#4cdb7a":imtp>=(v("fsex")==="f"?2.0:2.5)?"#f5a623":"#e05252"};padding:14px;display:flex;gap:12px;align-items:center;">
           ${gauge(imtp,v("fsex")==="f"?2.5:3.0,v("fsex")==="f"?2.0:2.5,"N/kg")}
           <div>
             <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">Relative Peak Force</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp?imtp.toFixed(2):"—"}<span style="font-size:13px;color:#7a8fa6;"> N/kg</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp.toFixed(2)}<span style="font-size:13px;color:#7a8fa6;"> N/kg</span></div>
             <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">Excellent: &gt;3.0 | Good: 2.5–3.0 | Developing: &lt;2.5</div>
-            ${imtp?`<div style="font-size:10px;font-style:italic;margin-top:4px;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp>=3.0?"✓ Excellent isometric strength.":imtp>=2.5?"→ Good — targeted strength work will push this.":"↑ Maximal strength is a key priority."}</div>`:""}
+            <div style="font-size:10px;font-style:italic;margin-top:4px;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp>=3.0?"✓ Excellent isometric strength.":imtp>=2.5?"→ Good — targeted strength work will push this.":"↑ Maximal strength is a key priority."}</div>
           </div>
-        </div>
-        <div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
+        </div>`:null,
+        rfd?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">RFD 0–200ms</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${rfd?rfd.toLocaleString():"—"}<span style="font-size:13px;color:#7a8fa6;"> N/s</span></div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${rfd.toLocaleString()}<span style="font-size:13px;color:#7a8fa6;"> N/s</span></div>
           <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">Rate of force development. Elite: &gt;5,000 N/s.</div>
-          ${rfd?`<div style="font-size:10px;font-style:italic;margin-top:4px;color:${rfd>=5000?"#4cdb7a":rfd>=3500?"#f5a623":"#e05252"};">${rfd>=5000?"✓ Excellent RFD.":rfd>=3500?"→ Good — plyometrics will improve.":"↑ Below elite benchmark."}</div>`:""}
-        </div>
-      </div>
-    </div>
+          <div style="font-size:10px;font-style:italic;margin-top:4px;color:${rfd>=5000?"#4cdb7a":rfd>=3500?"#f5a623":"#e05252"};">${rfd>=5000?"✓ Excellent RFD.":rfd>=3500?"→ Good — plyometrics will improve.":"↑ Below elite benchmark."}</div>
+        </div>`:null
+      ],"No IMTP data recorded.")}
+    </div>`:""}
     <div class="psec" style="flex:1;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
       <div class="nbox" style="margin-bottom:12px;"><strong>Relative strength</strong> (kg ÷ BW) normalises across athlete sizes. BW: ${bw?bw+" kg":"not entered"}.</div>
@@ -1205,18 +1214,18 @@ function gen(){
     </div>
 
     <!-- PCr test row -->
-    <div class="psec" style="flex:1;">
+    ${sv?`<div class="psec" style="flex:1;">
       <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;height:100%;">
         <!-- Gauge -->
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd!==null?(S.spd>=5?"#c6f135":"#e05252"):"#7a8fa6",200,158)}
+          ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd>=5?"#c6f135":"#e05252",200,158)}
         </div>
         <!-- Big number + label -->
         <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">${st.l}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.spd)};line-height:1;">${sv?sv.toFixed(2):"—"}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.spd)};line-height:1;">${sv.toFixed(2)}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${st.u}</div>
-          ${S.spd!==null?`<span class="rb ${S.spd>=7.5?"rg":S.spd>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.spd>=7.5?"Excellent":S.spd>=5?"Good":"Developing"}</span>`:""}
+          <span class="rb ${S.spd>=7.5?"rg":S.spd>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.spd>=7.5?"Excellent":S.spd>=5?"Good":"Developing"}</span>
         </div>
         <!-- Benchmarks -->
         <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:140px;flex-shrink:0;">
@@ -1227,22 +1236,22 @@ function gen(){
         <!-- Note -->
         <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${st.note}</div>
-          ${sv?`<div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.spd>=7.5?"<strong style='color:#c6f135;'>✓ Excellent</strong> — elite-level acceleration. Maintain with weekly maximal sprint sessions.":S.spd>=5?"<strong style='color:#f5a623;'>→ Good</strong> — sprint progressions will push to elite. 6–8×20m accelerations 2–3×/week.":"<strong style='color:#e05252;'>↑ Priority</strong> — acceleration work prescribed. A-march/skip drills, sled push 2×/week."}</div>`:""} 
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.spd>=7.5?"<strong style='color:#c6f135;'>✓ Excellent</strong> — elite-level acceleration. Maintain with weekly maximal sprint sessions.":S.spd>=5?"<strong style='color:#f5a623;'>→ Good</strong> — sprint progressions will push to elite. 6–8×20m accelerations 2–3×/week.":"<strong style='color:#e05252;'>↑ Priority</strong> — acceleration work prescribed. A-march/skip drills, sled push 2×/week."}</div>
         </div>
       </div>
-    </div>
+    </div>`:""}
 
     <!-- Aerobic test row -->
-    <div class="psec" style="flex:1;">
+    ${cv?`<div class="psec" style="flex:1;">
       <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;height:100%;">
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap!==null?(S.cap>=5?"#c6f135":"#e05252"):"#7a8fa6",200,158)}
+          ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap>=5?"#c6f135":"#e05252",200,158)}
         </div>
         <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">${ct.l}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.cap)};line-height:1;">${cv||"—"}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.cap)};line-height:1;">${cv}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${ct.u}</div>
-          ${S.cap!==null?`<span class="rb ${S.cap>=7.5?"rg":S.cap>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.cap>=7.5?"Excellent":S.cap>=5?"Good":"Developing"}</span>`:""}
+          <span class="rb ${S.cap>=7.5?"rg":S.cap>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.cap>=7.5?"Excellent":S.cap>=5?"Good":"Developing"}</span>
         </div>
         <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:140px;flex-shrink:0;">
           <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">${ct.el}</div></div>
@@ -1251,10 +1260,10 @@ function gen(){
         </div>
         <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${ct.note}</div>
-          ${cv?`<div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.cap>=7.5?"<strong style='color:#4cdb7a;'>✓ Excellent</strong> — elite aerobic capacity. Maintain with zone 2 sessions + sport-specific intervals.":S.cap>=5?"<strong style='color:#f5a623;'>→ Good base</strong> — zone 2 training 3×/week will drive adaptation. Add tempo intervals.":"<strong style='color:#e05252;'>↑ Aerobic development required</strong> — foundational conditioning work prescribed. 4×/week low-intensity."}</div>`:""}
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.cap>=7.5?"<strong style='color:#4cdb7a;'>✓ Excellent</strong> — elite aerobic capacity. Maintain with zone 2 sessions + sport-specific intervals.":S.cap>=5?"<strong style='color:#f5a623;'>→ Good base</strong> — zone 2 training 3×/week will drive adaptation. Add tempo intervals.":"<strong style='color:#e05252;'>↑ Aerobic development required</strong> — foundational conditioning work prescribed. 4×/week low-intensity."}</div>
         </div>
       </div>
-    </div>
+    </div>`:""}
 
     <!-- Bottom: domain bars + prescriptions -->
     <div class="psec" style="flex:0 0 auto;">
