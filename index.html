@@ -705,28 +705,6 @@ function gauge(val,good,avg,unit){
   return`<svg width="100" height="82" viewBox="0 0 100 82" style="flex-shrink:0;"><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="#1c2733" stroke-width="${sw}" stroke-dasharray="${ci*.75} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-225 ${cx} ${cx})"/><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${pct*ci*.75} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-225 ${cx} ${cx})"/><text x="${cx}" y="${cx+3}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="15" font-weight="700">${parseFloat(val).toFixed(2)}</text><text x="${cx}" y="${cx+14}" text-anchor="middle" fill="#7a8fa6" font-size="8" font-family="Barlow,sans-serif">${unit}</text></svg>`;
 }
 
-function rsiTarget(val){
-  if(!val)return`<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;color:#7a8fa6;font-size:11px;flex-shrink:0;">Not Tested</div>`;
-  const col=val>=1.5?"#c6f135":val>=1.0?"#f5a623":"#e05252";
-  const cx=80,cy=80;
-  // Concentric rings — purely visual, zero text
-  const rings=[
-    {r:68,fill:"#131b24",stroke:"#1c2733"},
-    {r:54,fill:"#131b24",stroke:"#1c2733"},
-    {r:40,fill:"rgba(198,241,53,.05)",stroke:"rgba(198,241,53,.15)"},
-    {r:26,fill:"rgba(245,166,35,.05)",stroke:"rgba(245,166,35,.15)"},
-    {r:12,fill:"rgba(224,82,82,.05)",stroke:"rgba(224,82,82,.15)"}
-  ];
-  const ringsSvg=rings.map(rg=>`<circle cx="${cx}" cy="${cy}" r="${rg.r}" fill="${rg.fill}" stroke="${rg.stroke}" stroke-width="1.5"/>`).join('');
-  const dotR=Math.min((val/2.5)*68,68);
-  const dotX=(cx+dotR).toFixed(1);
-  const glow=`<circle cx="${dotX}" cy="${cy}" r="16" fill="${col}" opacity=".12"/>`;
-  const pulse=`<circle cx="${dotX}" cy="${cy}" r="12" fill="none" stroke="${col}" stroke-width="1.5" opacity=".4"/>`;
-  const dot=`<circle cx="${dotX}" cy="${cy}" r="8" fill="${col}"/>`;
-  const score=`<text x="${cx}" y="${cy+6}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="20" font-weight="700">${val.toFixed(2)}</text>`;
-  return`<svg width="160" height="160" viewBox="0 0 160 160" style="flex-shrink:0;">${ringsSvg}${glow}${pulse}${dot}${score}</svg>`;
-}
-
 function energyZoneBars(spdScore,anaScore,capScore){
   const W=200,H=150,pad=18,barW=44,gap=16,baseline=H-28;
   const zones=[
@@ -1074,7 +1052,7 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Reactive Strength — Drop Jump RSI Mod</div>
       <div class="sprow">
-        ${rsiTarget(rsi)}
+        ${speedo(rsi,0,2.0,"",rsi?(rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"):"#7a8fa6",200,158)}
         <div class="spinfo">
           <div class="spbig" style="color:${rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"};">${rsi?rsi.toFixed(2):"—"}<span style="font-size:18px;color:#7a8fa6;font-weight:400;"> RSI Mod</span></div>
           <div class="spnote">Jump height ÷ contact time. Measures reactive power and tendon stiffness — critical for sprinting and COD.</div>
