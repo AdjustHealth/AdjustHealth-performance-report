@@ -338,6 +338,15 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>Sex</label><select id="fsex"><option value="m">Male</option><option value="f">Female</option></select></div>
       <div class="fb-card" style="grid-column:span 2;"><label>Sport Category</label><select id="fcat"><option value="">Select...</option><option value="field">Field Sports (AFL, Rugby, Soccer)</option><option value="court">Court Sports (Basketball, Netball)</option><option value="endurance">Endurance Sports</option><option value="combat">Combat Sports</option><option value="strength">Strength &amp; Power</option><option value="general">General Health / Rehab</option></select></div>
     </div>
+    <div class="fb-sh">Report Sections — choose what to include in the generated report</div>
+    <div class="ft-grid" style="grid-template-columns:repeat(5,1fr);">
+      <div class="ft-chip"><input type="checkbox" id="sec_injury" checked><label for="sec_injury">Injury Screen</label></div>
+      <div class="ft-chip"><input type="checkbox" id="sec_mobility" checked><label for="sec_mobility">Mobility</label></div>
+      <div class="ft-chip"><input type="checkbox" id="sec_power" checked><label for="sec_power">Power</label></div>
+      <div class="ft-chip"><input type="checkbox" id="sec_strength" checked><label for="sec_strength">Strength</label></div>
+      <div class="ft-chip"><input type="checkbox" id="sec_energy" checked><label for="sec_energy">Energy Systems <span style="color:#7a8fa6;">(Speed, Aerobic &amp; Anaerobic)</span></label></div>
+    </div>
+    <div class="nbox" style="margin-bottom:20px;">Untick a section to leave it out of the generated report. Its tab stays here so you can still enter or keep data in it — handy if you switch it back on later. Athlete Profile and Summary are always included.</div>
     <div style="display:flex;gap:12px;margin-top:8px;"><button class="fb-btn fb-btn-primary" onclick="showTab(1)">Next: Injury Screen →</button></div>
   </div>
 
@@ -892,6 +901,20 @@ function gen(){
   S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
   S.spd=sv?Math.round(sc(sv,st.good,st.avg,true)*10)/10:null;
   S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
+
+  // Report Sections — sections unticked in the Athlete tab are left out of both
+  // the generated pages and the domain score / radar / overall-score maths,
+  // even if the tab still holds data from before it was switched off.
+  const incInjury=document.getElementById("sec_injury").checked;
+  const incMobility=document.getElementById("sec_mobility").checked;
+  const incPower=document.getElementById("sec_power").checked;
+  const incStrength=document.getElementById("sec_strength").checked;
+  const incEnergy=document.getElementById("sec_energy").checked;
+  if(!incMobility)S.mob=null;
+  if(!incPower)S.pow=null;
+  if(!incStrength)S.str=null;
+  if(!incEnergy){S.spd=null;S.cap=null;}
+
   const all=[S.mob,S.pow,S.str,S.spd,S.cap].filter(x=>x!==null);
   S.ov=all.length?Math.round(all.reduce((a,b)=>a+b)/all.length*10)/10:null;
   const kdas=[[v("fkd1t"),v("fkd1d")],[v("fkd2t"),v("fkd2d")],[v("fkd3t"),v("fkd3d")]].filter(([t])=>t);
@@ -900,7 +923,8 @@ function gen(){
   const pages=document.getElementById("pages");
   pages.style.display="flex";
 
-  pages.innerHTML=`
+  let pageCount=1; // Athlete Profile is always page 1
+  const pageCover=`
 
 <div class="page" style="position:relative;justify-content:center;align-items:center;text-align:center;background:#0d1117;display:flex;flex-direction:column;">
   <div class="pstripe" style="position:absolute;top:0;left:0;right:0;"></div>
@@ -917,7 +941,9 @@ function gen(){
     <img src="data:image/jpeg;base64,${LOGO}" style="height:11px;object-fit:contain;mix-blend-mode:lighten;opacity:.4;">
   </div>
 </div>
+`;
 
+  const pageAthlete=`
 <div class="page">
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Athlete Profile</div><div class="psub">Personal details, injury screen & overall performance score</div></div><div class="pnum">Page 1</div></div>
@@ -943,10 +969,10 @@ function gen(){
         <!-- Injury screening — horizontal chips -->
         <div>
           <div class="slbl" style="margin-bottom:10px;">Injury Screening</div>
-          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;">
+          ${incInjury?`<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;">
             ${INJ.map(r=>{const res=injR(r);const pass=res==="pass",fail=res==="fail";const bg=pass?"rgba(76,219,122,.12)":fail?"rgba(224,82,82,.12)":"#131b24";const border=pass?"#4cdb7a":fail?"#e05252":"#2a3a4a";const dot_col=pass?"#4cdb7a":fail?"#e05252":"#3a4f63";return`<div style="background:${bg};border:1px solid ${border};padding:10px 8px;text-align:center;"><div style="width:10px;height:10px;border-radius:50%;background:${dot_col};margin:0 auto 5px;"></div><div style="font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:${pass?"#4cdb7a":fail?"#e05252":"#7a8fa6"};">${r}</div><div style="font-size:8px;color:${dot_col};margin-top:2px;">${pass?"Pass":fail?"Fail":"—"}</div></div>`;}).join("")}
           </div>
-          ${v("finjc")?`<div class="nbox" style="margin-top:8px;font-size:10px;">${v("finjc")}</div>`:""}
+          ${v("finjc")?`<div class="nbox" style="margin-top:8px;font-size:10px;">${v("finjc")}</div>`:""}`:`<div style="background:#131b24;border:1px solid #1c2733;padding:16px;color:#7a8fa6;font-size:11px;height:100%;display:flex;align-items:center;">Not included in this report.</div>`}
         </div>
         <!-- Overall score tile -->
         <div style="background:#131b24;border:1px solid #1c2733;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;text-align:center;">
@@ -978,10 +1004,13 @@ function gen(){
   </div>
   ${foot()}
 </div>
+`;
 
+  const pnumMobility=incMobility?++pageCount:null;
+  const pageMobility=`
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Mobility</div><div class="psub">Range of motion vs published normative ranges</div></div><div class="pnum">Page 2</div></div>
+  <div class="phdr"><div><div class="ptitle">Mobility</div><div class="psub">Range of motion vs published normative ranges</div></div><div class="pnum">Page ${pnumMobility}</div></div>
   <div class="pbody">
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox"><strong>How to read:</strong> Rated vs normative data. <span class="rb rg">Good</span> at/above norm &nbsp;<span class="rb ra">Average</span> within range &nbsp;<span class="rb rp">Poor</span> below norm. LSI target &gt;90%.</div>
@@ -1024,10 +1053,13 @@ function gen(){
   </div>
   ${foot()}
 </div>
+`;
 
+  const pnumPower=incPower?++pageCount:null;
+  const pagePower=`
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page 3</div></div>
+  <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page ${pnumPower}</div></div>
   <div class="pbody">
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Countermovement Jump (CMJ)</div>
@@ -1084,10 +1116,13 @@ function gen(){
   </div>
   ${foot()}
 </div>
+`;
 
+  const pnumStrength=incStrength?++pageCount:null;
+  const pageStrength=`
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Strength</div><div class="psub">Isokinetic dynamometry & IMTP — rated vs published norms</div></div><div class="pnum">Page 4</div></div>
+  <div class="phdr"><div><div class="ptitle">Strength</div><div class="psub">Isokinetic dynamometry & IMTP — rated vs published norms</div></div><div class="pnum">Page ${pnumStrength}</div></div>
   <div class="pbody">
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">Rated vs normative data. <strong>LSI target &gt;90%</strong> — asymmetry below this threshold should be monitored and corrected through targeted loading.</div>
@@ -1142,10 +1177,13 @@ function gen(){
   </div>
   ${foot()}
 </div>
+`;
 
+  const pnumEnergy=incEnergy?++pageCount:null;
+  const pageEnergy=`
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page 5</div></div>
+  <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page ${pnumEnergy}</div></div>
   <div class="pbody">
 
     <!-- System zone header cards -->
@@ -1239,10 +1277,13 @@ function gen(){
   </div>
   ${foot()}
 </div>
+`;
 
+  const pnumSummary=++pageCount;
+  const pageSummary=`
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">Performance profile — vs published normative data</div></div><div class="pnum">Page 6</div></div>
+  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">Performance profile — vs published normative data</div></div><div class="pnum">Page ${pnumSummary}</div></div>
   <div class="pbody">
     <div class="psec" style="flex:0 0 auto;">
       <div class="hero">
@@ -1275,6 +1316,13 @@ function gen(){
 </div>
 
   `;
+
+  pages.innerHTML=pageCover+pageAthlete+
+    (incMobility?pageMobility:"")+
+    (incPower?pagePower:"")+
+    (incStrength?pageStrength:"")+
+    (incEnergy?pageEnergy:"")+
+    pageSummary;
 
   // Inline SVG radar — no Chart.js dependency, instant render
   (()=>{
