@@ -1318,9 +1318,8 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="hero">
         <div class="hnum"><div class="hlbl">Overall</div><div class="hval" style="color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div><div class="hsub">out of 10</div></div>
-        <div class="hbody">
+        <div class="hbody" style="display:flex;align-items:center;">
           <div class="hhead">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete":S.ov>=5?"Good foundation — targeted development will drive significant gains":"Key areas identified for focused development"):"—"}</div>
-          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;margin-top:4px;">${v("fsummary")||"Clinician summary notes will appear here."}</div>
         </div>
       </div>
     </div>
@@ -1347,12 +1346,33 @@ function gen(){
 
   `;
 
+  // Clinical Summary — the full write-up gets its own page with room to breathe,
+  // rather than being squeezed into a box on the Summary page next to the score/radar.
+  const hasSummary=!!v("fsummary");
+  const pnumClinicalSummary=hasSummary?++pageCount:null;
+  const pageClinicalSummary=hasSummary?`
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Clinical Summary</div><div class="psub">Full interpretation and recommended focus</div></div><div class="pnum">Page ${pnumClinicalSummary}</div></div>
+  <div class="pbody">
+    <div class="psec">
+      <div style="background:#131b24;border-left:4px solid #c6f135;padding:28px 32px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#ffffff;margin-bottom:18px;">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete":S.ov>=5?"Good foundation — targeted development will drive significant gains":"Key areas identified for focused development"):"Clinical Summary"}</div>
+        <div style="font-size:13px;color:#b8c8d8;line-height:1.9;white-space:pre-line;">${v("fsummary")}</div>
+      </div>
+    </div>
+  </div>
+  ${foot()}
+</div>
+`:"";
+
   pages.innerHTML=pageCover+pageAthlete+
     (incMobility?pageMobility:"")+
     (incPower?pagePower:"")+
     (incStrength?pageStrength:"")+
     (incEnergy?pageEnergy:"")+
-    pageSummary;
+    pageSummary+
+    pageClinicalSummary;
 
   // Inline SVG radar — no Chart.js dependency, instant render
   (()=>{
