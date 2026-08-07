@@ -130,10 +130,10 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 /* =============================================
    A4 PAGE — 794 x 1123px
    Each page is a fixed-size flex column.
-   stripe (4px) + header (68px) + body (flex:1) + footer (26px)
-   = 4 + 68 + body + 26 = 1123
-   body = 1025px
-   body padding 20px top+bottom = 985px usable
+   stripe (4px) + header (92px) + body (flex:1) + footer (26px)
+   = 4 + 92 + body + 26 = 1123
+   body = 1001px
+   body padding 20px top+bottom = 961px usable
    ============================================= */
 .page{
   width:794px;height:1123px;
@@ -144,12 +144,12 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 }
 .pstripe{height:4px;background:#c6f135;flex-shrink:0;}
 .phdr{
-  height:80px;background:#131b24;
+  height:92px;background:#131b24;
   border-bottom:2px solid #c6f135;
   display:flex;align-items:flex-end;justify-content:space-between;
-  padding:0 28px 12px;flex-shrink:0;
+  padding:16px 28px 14px;flex-shrink:0;
 }
-.ptitle{font-family:"Barlow Condensed",sans-serif;font-size:54px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1;}
+.ptitle{font-family:"Barlow Condensed",sans-serif;font-size:50px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1;}
 .psub{font-size:10px;color:#c6f135;font-style:italic;margin-top:3px;}
 .pnum{background:#c6f135;color:#0d1117;font-family:"Barlow Condensed",sans-serif;font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
 
@@ -220,13 +220,13 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 .dot.fail{background:#e05252;border-color:#e05252;}
 
 .dtbl{width:100%;border-collapse:collapse;table-layout:fixed;}
-.dtbl thead th{background:#131b24;color:#c6f135;padding:7px 8px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+.dtbl thead th{background:#131b24;color:#c6f135;padding:11px 10px;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
 .dtbl thead th:not(:first-child){text-align:center;}
-.dtbl tbody td{padding:6px 8px;border-bottom:1px solid #1c2733;font-size:11px;color:#b8c8d8;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;}
-.dtbl tbody td:first-child{white-space:normal;font-size:10px;}
-.dtbl .dv{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:700;text-align:center;}
+.dtbl tbody td{padding:11px 10px;border-bottom:1px solid #1c2733;font-size:12px;color:#b8c8d8;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;}
+.dtbl tbody td:first-child{white-space:normal;font-size:11px;}
+.dtbl .dv{font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:700;text-align:center;}
 .dtbl .dc{text-align:center;}
-.dtbl .sh td{background:#1c2733;padding:4px 8px;font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c6f135;}
+.dtbl .sh td{background:#1c2733;padding:7px 10px;font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c6f135;}
 
 /* Hero */
 .hero{background:#131b24;display:flex;border:1px solid #1c2733;overflow:hidden;}
@@ -778,7 +778,7 @@ function fcard(item,bw){
   const fw=FTNW(),fr=FTNR();
   if(fw[item.id]){const[g,a]=fw[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Strong":item.val>=a?"Avg":"Developing"}</span>`;}
   else if(fr[item.id]){const[g,a]=fr[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Good":item.val>=a?"Avg":"Developing"}</span>`;}
-  return`<div class="mc" style="border-left-color:${col};">${badge}<div class="ml">${item.l}</div><div class="mv" style="color:${col};font-size:30px;">${item.val}</div><div class="mu">${item.u}</div></div>`;
+  return`<div class="mc" style="border-left-color:${col};padding:20px 18px;">${badge}<div class="ml">${item.l}</div><div class="mv" style="color:${col};font-size:38px;">${item.val}</div><div class="mu">${item.u}</div></div>`;
 }
 
 function loadDemo(){
@@ -940,15 +940,15 @@ function gen(){
 
     <!-- SECTION 1: Hero name strip + key stats in a dark banner -->
     <div class="psec" style="flex:0 0 auto;">
-      <div style="background:#131b24;border:1px solid #1c2733;display:flex;align-items:stretch;overflow:hidden;">
+      <div style="background:#131b24;border:1px solid #1c2733;display:grid;grid-template-columns:2.2fr repeat(5,1fr);align-items:stretch;overflow:hidden;">
         <!-- Name + sport block -->
-        <div style="flex:1;padding:18px 22px;border-right:1px solid #1c2733;">
+        <div style="padding:18px 20px;border-right:1px solid #1c2733;min-width:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:6px;">Athlete</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1;letter-spacing:-1px;margin-bottom:4px;">${name}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1.05;letter-spacing:-1px;margin-bottom:4px;word-break:normal;overflow-wrap:normal;">${name}</div>
           <div style="font-size:11px;color:#c6f135;font-weight:600;letter-spacing:1px;">${sport!=="—"?sport:""} ${v("fclub")?"· "+v("fclub"):""}</div>
         </div>
         <!-- Stat tiles -->
-        ${[["DOB",dobStr],["Sex",v("fsex")==="f"?"Female":"Male"],["Sport",sport!=="—"?sport:"—"],["Assessor",v("fclin")||"—"],["Date",dateStr]].map(([lbl,val])=>`<div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:0;"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;white-space:nowrap;">${lbl}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#ffffff;white-space:nowrap;">${val}</div></div>`).join("")}
+        ${[["DOB",dobStr],["Sex",v("fsex")==="f"?"Female":"Male"],["Sport",sport!=="—"?sport:"—"],["Assessor",v("fclin")||"—"],["Date",dateStr]].map(([lbl,val])=>`<div style="padding:14px 12px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;white-space:nowrap;">${lbl}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#ffffff;overflow-wrap:break-word;line-height:1.15;">${val}</div></div>`).join("")}
       </div>
     </div>
 
@@ -983,10 +983,10 @@ function gen(){
     </div>
 
     <!-- SECTION 4: Clinician notes -->
-    <div class="psec" style="padding-top:12px;justify-content:center;">
-      <div style="background:#131b24;border-left:4px solid #c6f135;padding:16px 20px;">
-        <div class="slbl" style="margin-bottom:8px;">Clinician Notes</div>
-        <div style="font-size:12px;color:#b8c8d8;line-height:1.8;">${v("fsummary")||"Add your clinical summary in the sidebar — it will appear here."}</div>
+    <div class="psec" style="padding-top:12px;">
+      <div style="background:#131b24;border-left:4px solid #c6f135;padding:24px 28px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div class="slbl" style="margin-bottom:10px;">Clinician Notes</div>
+        <div style="font-size:14px;color:#b8c8d8;line-height:2;">${v("fsummary")||"Add your clinical summary in the sidebar — it will appear here."}</div>
       </div>
     </div>
 
@@ -1009,23 +1009,25 @@ function gen(){
         ${spbar("Lumbar Flexion",lumb)}
       </div>
     </div>
-    <div class="psec" style="flex:1;margin-top:12px;overflow:hidden;justify-content:center;">
-      <table class="dtbl">
-        <thead><tr><th style="width:160px;">Region</th><th style="width:70px;">Left</th><th style="width:84px;">Rating</th><th style="width:70px;">Right</th><th style="width:84px;">Rating</th><th style="width:62px;">LSI</th></tr></thead>
-        <tbody>
-          <tr class="sh"><td colspan="6">Upper Limb</td></tr>
-          ${romRow("sher",ROMS().sher)}
-          ${romRow("shir",ROMS().shir)}
-          <tr class="sh"><td colspan="6">Lower Limb</td></tr>
-          ${romRow("hipf",ROMS().hipf)}
-          ${romRow("hipir",ROMS().hipir)}
-          ${romRow("hiper",ROMS().hiper)}
-          ${romRow("tho",ROMS().tho)}
-          ${romRow("ank",ROMS().ank)}
-          ${romRow("slr",ROMS().slr)}
-          ${romRow("ktw",ROMS().ktw)}
-        </tbody>
-      </table>
+    <div class="psec" style="flex:1;margin-top:12px;overflow:hidden;">
+      <div style="background:#131b24;border:1px solid #1c2733;flex:1;display:flex;flex-direction:column;justify-content:center;padding:4px 16px;">
+        <table class="dtbl">
+          <thead><tr><th style="width:160px;">Region</th><th style="width:70px;">Left</th><th style="width:84px;">Rating</th><th style="width:70px;">Right</th><th style="width:84px;">Rating</th><th style="width:62px;">LSI</th></tr></thead>
+          <tbody>
+            <tr class="sh"><td colspan="6">Upper Limb</td></tr>
+            ${romRow("sher",ROMS().sher)}
+            ${romRow("shir",ROMS().shir)}
+            <tr class="sh"><td colspan="6">Lower Limb</td></tr>
+            ${romRow("hipf",ROMS().hipf)}
+            ${romRow("hipir",ROMS().hipir)}
+            ${romRow("hiper",ROMS().hiper)}
+            ${romRow("tho",ROMS().tho)}
+            ${romRow("ank",ROMS().ank)}
+            ${romRow("slr",ROMS().slr)}
+            ${romRow("ktw",ROMS().ktw)}
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="psec" style="flex:0 0 auto;margin-top:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #1c2733;">
@@ -1144,10 +1146,12 @@ function gen(){
         </div>
       </div>
     </div>
-    <div class="psec" style="flex:1;justify-content:center;">
+    <div class="psec" style="flex:1;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
-      <div class="nbox" style="margin-bottom:8px;"><strong>Relative strength</strong> (kg ÷ BW) normalises across athlete sizes. BW: ${bw?bw+" kg":"not entered"}.</div>
-      ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
+      <div class="nbox" style="margin-bottom:12px;"><strong>Relative strength</strong> (kg ÷ BW) normalises across athlete sizes. BW: ${bw?bw+" kg":"not entered"}.</div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
+      </div>
     </div>
     <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry — monitor loading."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry — hamstring work prescribed."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry — hip stabiliser loading recommended."}`:null,imtp?`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good — strength work will push above 3.0.":"developing — maximal strength is a key priority."}`:null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){const[g,a]=fw[item.id];return`${item.l} ${item.val}kg — ${item.val>=g?"strong.":item.val>=a?"good — progressive loading prescribed.":"developing — strength priority."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.l} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
   </div>
@@ -1156,7 +1160,7 @@ function gen(){
 
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page 6</div></div>
+  <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page 5</div></div>
   <div class="pbody">
 
     <!-- System zone header cards -->
@@ -1253,7 +1257,7 @@ function gen(){
 
 <div class="page">
   <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">Performance profile — vs published normative data</div></div><div class="pnum">Page 7</div></div>
+  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">Performance profile — vs published normative data</div></div><div class="pnum">Page 6</div></div>
   <div class="pbody">
     <div class="psec" style="flex:0 0 auto;">
       <div class="hero">
