@@ -375,9 +375,8 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-lr"><div class="fb-lrlbl">Hip Int. Rotation (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mhipir-l" placeholder="—"></div><div><span>R</span><input type="number" id="mhipir-r" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Hip Ext. Rotation (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mhiper-l" placeholder="—"></div><div><span>R</span><input type="number" id="mhiper-r" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Hip Flexor — Thomas (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mtho-l" placeholder="—"></div><div><span>R</span><input type="number" id="mtho-r" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Ankle Dorsiflexion (°) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">knee-to-wall WB</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mank-l" placeholder="—"></div><div><span>R</span><input type="number" id="mank-r" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">SLR Test (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mslr-l" placeholder="—"></div><div><span>R</span><input type="number" id="mslr-r" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Knee-to-Wall (cm)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mktw-l" step="0.5" placeholder="—"></div><div><span>R</span><input type="number" id="mktw-r" step="0.5" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Knee-to-Wall — Ankle DF (cm)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mktw-l" step="0.5" placeholder="—"></div><div><span>R</span><input type="number" id="mktw-r" step="0.5" placeholder="—"></div></div></div>
     </div>
     <div class="fb-card" style="max-width:600px;"><label>Mobility Notes</label><textarea id="fmobc" placeholder="Clinical observations..."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(1)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(3)">Next: Power →</button></div>
@@ -403,19 +402,23 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   <div class="fb-panel" id="tab4">
     <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
     <div class="fb-grid fb-g3">
-      <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Knee Flexion (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkfl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fkfr" step="0.01" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Hip Abduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhabdl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhabdr" step="0.01" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Hip Adduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhaddl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhaddr" step="0.01" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder I Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsil" placeholder="—"></div><div><span>R</span><input type="number" id="fsir" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder Y Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsyl" placeholder="—"></div><div><span>R</span><input type="number" id="fsyr" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Shoulder ER Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fserl" placeholder="—"></div><div><span>R</span><input type="number" id="fserr" placeholder="—"></div></div></div>
+      <div class="fb-lr"><div class="fb-lrlbl">Shoulder IR Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsirl" placeholder="—"></div><div><span>R</span><input type="number" id="fsirr" placeholder="—"></div></div></div>
     </div>
     <div class="fb-sh">IMTP</div>
     <div class="fb-grid fb-g4">
       <div class="fb-card"><label>Peak Force (N/kg)</label><input id="fimtp" type="number" step="0.01" placeholder="—"></div>
       <div class="fb-card"><label>RFD 0–200ms (N/s)</label><input id="frfd" type="number" placeholder="—"></div>
+      <div class="fb-card"><label>Bodyweight (kg)</label><input id="fbw" type="number" step="0.1" placeholder="—"></div>
     </div>
     <div class="fb-sh">Functional Strength — select tests performed</div>
+    <div class="nbox" style="margin-bottom:12px;">Enter <strong>Bodyweight</strong> above (in the IMTP row) to get accurate Strong/Avg/Developing ratings on the weighted lifts below — they're scored as a multiple of bodyweight, not raw kg.</div>
     <div class="ft-grid" id="ftgl"></div>
     <div class="fb-grid fb-g4" id="finputs"></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(3)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(5)">Next: Energy Systems →</button></div>
@@ -502,7 +505,6 @@ const ROMS_M={
   hipir:{n:"Hip Int. Rot.",good:40,avg:25,lo:false,u:"°"},
   hiper:{n:"Hip Ext. Rot.",good:45,avg:30,lo:false,u:"°"},
   tho:{n:"Hip Flexor (Thomas)",good:5,avg:12,lo:true,u:"°"},
-  ank:{n:"Ankle DF",good:40,avg:28,lo:false,u:"°"},
   slr:{n:"SLR Test",good:75,avg:60,lo:false,u:"°"},
   ktw:{n:"Knee-to-Wall",good:11,avg:7,lo:false,u:"cm"}
 };
@@ -513,7 +515,6 @@ const ROMS_F={
   hipir:{n:"Hip Int. Rot.",good:45,avg:30,lo:false,u:"°"},
   hiper:{n:"Hip Ext. Rot.",good:50,avg:35,lo:false,u:"°"},
   tho:{n:"Hip Flexor (Thomas)",good:5,avg:12,lo:true,u:"°"},
-  ank:{n:"Ankle DF",good:42,avg:30,lo:false,u:"°"},
   slr:{n:"SLR Test",good:80,avg:65,lo:false,u:"°"},
   ktw:{n:"Knee-to-Wall",good:11,avg:7,lo:false,u:"cm"}
 };
@@ -524,7 +525,9 @@ const ROMS=()=>v("fsex")==="f"?ROMS_F:ROMS_M;
 const POWD_M={cmj:{good:36,avg:28},sjh:{good:32,avg:24},rsi:{good:1.5,avg:1.0},bj:{good:2.20,avg:1.90},sl:{good:1.90,avg:1.60},rpp:{good:55,avg:45}};
 const POWD_F={cmj:{good:28,avg:20},sjh:{good:24,avg:17},rsi:{good:1.2,avg:0.8},bj:{good:1.90,avg:1.60},sl:{good:1.50,avg:1.20},rpp:{good:42,avg:34}};
 const POWD=()=>v("fsex")==="f"?POWD_F:POWD_M;
-const FT=[{id:"sq",l:"3RM Back Squat",u:"kg",bw:false},{id:"bp",l:"3RM Bench Press",u:"kg",bw:false},{id:"dl",l:"3RM Deadlift",u:"kg",bw:false},{id:"pc",l:"1RM Power Clean",u:"kg",bw:false},{id:"cj",l:"1RM Clean & Jerk",u:"kg",bw:false},{id:"sn",l:"1RM Snatch",u:"kg",bw:false},{id:"pu",l:"Max Push-Ups",u:"reps",bw:false},{id:"pul",l:"Max Pull-Ups",u:"reps",bw:false},{id:"chu",l:"Max Chin-Ups",u:"reps",bw:false},{id:"dip",l:"Max Dips",u:"reps",bw:false},{id:"plk",l:"Plank Hold",u:"sec",bw:false},{id:"clfl",l:"SL Calf Raise L",u:"reps",bw:false},{id:"clfr",l:"SL Calf Raise R",u:"reps",bw:false}];
+const FT=[{id:"sq",l:"Back Squat",u:"kg",rm:true},{id:"bp",l:"Bench Press",u:"kg",rm:true},{id:"dl",l:"Deadlift",u:"kg",rm:true},{id:"pc",l:"1RM Power Clean",u:"kg"},{id:"cj",l:"1RM Clean & Jerk",u:"kg"},{id:"sn",l:"1RM Snatch",u:"kg"},{id:"pu",l:"Max Push-Ups",u:"reps"},{id:"pul",l:"Max Pull-Ups",u:"reps"},{id:"chu",l:"Max Chin-Ups",u:"reps"},{id:"dip",l:"Max Dips",u:"reps"},{id:"plk",l:"Plank Hold",u:"sec"},{id:"clfl",l:"SL Calf Raise L",u:"reps"},{id:"clfr",l:"SL Calf Raise R",u:"reps"}];
+// 3RM benchmarks below (kg lifted ÷ bodyweight). A 1RM entry for sq/bp/dl is converted to an
+// estimated 3RM via Epley (÷1.1) before comparison, so the same ratios apply either way.
 // Sex-split norms — M=male field sport athlete, F=female field sport athlete
 // Sprint: Haugen et al. 2012/2019, Buchheit RSA, Castagna Yo-Yo, ACSM aerobic
 // Power: Meylan CMJ norms, RSI literature review McMahon 2018
@@ -543,8 +546,8 @@ const ANAC_F={"rsa":{l:"RSA 5×30m",u:"sec",note:"5×30m sprint. Best time = pea
 const ANAC=k=>v("fsex")==="f"?ANAC_F[k]||ANAC_F["rsa"]:ANAC_M[k]||ANAC_M["rsa"];
 
 // Functional strength — M norms (absolute kg or reps)
-const FTNW_M={sq:[1.5,1.2],dl:[1.8,1.4],pc:[1.0,.75],cj:[1.1,.85],sn:[.85,.65]};
-const FTNW_F={sq:[1.1,.85],dl:[1.3,1.0],pc:[.7,.5],cj:[.75,.55],sn:[.65,.45]};
+const FTNW_M={sq:[1.5,1.2],bp:[1.0,.75],dl:[1.8,1.4],pc:[1.0,.75],cj:[1.1,.85],sn:[.85,.65]};
+const FTNW_F={sq:[1.1,.85],bp:[.7,.5],dl:[1.3,1.0],pc:[.7,.5],cj:[.75,.55],sn:[.65,.45]};
 const FTNR_M={pu:[40,25],pul:[15,8],chu:[12,6],dip:[20,10],plk:[120,60],clfl:[25,15],clfr:[25,15]};
 const FTNR_F={pu:[25,12],pul:[8,3],chu:[6,2],dip:[12,5],plk:[90,45],clfl:[20,12],clfr:[20,12]};
 const FTNW=()=>v("fsex")==="f"?FTNW_F:FTNW_M;
@@ -635,8 +638,16 @@ function toggleInj(r){
 (function(){
   const tg=document.getElementById("ftgl"),inp=document.getElementById("finputs");
   FT.forEach(t=>{
-    tg.innerHTML+=`<div class="ft-chip"><input type="checkbox" id="chk${t.id}" onchange="onFT()"><label for="chk${t.id}">${t.l.replace(/3RM |1RM |Max /,"")}</label></div>`;
-    inp.innerHTML+=`<div class="fb-card" id="fi${t.id}" style="display:none;"><label>${t.l} (${t.u})</label><input id="f${t.id}" type="number" step="0.01" placeholder="—"></div>`;
+    tg.innerHTML+=`<div class="ft-chip"><input type="checkbox" id="chk${t.id}" onchange="onFT()"><label for="chk${t.id}">${t.l.replace(/1RM |Max /,"")}</label></div>`;
+    inp.innerHTML+=t.rm?
+      `<div class="fb-card" id="fi${t.id}" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <label style="margin-bottom:0;">${t.l} (${t.u})</label>
+          <select id="frm_${t.id}" style="width:auto;padding:3px 6px;font-size:10px;background:#131b24;border:1px solid #2a3a4a;color:#c6f135;border-radius:4px;cursor:pointer;"><option value="3RM">3RM</option><option value="1RM">1RM</option></select>
+        </div>
+        <input id="f${t.id}" type="number" step="0.01" placeholder="—">
+      </div>`
+      :`<div class="fb-card" id="fi${t.id}" style="display:none;"><label>${t.l} (${t.u})</label><input id="f${t.id}" type="number" step="0.01" placeholder="—"></div>`;
   });
 })();
 
@@ -778,9 +789,16 @@ function spbar(lbl,pct){
 function fcard(item,bw){
   let col="#c6f135",badge="";
   const fw=FTNW(),fr=FTNR();
-  if(fw[item.id]){const[g,a]=fw[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Strong":item.val>=a?"Avg":"Developing"}</span>`;}
+  if(fw[item.id]){
+    if(bw){
+      const ratio=item.scoreVal/bw;
+      const[g,a]=fw[item.id];
+      col=ratio>=g?"#4cdb7a":ratio>=a?"#f5a623":"#e05252";
+      badge=`<span class="mc-bdg rb ${ratio>=g?"rg":ratio>=a?"ra":"rp"}">${ratio>=g?"Strong":ratio>=a?"Avg":"Developing"}</span>`;
+    }
+  }
   else if(fr[item.id]){const[g,a]=fr[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Good":item.val>=a?"Avg":"Developing"}</span>`;}
-  return`<div class="mc" style="border-left-color:${col};padding:20px 18px;">${badge}<div class="ml">${item.l}</div><div class="mv" style="color:${col};font-size:38px;">${item.val}</div><div class="mu">${item.u}</div></div>`;
+  return`<div class="mc" style="border-left-color:${col};padding:20px 18px;">${badge}<div class="ml">${item.label}</div><div class="mv" style="color:${col};font-size:38px;">${item.val}</div><div class="mu">${item.u}</div></div>`;
 }
 
 function loadDemo(){
@@ -811,7 +829,6 @@ function loadDemo(){
   document.getElementById("mhipir-l").value="32";document.getElementById("mhipir-r").value="28";
   document.getElementById("mhiper-l").value="40";document.getElementById("mhiper-r").value="38";
   document.getElementById("mtho-l").value="8";document.getElementById("mtho-r").value="10";
-  document.getElementById("mank-l").value="38";document.getElementById("mank-r").value="35";
   document.getElementById("mslr-l").value="74";document.getElementById("mslr-r").value="70";
   document.getElementById("mktw-l").value="9.5";document.getElementById("mktw-r").value="8.5";
   document.getElementById("fmobc").value="Mild bilateral hip flexor tightness. Right ankle DF restricted — mobility work prescribed.";
@@ -826,14 +843,17 @@ function loadDemo(){
   document.getElementById("fslbr").value="1.76";
 
   // Strength — Isokinetic
-  document.getElementById("fkel").value="3.12";document.getElementById("fker").value="3.28";
+  document.getElementById("fkel").value="486";document.getElementById("fker").value="512";
   document.getElementById("fkfl").value="2.04";document.getElementById("fkfr").value="1.98";
   document.getElementById("fhabdl").value="1.88";document.getElementById("fhabdr").value="1.94";
   document.getElementById("fhaddl").value="1.62";document.getElementById("fhaddr").value="1.58";
   document.getElementById("fsil").value="198";document.getElementById("fsir").value="210";
   document.getElementById("fsyl").value="162";document.getElementById("fsyr").value="174";
+  document.getElementById("fserl").value="142";document.getElementById("fserr").value="151";
+  document.getElementById("fsirl").value="176";document.getElementById("fsirr").value="183";
   document.getElementById("fimtp").value="2.74";
   document.getElementById("frfd").value="4200";
+  document.getElementById("fbw").value="82";
 
   // Functional strength — select tests
   ["sq","dl","pu","pul"].forEach(id=>{
@@ -875,7 +895,7 @@ function loadDemo(){
 function gen(){
   const name=v("fn")||"Athlete";
   const sport=v("fsport")||"—";
-  const bw=null;
+  const bw=nv("fbw")||null;
   const ds=s=>s?new Date(s+" ").toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"}):"—";
   const dateStr=ds(v("fd")),dobStr=v("fdob")?new Date(v("fdob")+" ").toLocaleDateString("en-AU"):"—";
 
@@ -885,9 +905,16 @@ function gen(){
   const keL=nv("fkel"),keR=nv("fker"),kfL=nv("fkfl"),kfR=nv("fkfr");
   const habdL=nv("fhabdl"),habdR=nv("fhabdr"),haddL=nv("fhaddl"),haddR=nv("fhaddr");
   const siL=nv("fsil"),siR=nv("fsir"),syL=nv("fsyl"),syR=nv("fsyr");
-  const hqL=(keL&&kfL)?Math.round((kfL/keL)*100):null,hqR=(keR&&kfR)?Math.round((kfR/keR)*100):null;
+  const serL=nv("fserl"),serR=nv("fserr"),sirL=nv("fsirl"),sirR=nv("fsirr");
   const imtp=nv("fimtp"),rfd=nv("frfd");
-  const fd=FT.map(t=>{const c=document.getElementById("chk"+t.id);if(!c||!c.checked)return null;const val=nv("f"+t.id);if(!val)return null;return{...t,val};}).filter(Boolean);
+  const fd=FT.map(t=>{
+    const c=document.getElementById("chk"+t.id);if(!c||!c.checked)return null;
+    const val=nv("f"+t.id);if(!val)return null;
+    const rmType=t.rm?(v("frm_"+t.id)||"3RM"):null;
+    const scoreVal=rmType==="1RM"?val/1.1:val; // Epley estimate: 1RM ≈ 3RM × 1.1
+    const label=rmType?`${rmType} ${t.l}`:t.l;
+    return{...t,val,rmType,scoreVal,label};
+  }).filter(Boolean);
   const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
   const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
   const ak=v("fanatype")||"rsa",av=nv("fanabest"),adec=nv("fanadec"),at=ANAC(ak);
@@ -1045,7 +1072,6 @@ function gen(){
             ${romRow("hipir",ROMS().hipir)}
             ${romRow("hiper",ROMS().hiper)}
             ${romRow("tho",ROMS().tho)}
-            ${romRow("ank",ROMS().ank)}
             ${romRow("slr",ROMS().slr)}
             ${romRow("ktw",ROMS().ktw)}
           </tbody>
@@ -1142,14 +1168,16 @@ function gen(){
         <thead><tr><th style="width:230px;">Test</th><th style="width:60px;">Left</th><th style="width:74px;">Rating</th><th style="width:60px;">Right</th><th style="width:74px;">Rating</th><th style="width:56px;">LSI</th></tr></thead>
         <tbody>
           ${(()=>{const f=v("fsex")==="f";return[
-            isoRow("Knee Extension (Nm/kg)",keL,keR,f?2.8:3.5,f?2.0:2.5),
+            isoRow("Knee Extension (N)",keL,keR,f?380:500,f?260:350),
             isoRow("Knee Flexion (Nm/kg)",kfL,kfR,f?2.0:2.5,f?1.4:1.8),
             isoRow("Hip Abduction (Nm/kg)",habdL,habdR,f?1.8:2.2,f?1.3:1.6),
             isoRow("Hip Adduction (Nm/kg)",haddL,haddR,f?1.6:2.0,f?1.2:1.5)
           ].join("");})()}
           ${(()=>{const f=v("fsex")==="f";return[
             isoRow("Shoulder I Test (N)",siL,siR,f?160:220,f?110:150),
-            isoRow("Shoulder Y Test (N)",syL,syR,f?130:180,f?90:120)
+            isoRow("Shoulder Y Test (N)",syL,syR,f?130:180,f?90:120),
+            isoRow("Shoulder ER Strength (N) — 90° abd",serL,serR,f?130:180,f?90:130),
+            isoRow("Shoulder IR Strength (N) — 90° abd",sirL,sirR,f?160:220,f?110:150)
           ].join("");})()}
         </tbody>
       </table>
@@ -1182,7 +1210,7 @@ function gen(){
       ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
       </div>
     </div>
-    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry — monitor loading."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry — hamstring work prescribed."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry — hip stabiliser loading recommended."}`:null,imtp?`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good — strength work will push above 3.0.":"developing — maximal strength is a key priority."}`:null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){const[g,a]=fw[item.id];return`${item.l} ${item.val}kg — ${item.val>=g?"strong.":item.val>=a?"good — progressive loading prescribed.":"developing — strength priority."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.l} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry — monitor loading."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry — hamstring work prescribed."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry — hip stabiliser loading recommended."}`:null,imtp?`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good — strength work will push above 3.0.":"developing — maximal strength is a key priority."}`:null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){if(!bw)return`${item.label} ${item.val}kg — enter bodyweight for a rating.`;const ratio=item.scoreVal/bw;const[g,a]=fw[item.id];return`${item.label} ${item.val}kg — ${ratio>=g?"strong.":ratio>=a?"good — progressive loading prescribed.":"developing — strength priority."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.label} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
   </div>
   ${foot()}
 </div>
