@@ -342,7 +342,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab1">
-    <div class="fb-sh">Injury Screening — tap each region to toggle Pass / Fail</div>
+    <div class="fb-sh">Injury Screening — click a region to cycle Untested → Pass → Fail (or press P / F for the next untested region)</div>
     <div class="inj-grid" id="injchips"></div>
     <div class="fb-card" style="max-width:600px;"><label>Screening Comments</label><textarea id="finjc" placeholder="Note any failed regions, current complaints or precautions..."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(0)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(2)">Next: Mobility →</button></div>
@@ -589,13 +589,15 @@ function genAndShow(){
   if(l)l.src=document.getElementById("sblogo").src;
 }
 function clearForm(){
-  if(!confirm("Clear all form data?"))return;
+  if(!confirm("Clear all form data? This starts a new athlete — the current one will be lost unless you've already saved its PDF."))return;
   document.querySelectorAll("#form-screen input,#form-screen select,#form-screen textarea").forEach(el=>{
     if(el.type==="checkbox"||el.type==="radio")el.checked=false;
     else el.value="";
   });
   INJ.forEach(r=>{_injState[r]="none";_updateChip(r);});
   document.querySelectorAll(".ft-chip input[type=checkbox]").forEach(cb=>{cb.checked=false;cb.dispatchEvent(new Event("change"));});
+  document.getElementById("fd").value=todayISO();
+  saveState();updateProgress();
 }
 
 // ── Injury chips — tap to cycle none→pass→fail→none ──────────────────────────
@@ -611,6 +613,7 @@ function _updateChip(r){
 function toggleInj(r){
   _injState[r]=_injState[r]==="none"?"pass":_injState[r]==="pass"?"fail":"none";
   _updateChip(r);
+  saveState();updateProgress();
 }
 (function(){
   const g=document.getElementById("injchips");
@@ -634,15 +637,16 @@ document.addEventListener("keydown",function(e){
   if(!panel||!panel.classList.contains("active"))return;
   const untouched=INJ.find(r=>_injState[r]==="none");
   if(!untouched)return;
-  if(e.key==="p"||e.key==="P"){_injState[untouched]="pass";_updateChip(untouched);saveState();}
-  if(e.key==="f"||e.key==="F"){_injState[untouched]="fail";_updateChip(untouched);saveState();}
+  if(e.key==="p"||e.key==="P"){_injState[untouched]="pass";_updateChip(untouched);saveState();updateProgress();}
+  if(e.key==="f"||e.key==="F"){_injState[untouched]="fail";_updateChip(untouched);saveState();updateProgress();}
 });
 
 // ── Progress tick in tab labels ───────────────────────────────────────────────
 function updateProgress(){
   const tabs=document.querySelectorAll(".fb-tab");
   document.querySelectorAll(".fb-panel").forEach((panel,i)=>{
-    const filled=[...panel.querySelectorAll("input:not([type=checkbox]),textarea")].filter(el=>el.value&&el.value.trim()!=="").length;
+    let filled=[...panel.querySelectorAll("input:not([type=checkbox]),textarea")].filter(el=>el.id!=="fd"&&el.value&&el.value.trim()!=="").length;
+    if(i===1&&INJ.some(r=>_injState[r]&&_injState[r]!=="none"))filled++;
     const tab=tabs[i];if(!tab)return;
     const base=tab.getAttribute("data-label")||(tab.setAttribute("data-label",tab.textContent),tab.textContent);
     tab.textContent=filled>0?base+" ✓":base;
@@ -652,7 +656,9 @@ document.addEventListener("input",updateProgress);
 document.addEventListener("change",updateProgress);
 
 // ── Restore saved state + init on load ───────────────────────────────────────
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 restoreState();
+if(!document.getElementById("fd").value)document.getElementById("fd").value=todayISO();
 updateProgress();
 
 function onFT(){FT.forEach(t=>{const c=document.getElementById("chk"+t.id),i=document.getElementById("fi"+t.id);if(i)i.style.display=c&&c.checked?"block":"none";});}
@@ -865,6 +871,7 @@ function loadDemo(){
   document.getElementById("fkd3d").value="MAS 16.5 km/h — good but room to grow. Zone 2 cardio 3×/week + weekly MAS intervals to push toward elite threshold.";
   document.getElementById("fsummary").value="Jordan presents as a well-rounded field sport athlete with good strength and power foundations. Key limiters are reactive strength (RSI), ankle mobility, and aerobic ceiling. Structured 12-week block targeting these areas is expected to yield significant performance gains ahead of preseason.";
 
+  saveState();updateProgress();
   // Generate immediately
   gen();
 }
