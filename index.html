@@ -573,7 +573,11 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab6">
-    <div class="fb-sh">Key Development Areas</div>
+    <div class="fb-sh" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>Key Development Areas</span>
+      <button class="fb-btn fb-btn-outline" style="padding:7px 16px;font-size:10px;" onclick="autoFillSummary()">Auto-Fill From Test Results</button>
+    </div>
+    <div class="nbox" style="margin-bottom:16px;">Auto-fill drafts the 3 priorities and the summary below from whichever tests score lowest against their norms so far — it only uses data you've actually entered. Review and edit before generating.</div>
     <div class="fb-grid fb-g3">
       <div class="fb-card"><label>Priority 1 — Title</label><input id="fkd1t" type="text" placeholder="e.g. Ankle Dorsiflexion Restriction"></div>
       <div class="fb-card" style="grid-column:span 2;"><label>Priority 1 — Detail</label><input id="fkd1d" type="text" placeholder="Plain-English explanation and prescription..."></div>
@@ -1017,6 +1021,110 @@ function fcard(item,bw){
   else if(fr[item.id]){const[g,a]=fr[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Good":item.val>=a?"Avg":"Developing"}</span>`;}
   const hint=item.hint?`<div class="mu" style="font-style:italic;margin-top:3px;">${item.hint}</div>`:"";
   return`<div class="mc" style="border-left-color:${col};padding:20px 18px;">${badge}<div class="ml">${item.label}</div><div class="mv" style="color:${col};font-size:38px;">${item.val}</div><div class="mu">${item.u}</div>${hint}</div>`;
+}
+
+// ── Auto-fill Summary & Priorities from entered test results ─────────────────
+// Reuses the exact same rating helpers (rat/sc) and norm tables (ROMS/POWD/
+// FTNW/FTNR/SPDC/CAPC/ANAC) the report itself rates each test against, so the
+// draft text can never say anything the report doesn't already agree with.
+function collectFindings(){
+  const list=[];
+  const bw=nv("fbw")||null;
+  const f=v("fsex")==="f";
+
+  // Mobility — goniometry pairs (spinal % has no rated norm table, so it's left out)
+  Object.entries(ROMS()).forEach(([k,nm])=>{
+    ["l","r"].forEach(s=>{
+      const val=gmob(k,s);
+      if(val>0)list.push({domain:"Mobility",label:`${nm.n} (${s.toUpperCase()})`,val,unit:nm.u,good:nm.good,avg:nm.avg,lo:!!nm.lo,rating:rat(val,nm),score:sc(val,nm.good,nm.avg,nm.lo)});
+    });
+  });
+
+  // Power
+  const _pw=POWD();
+  [["CMJ Height","fcmjh","cmj"," cm"],["Squat Jump Height","fsjh","sjh"," cm"],["RSI Mod (Drop Jump)","frsi","rsi",""],["Broad Jump","fbj","bj"," m"]].forEach(([label,id,key,unit])=>{
+    const val=nv(id),nm=_pw[key];
+    if(val&&nm)list.push({domain:"Power",label,val,unit,good:nm.good,avg:nm.avg,lo:false,rating:rat(val,nm),score:sc(val,nm.good,nm.avg)});
+  });
+
+  // Strength — isokinetic pairs (same good/avg pairs pageStrength rates against)
+  [["Knee Extension","fkel","fker",f?380:500,f?260:350,"N"],
+   ["Knee Flexion","fkfl","fkfr",f?2.0:2.5,f?1.4:1.8," Nm/kg"],
+   ["Hip Abduction","fhabdl","fhabdr",f?1.8:2.2,f?1.3:1.6," Nm/kg"],
+   ["Hip Adduction","fhaddl","fhaddr",f?1.6:2.0,f?1.2:1.5," Nm/kg"],
+   ["Shoulder I Test","fsil","fsir",f?160:220,f?110:150,"N"],
+   ["Shoulder Y Test","fsyl","fsyr",f?130:180,f?90:120,"N"],
+   ["Shoulder ER Strength","fserl","fserr",f?130:180,f?90:130,"N"],
+   ["Shoulder IR Strength","fsirl","fsirr",f?160:220,f?110:150,"N"]
+  ].forEach(([label,idL,idR,good,avg,unit])=>{
+    [["L",idL],["R",idR]].forEach(([side,id])=>{
+      const val=nv(id);
+      if(val)list.push({domain:"Strength",label:`${label} (${side})`,val,unit,good,avg,lo:false,rating:rat(val,{good,avg,lo:false}),score:sc(val,good,avg)});
+    });
+  });
+  const imtp=nv("fimtp");
+  if(imtp){const good=f?2.5:3.0,avg=f?2.0:2.5;list.push({domain:"Strength",label:"IMTP Relative Peak Force",val:imtp,unit:" N/kg",good,avg,lo:false,rating:rat(imtp,{good,avg,lo:false}),score:sc(imtp,good,avg)});}
+
+  // Strength — functional tests (tier-aware: reuses FT()/FTNW()/FTNR(), so youth
+  // tests without a published norm are correctly skipped rather than guessed at)
+  const fw=FTNW(),fr=FTNR();
+  FT().forEach(t=>{
+    const c=document.getElementById("chk"+t.id);if(!c||!c.checked)return;
+    const val=nv("f"+t.id);if(!val)return;
+    const rmType=t.rm?(v("frm_"+t.id)||"3RM"):null;
+    const scoreVal=rmType==="1RM"?val/1.1:val;
+    if(fw[t.id]&&bw){
+      const[g,a]=fw[t.id],ratio=scoreVal/bw;
+      list.push({domain:"Strength",label:t.l,val,unit:" "+t.u,good:Math.round(g*bw*10)/10,avg:Math.round(a*bw*10)/10,lo:false,rating:ratio>=g?"g":ratio>=a?"a":"p",score:sc(ratio,g,a)});
+    }else if(fr[t.id]){
+      const[g,a]=fr[t.id];
+      list.push({domain:"Strength",label:t.l,val,unit:" "+t.u,good:g,avg:a,lo:false,rating:val>=g?"g":val>=a?"a":"p",score:sc(val,g,a)});
+    }
+  });
+
+  // Energy Systems
+  const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
+  if(sv)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,good:st.good,avg:st.avg,lo:true,rating:rat(sv,{good:st.good,avg:st.avg,lo:true}),score:sc(sv,st.good,st.avg,true)});
+  const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
+  if(cv)list.push({domain:"Energy Systems",label:ct.l,val:cv,unit:" "+ct.u,good:ct.good,avg:ct.avg,lo:!ct.hi,rating:rat(cv,{good:ct.good,avg:ct.avg,lo:!ct.hi}),score:sc(cv,ct.good,ct.avg,!ct.hi)});
+  const ak=v("fanatype")||"rsa",av=nv("fanabest"),at=ANAC(ak);
+  if(av)list.push({domain:"Energy Systems",label:at.l,val:av,unit:" "+at.u,good:at.good,avg:at.avg,lo:at.lo,rating:rat(av,{good:at.good,avg:at.avg,lo:at.lo}),score:sc(av,at.good,at.avg,at.lo)});
+
+  return list.filter(x=>x.score!==null);
+}
+
+function autoFillSummary(){
+  const findings=collectFindings();
+  if(!findings.length){alert("Enter some test results first — there's nothing to summarise yet.");return;}
+
+  const hasExisting=["fkd1t","fkd2t","fkd3t","fsummary"].some(id=>v(id));
+  if(hasExisting&&!confirm("This will overwrite the Key Development Areas and Clinician Summary already entered. Continue?"))return;
+
+  const weak=findings.filter(x=>x.rating!=="g").sort((a,b)=>a.score-b.score).slice(0,3);
+  [["fkd1t","fkd1d"],["fkd2t","fkd2d"],["fkd3t","fkd3d"]].forEach(([tId,dId],i)=>{
+    const item=weak[i];
+    document.getElementById(tId).value=item?item.label:"";
+    document.getElementById(dId).value=item?`Measured at ${item.val}${item.unit} — ${item.lo?`above the ${item.good}–${item.avg}${item.unit} target range`:`below the ${item.avg}–${item.good}${item.unit} average band`}. Recommend targeted development here over the next training block.`:"";
+  });
+
+  const domains=["Mobility","Power","Strength","Energy Systems"];
+  const domAvg={};
+  domains.forEach(d=>{
+    const items=findings.filter(x=>x.domain===d);
+    if(items.length)domAvg[d]=items.reduce((a,b)=>a+b.score,0)/items.length;
+  });
+  const ranked=Object.keys(domAvg).sort((a,b)=>domAvg[a]-domAvg[b]);
+  const weakest=ranked[0],strongest=ranked[ranked.length-1];
+  const name=v("fn")||"The athlete";
+  let summary=`${name} `;
+  if(weakest&&strongest&&weakest!==strongest)summary+=`shows the strongest results in ${strongest} and the clearest opportunity for development in ${weakest}.`;
+  else if(weakest)summary+=`shows development opportunities concentrated in ${weakest}.`;
+  else summary+=`presents with results broadly in line with expected norms across all tested domains.`;
+  if(weak.length)summary+=` Priority areas: ${weak.map(w=>w.label).join(", ")}.`;
+  summary+=` A structured training block targeting these areas is recommended, with re-testing to track progress.`;
+  document.getElementById("fsummary").value=summary;
+
+  saveState();updateProgress();
 }
 
 function loadDemo(){
