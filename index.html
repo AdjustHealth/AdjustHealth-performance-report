@@ -452,8 +452,6 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>Clinician</label><input id="fclin" type="text" placeholder="Your name"></div>
       <div class="fb-card"><label>Assessment Date</label><input id="fd" type="date"></div>
       <div class="fb-card"><label>Date of Birth</label><input id="fdob" type="date"></div>
-      <div class="fb-card"><label>Specific Sport</label><input id="fsport" type="text" placeholder="e.g. AFL, Basketball"></div>
-      <div class="fb-card"><label>Club / Team</label><input id="fclub" type="text" placeholder="Club or team name"></div>
       <div class="fb-card"><label>Email</label><input id="femail" type="email" placeholder="athlete@email.com"></div>
     </div>
     <div class="fb-grid fb-g3">
@@ -1028,8 +1026,6 @@ function loadDemo(){
   document.getElementById("fdob").value="1999-03-14";
   document.getElementById("fsex").value="m";
   document.getElementById("fcat").value="field";
-  document.getElementById("fsport").value="AFL";
-  document.getElementById("fclub").value="Brisbane Lions Academy";
   document.getElementById("femail").value="j.mitchell@example.com";
 
   document.getElementById("fclin").value="Dr. Sarah Chen";
@@ -1114,7 +1110,6 @@ function loadDemo(){
 
 function gen(){
   const name=v("fn")||"Athlete";
-  const sport=v("fsport")||"—";
   const bw=nv("fbw")||null;
   const ds=s=>s?new Date(s+" ").toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"}):"—";
   const dateStr=ds(v("fd")),dobStr=v("fdob")?new Date(v("fdob")+" ").toLocaleDateString("en-AU"):"—";
@@ -1207,15 +1202,14 @@ function gen(){
 
     <!-- SECTION 1: Hero name strip + key stats in a dark banner -->
     <div class="psec" style="flex:0 0 auto;">
-      <div style="background:#131b24;border:1px solid #1c2733;display:grid;grid-template-columns:2.2fr repeat(5,1fr);align-items:stretch;overflow:hidden;">
-        <!-- Name + sport block -->
-        <div style="padding:18px 20px;border-right:1px solid #1c2733;min-width:0;">
+      <div style="background:#131b24;border:1px solid #1c2733;display:grid;grid-template-columns:2.2fr repeat(4,1fr);align-items:stretch;overflow:hidden;">
+        <!-- Name block -->
+        <div style="padding:18px 20px;border-right:1px solid #1c2733;min-width:0;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:6px;">Athlete</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1.05;letter-spacing:-1px;margin-bottom:4px;word-break:normal;overflow-wrap:normal;">${name}</div>
-          <div style="font-size:11px;color:#c6f135;font-weight:600;letter-spacing:1px;">${sport!=="—"?sport:""} ${v("fclub")?"· "+v("fclub"):""}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1.05;letter-spacing:-1px;word-break:normal;overflow-wrap:normal;">${name}</div>
         </div>
         <!-- Stat tiles -->
-        ${[["DOB",dobStr],["Sex",v("fsex")==="f"?"Female":"Male"],["Sport",sport!=="—"?sport:"—"],["Assessor",v("fclin")||"—"],["Date",dateStr]].map(([lbl,val])=>`<div style="padding:14px 12px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;white-space:nowrap;">${lbl}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#ffffff;overflow-wrap:break-word;line-height:1.15;">${val}</div></div>`).join("")}
+        ${[["DOB",dobStr],["Sex",v("fsex")==="f"?"Female":"Male"],["Assessor",v("fclin")||"—"],["Date",dateStr]].map(([lbl,val])=>`<div style="padding:14px 12px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;"><div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;white-space:nowrap;">${lbl}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#ffffff;overflow-wrap:break-word;line-height:1.15;">${val}</div></div>`).join("")}
       </div>
     </div>
 
