@@ -521,6 +521,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab3">
+    <div id="powerNumeric">
     <div class="fb-sh">Vertical — VALD Force Decks</div>
     <div class="fb-grid fb-g4">
       <div class="fb-card"><label>CMJ Height (cm)</label><input id="fcmjh" type="number" step="0.1" placeholder="—"></div>
@@ -533,6 +534,12 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>Broad Jump (m)</label><input id="fbj" type="number" step="0.01" placeholder="—"></div>
       <div class="fb-card"><label>SL Broad Jump — Left (m)</label><input id="fslbl" type="number" step="0.01" placeholder="—"></div>
       <div class="fb-card"><label>SL Broad Jump — Right (m)</label><input id="fslbr" type="number" step="0.01" placeholder="—"></div>
+    </div>
+    </div>
+    <div id="powerQualWrap" class="hidden">
+      <div class="fb-sh">Power — Clinical Rating</div>
+      <div class="nbox" style="margin-bottom:14px;">Youth power is rated on clinical judgement rather than force-plate norms — no validated youth thresholds are published for these tests.</div>
+      <div id="powerQualList" class="qr-list"></div>
     </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(2)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(4)">Next: Strength →</button></div>
   </div>
@@ -562,16 +569,16 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>RFD 0–200ms (N/s)</label><input id="frfd" type="number" placeholder="—"></div>
       <div class="fb-card"><label>Bodyweight (kg)</label><input id="fbw" type="number" step="0.1" placeholder="—"></div>
     </div>
-    <div class="fb-sh">Functional Strength — select tests performed</div>
-    <div class="nbox" style="margin-bottom:12px;">Enter <strong>Bodyweight</strong> above (in the IMTP row) to get accurate Strong/Avg/Developing ratings on the weighted lifts below — they're scored as a multiple of bodyweight, not raw kg.</div>
+    <div class="fb-sh">Functional Strength</div>
+    <div class="nbox" style="margin-bottom:12px;">Leave any test blank to leave it out of the report — same as everywhere else in this form. Enter <strong>Bodyweight</strong> above (in the IMTP row) to get accurate Strong/Avg/Developing ratings on the weighted lifts below — they're scored as a multiple of bodyweight, not raw kg.</div>
     <div class="nbox hidden" id="youthNoteY1" style="margin-bottom:12px;border-left-color:#f5a623;">No barbell tests available for Youth 1 (8–12) — per the ASCA Position Stand on Resistance Training for Children and Youth, this age band trains and tests using bodyweight, bands and machine exercises only. Bodyweight tests below are shown unrated (no age-specific norm published) — use the ASCA competency benchmark noted under each as a pass guide.</div>
     <div class="nbox hidden" id="youthNoteY2" style="margin-bottom:12px;border-left-color:#f5a623;">Youth 2 (13–18): Bench Press is rated as %-bodyweight per ASCA's youth progression gates (40% BW at 13 → 70% BW boys / 50% BW girls by 15+). Squat &amp; Deadlift are shown for tracking only and left unrated — ASCA does not publish a relative-strength benchmark for these lifts in youth, and recommends they only be introduced under coaching accredited to at least ASCA Level 2, using an 8–15RM training range rather than maximal loads. Olympic lift variants are not included in the youth battery.</div>
-    <div class="ft-grid" id="ftgl"></div>
     <div class="fb-grid fb-g4" id="finputs"></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(3)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(5)">Next: Energy Systems →</button></div>
   </div>
 
   <div class="fb-panel" id="tab5">
+    <div id="energyNumeric">
     <div class="fb-sh">Speed — PCr System</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Test Type</label><select id="fspdtype" onchange="onSpd()"><option value="10m">10m Sprint</option><option value="20m">20m Sprint</option><option value="40m">40m Sprint</option><option value="505">505 Agility</option><option value="lane">Lane Agility</option></select></div>
@@ -594,6 +601,12 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>Bike Test</label><select id="fanabtype" onchange="onAnaB()"><option value="wb10">Watt Bike 10s Peak</option></select></div>
       <div class="fb-card"><label id="fanaBlbl">Peak Power (W)</label><input id="fanabval" type="number" placeholder="—"></div>
     </div>
+    </div>
+    <div id="energyQualWrap" class="hidden">
+      <div class="fb-sh">Energy Systems — Clinical Rating</div>
+      <div class="nbox" style="margin-bottom:14px;">Youth energy systems are rated on clinical judgement rather than adult sprint/aerobic norms.</div>
+      <div id="energyQualList" class="qr-list"></div>
+    </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(4)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(6)">Next: Summary →</button></div>
   </div>
 
@@ -614,7 +627,8 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
     <div class="fb-card" style="max-width:900px;"><label>Clinician Summary</label><textarea id="fsummary" style="min-height:120px;" placeholder="Overall clinical interpretation — key strengths, limiters, and recommended training focus..."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:24px;align-items:center;">
       <button class="fb-btn fb-btn-outline" onclick="showTab(5)">← Back</button>
-      <button class="fb-btn fb-btn-primary" onclick="genAndShow()" style="padding:14px 36px;font-size:15px;letter-spacing:3px;">⚡ Generate Report</button>
+      <button class="fb-btn fb-btn-outline" onclick="genAndShow()" style="padding:14px 28px;font-size:13px;letter-spacing:2px;">Preview Report</button>
+      <button class="fb-btn fb-btn-primary" onclick="finishAndPrint()" style="padding:14px 36px;font-size:15px;letter-spacing:3px;">Finish &amp; Print PDF</button>
     </div>
   </div>
 
@@ -766,7 +780,7 @@ function restoreState(){
       if(el.type==="checkbox")el.checked=val;
       else el.value=val;
     });
-    onSpd();onCap();onAna();onAnaB();onFT();syncQualChips();
+    onSpd();onCap();onAna();onAnaB();syncQualChips();
     return data.__assessType||null;
   }catch(e){return null;}
 }
@@ -878,6 +892,8 @@ function toggleInj(r){
 // numeric tests already use, instead of inventing a second rating language.
 const QUAL_MOBILITY=[["sher","Shoulder ER"],["shir","Shoulder IR"],["hipf","Hip Flexion"],["hipir","Hip Int. Rotation"],["hiper","Hip Ext. Rotation"],["tho","Hip Flexor (Thomas)"],["slr","SLR Test"],["ktw","Knee-to-Wall (Ankle DF)"]];
 const QUAL_ISO=[["ke","Knee Extension"],["kf","Knee Flexion"],["habd","Hip Abduction"],["hadd","Hip Adduction"],["si","Shoulder I Test"],["sy","Shoulder Y Test"],["ser","Shoulder ER Strength"],["sir","Shoulder IR Strength"]];
+const QUAL_POWER=[["cmjh","CMJ Height"],["cmjrpp","CMJ Rel. Peak Power"],["sjh","Squat Jump Height"],["rsi","RSI Mod (Drop Jump)"],["bj","Broad Jump"],["slbj","SL Broad Jump"]];
+const QUAL_ENERGY=[["spd","Speed / Acceleration"],["cap","Aerobic Capacity"],["ana","Anaerobic Capacity"]];
 function buildQualUI(listId,measures){
   document.getElementById(listId).innerHTML=measures.map(([key,label])=>`
     <div class="qr-item">
@@ -908,22 +924,30 @@ function applyYouthUIMode(){
   document.getElementById("mobilityQualWrap").classList.toggle("hidden",!isYouth);
   document.getElementById("isoNumeric").classList.toggle("hidden",isYouth);
   document.getElementById("isoQualWrap").classList.toggle("hidden",!isYouth);
+  document.getElementById("powerNumeric").classList.toggle("hidden",isYouth);
+  document.getElementById("powerQualWrap").classList.toggle("hidden",!isYouth);
+  document.getElementById("energyNumeric").classList.toggle("hidden",isYouth);
+  document.getElementById("energyQualWrap").classList.toggle("hidden",!isYouth);
 }
 buildQualUI("mobilityQualList",QUAL_MOBILITY);
 buildQualUI("isoQualList",QUAL_ISO);
+buildQualUI("powerQualList",QUAL_POWER);
+buildQualUI("energyQualList",QUAL_ENERGY);
 
+// Functional Strength tests are always shown, no opt-in checkbox — consistent
+// with every other section in the app, where a blank field is simply excluded
+// from the report rather than requiring an extra click to "activate" it first.
 function buildFTUI(){
-  const tg=document.getElementById("ftgl"),inp=document.getElementById("finputs");
-  const prev={}; // preserve any already-entered values/checks across a rebuild
+  const inp=document.getElementById("finputs");
+  const prev={}; // preserve any already-entered values across a rebuild
   FT_ADULT.forEach(t=>{
-    const c=document.getElementById("chk"+t.id),i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id);
-    prev[t.id]={checked:c?c.checked:false,val:i?i.value:"",rm:r?r.value:null};
+    const i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id);
+    prev[t.id]={val:i?i.value:"",rm:r?r.value:null};
   });
-  tg.innerHTML="";inp.innerHTML="";
+  inp.innerHTML="";
   FT().forEach(t=>{
-    tg.innerHTML+=`<div class="ft-chip"><input type="checkbox" id="chk${t.id}" onchange="onFT()"><label for="chk${t.id}">${t.l.replace(/1RM |Max /,"")}</label></div>`;
     inp.innerHTML+=t.rm?
-      `<div class="fb-card" id="fi${t.id}" style="display:none;">
+      `<div class="fb-card" id="fi${t.id}">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
           <label style="margin-bottom:0;">${t.l} (${t.u})</label>
           <select id="frm_${t.id}" style="width:auto;padding:3px 6px;font-size:10px;background:#131b24;border:1px solid #2a3a4a;color:#c6f135;border-radius:4px;cursor:pointer;"><option value="3RM">3RM</option><option value="1RM">1RM</option></select>
@@ -931,16 +955,14 @@ function buildFTUI(){
         <input id="f${t.id}" type="number" step="0.01" placeholder="—">
         ${t.hint?`<div style="font-size:9px;color:#7a8fa6;font-style:italic;margin-top:6px;">${t.hint}</div>`:""}
       </div>`
-      :`<div class="fb-card" id="fi${t.id}" style="display:none;"><label>${t.l} (${t.u})</label><input id="f${t.id}" type="number" step="0.01" placeholder="—">${t.hint?`<div style="font-size:9px;color:#7a8fa6;font-style:italic;margin-top:6px;">${t.hint}</div>`:""}</div>`;
+      :`<div class="fb-card" id="fi${t.id}"><label>${t.l} (${t.u})</label><input id="f${t.id}" type="number" step="0.01" placeholder="—">${t.hint?`<div style="font-size:9px;color:#7a8fa6;font-style:italic;margin-top:6px;">${t.hint}</div>`:""}</div>`;
   });
   FT().forEach(t=>{
     const p=prev[t.id];if(!p)return;
-    const c=document.getElementById("chk"+t.id),i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id);
-    if(c&&p.checked){c.checked=true;}
+    const i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id);
     if(i&&p.val)i.value=p.val;
     if(r&&p.rm)r.value=p.rm;
   });
-  onFT();
   document.getElementById("youthNoteY1").classList.toggle("hidden",!(ASSESS_TYPE==="youth"&&YOUTH_TIER==="y1"));
   document.getElementById("youthNoteY2").classList.toggle("hidden",!(ASSESS_TYPE==="youth"&&YOUTH_TIER==="y2"));
 }
@@ -971,7 +993,6 @@ document.addEventListener("change",updateProgress);
 
 function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 
-function onFT(){FT().forEach(t=>{const c=document.getElementById("chk"+t.id),i=document.getElementById("fi"+t.id);if(i)i.style.display=c&&c.checked?"block":"none";});}
 function onSpd(){const k=v("fspdtype")||"10m";const t=SPDC(k);if(t)document.getElementById("fspdlbl").textContent=t.l+" ("+t.u+")";}
 function onCap(){const k=v("fcaptype")||"mas";const t=CAPC(k);if(!t)return;document.getElementById("fcaplbl").textContent=t.l+" ("+t.u+")";document.getElementById("fcapnote").textContent=t.note;}
 function onAna(){const k=v("fanatype")||"rsa";const t=ANAC(k);if(!t)return;document.getElementById("fanalbest").textContent=t.l+" Best ("+t.u+")";}
@@ -982,6 +1003,7 @@ const nv=id=>parseFloat(document.getElementById(id)?.value)||0;
 const injR=r=>_injState[r]||"none";
 const gmob=(k,s)=>parseFloat(document.getElementById(`m${k}-${s}`)?.value)||0;
 const rat=(val,nm)=>nm.lo?(val<=nm.good?"g":val<=nm.avg?"a":"p"):(val>=nm.good?"g":val>=nm.avg?"a":"p");
+const qScore=r=>r==="g"?9:r==="a"?5.5:r==="p"?2:null; // numeric equivalent of a Poor/Average/Good clinical rating
 const rCol=r=>r==="g"?"#4cdb7a":r==="a"?"#f5a623":"#e05252";
 const rCls=r=>r==="g"?"rg":r==="a"?"ra":"rp";
 const rLbl=r=>r==="g"?"Good":r==="a"?"Average":"Poor";
@@ -1124,12 +1146,19 @@ function collectFindings(){
     });
   }
 
-  // Power
-  const _pw=POWD();
-  [["CMJ Height","fcmjh","cmj"," cm"],["Squat Jump Height","fsjh","sjh"," cm"],["RSI Mod (Drop Jump)","frsi","rsi",""],["Broad Jump","fbj","bj"," m"]].forEach(([label,id,key,unit])=>{
-    const val=nv(id),nm=_pw[key];
-    if(val&&nm)list.push({domain:"Power",label,val,unit,good:nm.good,avg:nm.avg,lo:false,rating:rat(val,nm),score:sc(val,nm.good,nm.avg)});
-  });
+  // Power — youth uses a single clinical rating per test, no force-plate norms.
+  if(ASSESS_TYPE==="youth"){
+    QUAL_POWER.forEach(([k,l])=>{
+      const r=v("mq_"+k);
+      if(r)list.push({domain:"Power",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
+    });
+  }else{
+    const _pw=POWD();
+    [["CMJ Height","fcmjh","cmj"," cm"],["Squat Jump Height","fsjh","sjh"," cm"],["RSI Mod (Drop Jump)","frsi","rsi",""],["Broad Jump","fbj","bj"," m"]].forEach(([label,id,key,unit])=>{
+      const val=nv(id),nm=_pw[key];
+      if(val&&nm)list.push({domain:"Power",label,val,unit,good:nm.good,avg:nm.avg,lo:false,rating:rat(val,nm),score:sc(val,nm.good,nm.avg)});
+    });
+  }
 
   // Strength — isokinetic (same good/avg pairs pageStrength rates against).
   // Youth uses a single clinical rating per test instead of L/R numbers.
@@ -1161,7 +1190,6 @@ function collectFindings(){
   // tests without a published norm are correctly skipped rather than guessed at)
   const fw=FTNW(),fr=FTNR();
   FT().forEach(t=>{
-    const c=document.getElementById("chk"+t.id);if(!c||!c.checked)return;
     const val=nv("f"+t.id);if(!val)return;
     const rmType=t.rm?(v("frm_"+t.id)||"3RM"):null;
     const scoreVal=rmType==="1RM"?val/1.1:val;
@@ -1174,13 +1202,21 @@ function collectFindings(){
     }
   });
 
-  // Energy Systems
-  const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
-  if(sv)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,good:st.good,avg:st.avg,lo:true,rating:rat(sv,{good:st.good,avg:st.avg,lo:true}),score:sc(sv,st.good,st.avg,true)});
-  const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
-  if(cv)list.push({domain:"Energy Systems",label:ct.l,val:cv,unit:" "+ct.u,good:ct.good,avg:ct.avg,lo:!ct.hi,rating:rat(cv,{good:ct.good,avg:ct.avg,lo:!ct.hi}),score:sc(cv,ct.good,ct.avg,!ct.hi)});
-  const ak=v("fanatype")||"rsa",av=nv("fanabest"),at=ANAC(ak);
-  if(av)list.push({domain:"Energy Systems",label:at.l,val:av,unit:" "+at.u,good:at.good,avg:at.avg,lo:at.lo,rating:rat(av,{good:at.good,avg:at.avg,lo:at.lo}),score:sc(av,at.good,at.avg,at.lo)});
+  // Energy Systems — youth uses a single clinical rating per system, no adult
+  // sprint/aerobic norms.
+  if(ASSESS_TYPE==="youth"){
+    QUAL_ENERGY.forEach(([k,l])=>{
+      const r=v("mq_"+k);
+      if(r)list.push({domain:"Energy Systems",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
+    });
+  }else{
+    const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
+    if(sv)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,good:st.good,avg:st.avg,lo:true,rating:rat(sv,{good:st.good,avg:st.avg,lo:true}),score:sc(sv,st.good,st.avg,true)});
+    const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
+    if(cv)list.push({domain:"Energy Systems",label:ct.l,val:cv,unit:" "+ct.u,good:ct.good,avg:ct.avg,lo:!ct.hi,rating:rat(cv,{good:ct.good,avg:ct.avg,lo:!ct.hi}),score:sc(cv,ct.good,ct.avg,!ct.hi)});
+    const ak=v("fanatype")||"rsa",av=nv("fanabest"),at=ANAC(ak);
+    if(av)list.push({domain:"Energy Systems",label:at.l,val:av,unit:" "+at.u,good:at.good,avg:at.avg,lo:at.lo,rating:rat(av,{good:at.good,avg:at.avg,lo:at.lo}),score:sc(av,at.good,at.avg,at.lo)});
+  }
 
   return list.filter(x=>x.score!==null);
 }
@@ -1271,11 +1307,7 @@ function loadDemo(){
   document.getElementById("frfd").value="4200";
   document.getElementById("fbw").value="82";
 
-  // Functional strength — select tests
-  ["sq","dl","pu","pul"].forEach(id=>{
-    const cb=document.getElementById("chk"+id);
-    if(cb){cb.checked=true;cb.dispatchEvent(new Event("change"));}
-  });
+  // Functional strength
   const _fsq=document.getElementById("fsq");if(_fsq)_fsq.value="140";
   const _fdl=document.getElementById("fdl");if(_fdl)_fdl.value="172";
   const _fpu=document.getElementById("fpu");if(_fpu)_fpu.value="32";
@@ -1323,7 +1355,6 @@ function gen(){
   const serL=nv("fserl"),serR=nv("fserr"),sirL=nv("fsirl"),sirR=nv("fsirr");
   const imtp=nv("fimtp"),rfd=nv("frfd");
   const fd=FT().map(t=>{
-    const c=document.getElementById("chk"+t.id);if(!c||!c.checked)return null;
     const val=nv("f"+t.id);if(!val)return null;
     const rmType=t.rm?(v("frm_"+t.id)||"3RM"):null;
     const scoreVal=rmType==="1RM"?val/1.1:val; // Epley estimate: 1RM ≈ 3RM × 1.1
@@ -1336,7 +1367,7 @@ function gen(){
   const abk=v("fanabtype")||"wb10",abv=nv("fanabval"),abt=ANAC(abk);
   const S_ana_run=av?Math.round(sc(av,at.good,at.avg,at.lo)*10)/10:null;
   const S_ana_bike=abv?Math.round(sc(abv,abt.good,abt.avg,abt.lo)*10)/10:null;
-  const S_ana=S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike;
+  const S_ana=ASSESS_TYPE==="youth"?qScore(v("mq_ana")):(S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike);
   const cerv=nv("fcerv"),thor=nv("fthor"),lumb=nv("flumb");
 
   let mG=0,mA=0,mP=0,mN=0;
@@ -1349,13 +1380,23 @@ function gen(){
   const S={};
   S.mob=mN>0?Math.round(((mG*10+mA*5+mP*2)/(mN*10))*100)/10:null;
   const _pw=POWD();
-  const pArr=[sc(cmjH,_pw.cmj.good,_pw.cmj.avg),sc(eur,1.10,1.00),sc(rsi,_pw.rsi.good,_pw.rsi.avg),sc(bj,_pw.bj.good,_pw.bj.avg)].filter(x=>x!==null);
-  S.pow=pArr.length?Math.round(pArr.reduce((a,b)=>a+b)/pArr.length*10)/10:null;
+  if(ASSESS_TYPE==="youth"){
+    const pq=QUAL_POWER.map(([k])=>qScore(v("mq_"+k))).filter(x=>x!==null);
+    S.pow=pq.length?Math.round(pq.reduce((a,b)=>a+b)/pq.length*10)/10:null;
+  }else{
+    const pArr=[sc(cmjH,_pw.cmj.good,_pw.cmj.avg),sc(eur,1.10,1.00),sc(rsi,_pw.rsi.good,_pw.rsi.avg),sc(bj,_pw.bj.good,_pw.bj.avg)].filter(x=>x!==null);
+    S.pow=pArr.length?Math.round(pArr.reduce((a,b)=>a+b)/pArr.length*10)/10:null;
+  }
   const _sf=v("fsex")==="f";
   const sArr=[sc(imtp,_sf?2.5:3.0,_sf?2.0:2.5)].filter(x=>x!==null);
   S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
-  S.spd=sv?Math.round(sc(sv,st.good,st.avg,true)*10)/10:null;
-  S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
+  if(ASSESS_TYPE==="youth"){
+    S.spd=qScore(v("mq_spd"));
+    S.cap=qScore(v("mq_cap"));
+  }else{
+    S.spd=sv?Math.round(sc(sv,st.good,st.avg,true)*10)/10:null;
+    S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
+  }
 
   // Report Sections — sections unticked in the Athlete tab are left out of both
   // the generated pages and the domain score / radar / overall-score maths,
@@ -1514,6 +1555,13 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page ${pnumPower}</div></div>
   <div class="pbody">
+    ${ASSESS_TYPE==="youth"?`
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox">Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per test. No validated youth force-plate norms are published for these tests.</div>
+    </div>
+    <div class="psec" style="flex:1;">
+      ${cardGrid(QUAL_POWER.map(([k,l])=>qualCard(l,k)),"No power ratings recorded.")}
+    </div>`:`
     ${(cmjH||cmjRPP||eur!==null)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Countermovement Jump (CMJ)</div>
       <div class="nbox" style="margin-bottom:10px;">Measures vertical/explosive power.</div>
@@ -1565,7 +1613,7 @@ function gen(){
         </div>`:null
       ],"No broad jump tests recorded.")}
     </div>`:""}
-    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average.":"below norm."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average elastic energy use.":"below target elastic energy use."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive strength.":rsi>=POWD().rsi.avg?"good reactive strength.":"developing reactive strength."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry noted."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>
+    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average.":"below norm."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average elastic energy use.":"below target elastic energy use."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive strength.":rsi>=POWD().rsi.avg?"good reactive strength.":"developing reactive strength."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry noted."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>`}
   </div>
   ${foot()}
 </div>
@@ -1648,6 +1696,19 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page ${pnumEnergy}</div></div>
   <div class="pbody">
+    ${ASSESS_TYPE==="youth"?`
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox">Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per system. Adult sprint/aerobic norms don't apply at this age.</div>
+    </div>
+    <div class="psec" style="flex:1;">
+      ${cardGrid(QUAL_ENERGY.map(([k,l])=>qualCard(l,k)),"No energy systems ratings recorded.")}
+    </div>
+    <div class="psec" style="flex:0 0 auto;">
+      <div style="background:#131b24;border-left:3px solid #c6f135;padding:10px 14px;max-width:260px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;margin-bottom:6px;">Domain Profile</div>
+        ${energyZoneBars(S.spd,S_ana,S.cap)}
+      </div>
+    </div>`:`
 
     <!-- System zone header cards -->
     <div class="psec" style="flex:0 0 auto;">
@@ -1736,7 +1797,7 @@ function gen(){
         </div>
       </div>
     </div>
-
+`}
   </div>
   ${foot()}
 </div>
@@ -1840,6 +1901,7 @@ function gen(){
   })();
 }
 
+function finishAndPrint(){genAndShow();doPrint();}
 function doPrint(){
   const p=document.getElementById("pages");
   if(!p||p.style.display==="none"){alert("Generate the preview first.");return;}
