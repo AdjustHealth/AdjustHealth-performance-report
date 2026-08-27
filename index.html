@@ -514,7 +514,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab3">
-    <div id="powerNumeric">
+    <div class="nbox hidden" id="youthNotePower" style="margin-bottom:14px;border-left-color:#f5a623;">Youth power is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
     <div class="fb-sh">Vertical — VALD Force Decks</div>
     <div class="fb-grid fb-g4">
       <div class="fb-card"><label>CMJ Height (cm)</label><input id="fcmjh" type="number" step="0.1" placeholder="—"></div>
@@ -528,17 +528,11 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>SL Broad Jump — Left (m)</label><input id="fslbl" type="number" step="0.01" placeholder="—"></div>
       <div class="fb-card"><label>SL Broad Jump — Right (m)</label><input id="fslbr" type="number" step="0.01" placeholder="—"></div>
     </div>
-    </div>
-    <div id="powerQualWrap" class="hidden">
-      <div class="fb-sh">Power — Clinical Rating</div>
-      <div class="nbox" style="margin-bottom:14px;">Youth power is rated on clinical judgement rather than force-plate norms — no validated youth thresholds are published for these tests.</div>
-      <div id="powerQualList" class="qr-list"></div>
-    </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(2)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(4)">Next: Strength →</button></div>
   </div>
 
   <div class="fb-panel" id="tab4">
-    <div id="isoNumeric">
+    <div class="nbox hidden" id="youthNoteIso" style="margin-bottom:14px;border-left-color:#f5a623;">Youth isokinetic strength is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
     <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
     <div class="fb-grid fb-g3">
       <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
@@ -549,12 +543,6 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder Y Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsyl" placeholder="—"></div><div><span>R</span><input type="number" id="fsyr" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder ER Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fserl" placeholder="—"></div><div><span>R</span><input type="number" id="fserr" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder IR Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsirl" placeholder="—"></div><div><span>R</span><input type="number" id="fsirr" placeholder="—"></div></div></div>
-    </div>
-    </div>
-    <div id="isoQualWrap" class="hidden">
-      <div class="fb-sh">Strength — Clinical Rating</div>
-      <div class="nbox" style="margin-bottom:14px;">Youth isokinetic strength is rated on clinical judgement rather than dynamometer output — one rating per test, not left/right.</div>
-      <div id="isoQualList" class="qr-list"></div>
     </div>
     <div class="fb-sh">IMTP</div>
     <div class="fb-grid fb-g4">
@@ -571,7 +559,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab5">
-    <div id="energyNumeric">
+    <div class="nbox hidden" id="youthNoteEnergy" style="margin-bottom:14px;border-left-color:#f5a623;">Youth energy systems are recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
     <div class="fb-sh">Speed — PCr System</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Test Type</label><select id="fspdtype" onchange="onSpd()"><option value="10m">10m Sprint</option><option value="20m">20m Sprint</option><option value="40m">40m Sprint</option><option value="505">505 Agility</option><option value="lane">Lane Agility</option></select></div>
@@ -593,12 +581,6 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Bike Test</label><select id="fanabtype" onchange="onAnaB()"><option value="wb10">Watt Bike 10s Peak</option></select></div>
       <div class="fb-card"><label id="fanaBlbl">Peak Power (W)</label><input id="fanabval" type="number" placeholder="—"></div>
-    </div>
-    </div>
-    <div id="energyQualWrap" class="hidden">
-      <div class="fb-sh">Energy Systems — Clinical Rating</div>
-      <div class="nbox" style="margin-bottom:14px;">Youth energy systems are rated on clinical judgement rather than adult sprint/aerobic norms.</div>
-      <div id="energyQualList" class="qr-list"></div>
     </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(4)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(6)">Next: Summary →</button></div>
   </div>
@@ -884,9 +866,6 @@ function toggleInj(r){
 // (rCls/rLbl/rCol) so they slot into the same badges and colour system the
 // numeric tests already use, instead of inventing a second rating language.
 const QUAL_MOBILITY=[["sher","Shoulder ER"],["shir","Shoulder IR"],["hipf","Hip Flexion"],["hipir","Hip Int. Rotation"],["hiper","Hip Ext. Rotation"],["tho","Hip Flexor (Thomas)"],["slr","SLR Test"],["ktw","Knee-to-Wall (Ankle DF)"]];
-const QUAL_ISO=[["ke","Knee Extension"],["kf","Knee Flexion"],["habd","Hip Abduction"],["hadd","Hip Adduction"],["si","Shoulder I Test"],["sy","Shoulder Y Test"],["ser","Shoulder ER Strength"],["sir","Shoulder IR Strength"]];
-const QUAL_POWER=[["cmjh","CMJ Height"],["cmjrpp","CMJ Rel. Peak Power"],["sjh","Squat Jump Height"],["rsi","RSI Mod (Drop Jump)"],["bj","Broad Jump"],["slbj","SL Broad Jump"]];
-const QUAL_ENERGY=[["spd","Speed / Acceleration"],["cap","Aerobic Capacity"],["ana","Anaerobic Capacity"]];
 function buildQualUI(listId,measures){
   document.getElementById(listId).innerHTML=measures.map(([key,label])=>`
     <div class="qr-item">
@@ -911,21 +890,20 @@ function syncQualChips(){
     document.querySelectorAll(`#qr-${key} .qr-chip`).forEach(c=>c.classList.toggle("sel",c.dataset.r===inp.value));
   });
 }
+// Mobility is qualitative for youth (no numeric pediatric ROM norms to compare
+// against). Isokinetic Strength, Power and Energy Systems stay numeric for
+// youth too — real jump heights and sprint times are worth recording and
+// tracking on their own — they just skip the Good/Average/Poor rating in the
+// report, since there's no valid youth norm to rate them against either.
 function applyYouthUIMode(){
   const isYouth=ASSESS_TYPE==="youth";
   document.getElementById("mobilityNumeric").classList.toggle("hidden",isYouth);
   document.getElementById("mobilityQualWrap").classList.toggle("hidden",!isYouth);
-  document.getElementById("isoNumeric").classList.toggle("hidden",isYouth);
-  document.getElementById("isoQualWrap").classList.toggle("hidden",!isYouth);
-  document.getElementById("powerNumeric").classList.toggle("hidden",isYouth);
-  document.getElementById("powerQualWrap").classList.toggle("hidden",!isYouth);
-  document.getElementById("energyNumeric").classList.toggle("hidden",isYouth);
-  document.getElementById("energyQualWrap").classList.toggle("hidden",!isYouth);
+  document.getElementById("youthNoteIso").classList.toggle("hidden",!isYouth);
+  document.getElementById("youthNotePower").classList.toggle("hidden",!isYouth);
+  document.getElementById("youthNoteEnergy").classList.toggle("hidden",!isYouth);
 }
 buildQualUI("mobilityQualList",QUAL_MOBILITY);
-buildQualUI("isoQualList",QUAL_ISO);
-buildQualUI("powerQualList",QUAL_POWER);
-buildQualUI("energyQualList",QUAL_ENERGY);
 
 // Functional Strength tests are always shown, no opt-in checkbox — consistent
 // with every other section in the app, where a blank field is simply excluded
@@ -1107,6 +1085,14 @@ function qualCard(label,key){
   return`<div class="mc" style="border-left-color:${rCol(r)};"><div class="ml">${label}</div><div class="mv" style="color:${rCol(r)};font-size:22px;">${rLbl(r)}</div></div>`;
 }
 
+// Plain, unrated stat card — for youth Power/Strength(isokinetic)/Energy Systems,
+// where the number is worth recording and showing but there's no valid youth
+// norm to judge it Good/Average/Poor against.
+function plainCard(label,val,unit){
+  if(!val)return null;
+  return`<div class="mc"><div class="ml">${label}</div><div class="mv">${val}</div><div class="mu">${unit}</div></div>`;
+}
+
 // Renders only the cards that have data — an untested item just doesn't appear,
 // so a blank field is the way to leave any individual test off the report.
 function cardGrid(cards,emptyMsg){
@@ -1161,13 +1147,10 @@ function collectFindings(){
     });
   }
 
-  // Power — youth uses a single clinical rating per test, no force-plate norms.
-  if(ASSESS_TYPE==="youth"){
-    QUAL_POWER.forEach(([k,l])=>{
-      const r=v("mq_"+k);
-      if(r)list.push({domain:"Power",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
-    });
-  }else{
+  // Power — real numbers are still recorded and shown for youth, but there's no
+  // youth force-plate norm to rate them against, so they're left out of the
+  // gradable findings entirely rather than judged against adult thresholds.
+  if(ASSESS_TYPE!=="youth"){
     const _pw=POWD();
     [["CMJ Height","fcmjh","cmj"," cm"],["Squat Jump Height","fsjh","sjh"," cm"],["RSI Mod (Drop Jump)","frsi","rsi",""],["Broad Jump","fbj","bj"," m"]].forEach(([label,id,key,unit])=>{
       const val=nv(id),nm=_pw[key];
@@ -1175,14 +1158,9 @@ function collectFindings(){
     });
   }
 
-  // Strength — isokinetic (same good/avg pairs pageStrength rates against).
-  // Youth uses a single clinical rating per test instead of L/R numbers.
-  if(ASSESS_TYPE==="youth"){
-    QUAL_ISO.forEach(([k,l])=>{
-      const r=v("mq_"+k);
-      if(r)list.push({domain:"Strength",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
-    });
-  }else{
+  // Strength — isokinetic. Same reasoning as Power: numbers are recorded and
+  // shown for youth, just not rated against adult dynamometer norms.
+  if(ASSESS_TYPE!=="youth"){
     [["Knee Extension","fkel","fker",f?380:500,f?260:350,"N"],
      ["Knee Flexion","fkfl","fkfr",f?2.0:2.5,f?1.4:1.8," Nm/kg"],
      ["Hip Abduction","fhabdl","fhabdr",f?1.8:2.2,f?1.3:1.6," Nm/kg"],
@@ -1197,9 +1175,9 @@ function collectFindings(){
         if(val)list.push({domain:"Strength",label:`${label} (${side})`,val,unit,good,avg,lo:false,rating:rat(val,{good,avg,lo:false}),score:sc(val,good,avg)});
       });
     });
+    const imtp=nv("fimtp");
+    if(imtp){const good=f?2.5:3.0,avg=f?2.0:2.5;list.push({domain:"Strength",label:"IMTP Relative Peak Force",val:imtp,unit:" N/kg",good,avg,lo:false,rating:rat(imtp,{good,avg,lo:false}),score:sc(imtp,good,avg)});}
   }
-  const imtp=nv("fimtp");
-  if(imtp){const good=f?2.5:3.0,avg=f?2.0:2.5;list.push({domain:"Strength",label:"IMTP Relative Peak Force",val:imtp,unit:" N/kg",good,avg,lo:false,rating:rat(imtp,{good,avg,lo:false}),score:sc(imtp,good,avg)});}
 
   // Strength — functional tests (tier-aware: reuses FT()/FTNW()/FTNR(), so youth
   // tests without a published norm are correctly skipped rather than guessed at)
@@ -1217,14 +1195,9 @@ function collectFindings(){
     }
   });
 
-  // Energy Systems — youth uses a single clinical rating per system, no adult
-  // sprint/aerobic norms.
-  if(ASSESS_TYPE==="youth"){
-    QUAL_ENERGY.forEach(([k,l])=>{
-      const r=v("mq_"+k);
-      if(r)list.push({domain:"Energy Systems",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
-    });
-  }else{
+  // Energy Systems — same reasoning: numbers are recorded and shown for youth,
+  // just not rated against adult sprint/aerobic norms.
+  if(ASSESS_TYPE!=="youth"){
     const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
     if(sv)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,good:st.good,avg:st.avg,lo:true,rating:rat(sv,{good:st.good,avg:st.avg,lo:true}),score:sc(sv,st.good,st.avg,true)});
     const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
@@ -1382,7 +1355,7 @@ function gen(){
   const abk=v("fanabtype")||"wb10",abv=nv("fanabval"),abt=ANAC(abk);
   const S_ana_run=av?Math.round(sc(av,at.good,at.avg,at.lo)*10)/10:null;
   const S_ana_bike=abv?Math.round(sc(abv,abt.good,abt.avg,abt.lo)*10)/10:null;
-  const S_ana=ASSESS_TYPE==="youth"?qScore(v("mq_ana")):(S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike);
+  const S_ana=ASSESS_TYPE==="youth"?null:(S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike);
   const cerv=nv("fcerv"),thor=nv("fthor"),lumb=nv("flumb");
 
   let mG=0,mA=0,mP=0,mN=0;
@@ -1392,22 +1365,29 @@ function gen(){
     Object.entries(ROMS()).forEach(([k,nm])=>{["l","r"].forEach(s=>{const val=gmob(k,s);if(val>0){mN++;const r=rat(val,nm);if(r==="g")mG++;else if(r==="a")mA++;else mP++;}});});
   }
 
+  // Power, Strength (isokinetic/IMTP) and Energy Systems have no valid youth
+  // norm to score against, so those domain scores stay null for youth reports
+  // — an honest "not rated" rather than a score derived from adult thresholds.
+  // The real numbers still get recorded and shown on their own pages either way.
   const S={};
   S.mob=mN>0?Math.round(((mG*10+mA*5+mP*2)/(mN*10))*100)/10:null;
   const _pw=POWD();
   if(ASSESS_TYPE==="youth"){
-    const pq=QUAL_POWER.map(([k])=>qScore(v("mq_"+k))).filter(x=>x!==null);
-    S.pow=pq.length?Math.round(pq.reduce((a,b)=>a+b)/pq.length*10)/10:null;
+    S.pow=null;
   }else{
     const pArr=[sc(cmjH,_pw.cmj.good,_pw.cmj.avg),sc(eur,1.10,1.00),sc(rsi,_pw.rsi.good,_pw.rsi.avg),sc(bj,_pw.bj.good,_pw.bj.avg)].filter(x=>x!==null);
     S.pow=pArr.length?Math.round(pArr.reduce((a,b)=>a+b)/pArr.length*10)/10:null;
   }
   const _sf=v("fsex")==="f";
-  const sArr=[sc(imtp,_sf?2.5:3.0,_sf?2.0:2.5)].filter(x=>x!==null);
-  S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
   if(ASSESS_TYPE==="youth"){
-    S.spd=qScore(v("mq_spd"));
-    S.cap=qScore(v("mq_cap"));
+    S.str=null;
+  }else{
+    const sArr=[sc(imtp,_sf?2.5:3.0,_sf?2.0:2.5)].filter(x=>x!==null);
+    S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
+  }
+  if(ASSESS_TYPE==="youth"){
+    S.spd=null;
+    S.cap=null;
   }else{
     S.spd=sv?Math.round(sc(sv,st.good,st.avg,true)*10)/10:null;
     S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
@@ -1571,10 +1551,19 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per test. No validated youth force-plate norms are published for these tests.</div>
+      <div class="nbox">Recorded as-is — no validated youth force-plate norms exist to rate these tests against. Still valuable to track session-to-session.</div>
     </div>
     <div class="psec" style="flex:1;">
-      ${cardGrid(QUAL_POWER.map(([k,l])=>qualCard(l,k)),"No power ratings recorded.")}
+      ${cardGrid([
+        plainCard("CMJ Height",cmjH?cmjH.toFixed(1):null,"cm"),
+        plainCard("CMJ Rel. Peak Power",cmjRPP?cmjRPP.toFixed(1):null,"W/kg"),
+        plainCard("Squat Jump Height",sjH?sjH.toFixed(1):null,"cm"),
+        plainCard("EUR (CMJ ÷ SJ)",eur!==null?eur.toFixed(2):null,""),
+        plainCard("RSI Mod (Drop Jump)",rsi?rsi.toFixed(2):null,""),
+        plainCard("Broad Jump",bj?bj.toFixed(2):null,"m"),
+        plainCard("SL Broad Jump — Left",slL?slL.toFixed(2):null,"m"),
+        plainCard("SL Broad Jump — Right",slR?slR.toFixed(2):null,"m")
+      ],"No power tests recorded.")}
     </div>`:`
     ${(cmjH||cmjRPP||eur!==null)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Countermovement Jump (CMJ)</div>
@@ -1641,11 +1630,20 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per test.</div>
+      <div class="nbox">Recorded as-is — no validated youth dynamometer norms exist to rate these tests against. Still valuable to track session-to-session.</div>
     </div>
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry</div>
-      ${cardGrid(QUAL_ISO.map(([k,l])=>qualCard(l,k)),"No isokinetic ratings recorded.")}
+      ${cardGrid([
+        plainCard("Knee Extension — L",keL?keL.toFixed(1):null,"N"),plainCard("Knee Extension — R",keR?keR.toFixed(1):null,"N"),
+        plainCard("Knee Flexion — L",kfL?kfL.toFixed(2):null,"Nm/kg"),plainCard("Knee Flexion — R",kfR?kfR.toFixed(2):null,"Nm/kg"),
+        plainCard("Hip Abduction — L",habdL?habdL.toFixed(2):null,"Nm/kg"),plainCard("Hip Abduction — R",habdR?habdR.toFixed(2):null,"Nm/kg"),
+        plainCard("Hip Adduction — L",haddL?haddL.toFixed(2):null,"Nm/kg"),plainCard("Hip Adduction — R",haddR?haddR.toFixed(2):null,"Nm/kg"),
+        plainCard("Shoulder I Test — L",siL?siL.toFixed(1):null,"N"),plainCard("Shoulder I Test — R",siR?siR.toFixed(1):null,"N"),
+        plainCard("Shoulder Y Test — L",syL?syL.toFixed(1):null,"N"),plainCard("Shoulder Y Test — R",syR?syR.toFixed(1):null,"N"),
+        plainCard("Shoulder ER Strength — L",serL?serL.toFixed(1):null,"N"),plainCard("Shoulder ER Strength — R",serR?serR.toFixed(1):null,"N"),
+        plainCard("Shoulder IR Strength — L",sirL?sirL.toFixed(1):null,"N"),plainCard("Shoulder IR Strength — R",sirR?sirR.toFixed(1):null,"N")
+      ],"No isokinetic tests recorded.")}
     </div>`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">Rated vs normative data. <strong>LSI target &gt;90%.</strong></div>
@@ -1677,7 +1675,11 @@ function gen(){
     ${(imtp||rfd)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">IMTP — Isometric Mid-Thigh Pull</div>
       ${cardGrid([
-        imtp?`<div style="background:#131b24;border-left:4px solid ${imtp>=(v("fsex")==="f"?2.5:3.0)?"#4cdb7a":imtp>=(v("fsex")==="f"?2.0:2.5)?"#f5a623":"#e05252"};padding:14px;display:flex;gap:12px;align-items:center;">
+        imtp?(ASSESS_TYPE==="youth"?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">Relative Peak Force</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${imtp.toFixed(2)}<span style="font-size:13px;color:#7a8fa6;"> N/kg</span></div>
+          <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">No validated youth norm — recorded for tracking.</div>
+        </div>`:`<div style="background:#131b24;border-left:4px solid ${imtp>=(v("fsex")==="f"?2.5:3.0)?"#4cdb7a":imtp>=(v("fsex")==="f"?2.0:2.5)?"#f5a623":"#e05252"};padding:14px;display:flex;gap:12px;align-items:center;">
           ${gauge(imtp,v("fsex")==="f"?2.5:3.0,v("fsex")==="f"?2.0:2.5,"N/kg")}
           <div>
             <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">Relative Peak Force</div>
@@ -1685,7 +1687,7 @@ function gen(){
             <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">Excellent: &gt;3.0 | Good: 2.5–3.0 | Developing: &lt;2.5</div>
             <div style="font-size:10px;font-style:italic;margin-top:4px;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp>=3.0?"✓ Excellent isometric strength.":imtp>=2.5?"→ Good isometric strength.":"↓ Developing isometric strength."}</div>
           </div>
-        </div>`:null,
+        </div>`):null,
         rfd?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">RFD 0–200ms</div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${rfd.toLocaleString()}<span style="font-size:13px;color:#7a8fa6;"> N/s</span></div>
@@ -1701,7 +1703,7 @@ function gen(){
       ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
       </div>
     </div>
-    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry noted."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry noted."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry noted."}`:null,imtp?`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good isometric strength.":"developing isometric strength."}`:null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){if(!bw)return`${item.label} ${item.val}kg — enter bodyweight for a rating.`;const ratio=item.scoreVal/bw;const[g,a]=fw[item.id];return`${item.label} ${item.val}kg — ${ratio>=g?"strong.":ratio>=a?"average.":"developing."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.label} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry noted."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry noted."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry noted."}`:null,imtp?(ASSESS_TYPE==="youth"?`IMTP ${imtp.toFixed(2)} N/kg — recorded for tracking.`:`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good isometric strength.":"developing isometric strength."}`):null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){if(!bw)return`${item.label} ${item.val}kg — enter bodyweight for a rating.`;const ratio=item.scoreVal/bw;const[g,a]=fw[item.id];return`${item.label} ${item.val}kg — ${ratio>=g?"strong.":ratio>=a?"average.":"developing."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.label} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
   </div>
   ${foot()}
 </div>
@@ -1715,16 +1717,16 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per system. Adult sprint/aerobic norms don't apply at this age.</div>
+      <div class="nbox">Recorded as-is — no validated youth sprint/aerobic norms exist to rate these against. Still valuable to track session-to-session.</div>
     </div>
     <div class="psec" style="flex:1;">
-      ${cardGrid(QUAL_ENERGY.map(([k,l])=>qualCard(l,k)),"No energy systems ratings recorded.")}
-    </div>
-    <div class="psec" style="flex:0 0 auto;">
-      <div style="background:#131b24;border-left:3px solid #c6f135;padding:10px 14px;max-width:260px;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;margin-bottom:6px;">Domain Profile</div>
-        ${energyZoneBars(S.spd,S_ana,S.cap)}
-      </div>
+      ${cardGrid([
+        plainCard(st.l,sv?sv:null,st.u),
+        plainCard(ct.l,cv?cv:null,ct.u),
+        plainCard(at.l+" — Best",av?av:null,at.u),
+        av&&adec?plainCard("Fatigue Decrement",adec,"%"):null,
+        plainCard(abt.l,abv?abv:null,abt.u)
+      ],"No energy systems tests recorded.")}
     </div>`:`
 
     <!-- System zone header cards -->
