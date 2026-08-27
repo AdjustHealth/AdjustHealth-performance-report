@@ -8,6 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
+.hidden{display:none!important;}
 
 /* SIDEBAR */
 .shell{display:flex;min-height:100vh;}
@@ -182,6 +183,16 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 .ft-chip input[type=checkbox]{accent-color:#c6f135;width:18px;height:18px;flex-shrink:0;cursor:pointer;}
 .ft-chip label{font-size:11px;color:#b8c8d8;cursor:pointer;line-height:1.3;}
 .ft-chip:has(input:checked){border-color:#c6f135;background:rgba(198,241,53,.05);}
+
+.qr-list{display:grid;gap:8px;margin-bottom:16px;}
+.qr-item{background:#0d1117;border:1px solid #1c2733;border-radius:6px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.qr-lbl{font-size:12px;color:#b8c8d8;font-weight:500;}
+.qr-row{display:flex;gap:6px;flex-shrink:0;}
+.qr-chip{padding:6px 14px;border-radius:4px;border:1px solid #2a3a4a;background:#131b24;color:#7a8fa6;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .12s;}
+.qr-chip:hover{border-color:#3a4f63;}
+.qr-chip[data-r="p"].sel{background:rgba(224,82,82,.15);border-color:#e05252;color:#e05252;}
+.qr-chip[data-r="a"].sel{background:rgba(245,166,35,.15);border-color:#f5a623;color:#f5a623;}
+.qr-chip[data-r="g"].sel{background:rgba(76,219,122,.15);border-color:#4cdb7a;color:#4cdb7a;}
 
 @media print{#form-screen,#preview-screen>div:first-child{display:none!important;}}
 
@@ -478,6 +489,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab2">
+    <div id="mobilityNumeric">
     <div class="fb-sh">Spinal — % of Normal Range</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Cervical Rotation (%)</label><input id="fcerv" type="number" min="0" max="100" placeholder="—"></div>
@@ -497,6 +509,12 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-lr"><div class="fb-lrlbl">Hip Flexor — Thomas (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mtho-l" placeholder="—"></div><div><span>R</span><input type="number" id="mtho-r" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">SLR Test (°)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mslr-l" placeholder="—"></div><div><span>R</span><input type="number" id="mslr-r" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Knee-to-Wall — Ankle DF (cm)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="mktw-l" step="0.5" placeholder="—"></div><div><span>R</span><input type="number" id="mktw-r" step="0.5" placeholder="—"></div></div></div>
+    </div>
+    </div>
+    <div id="mobilityQualWrap" class="hidden">
+      <div class="fb-sh">Mobility — Clinical Rating</div>
+      <div class="nbox" style="margin-bottom:14px;">Youth mobility is rated on clinical judgement rather than goniometry — quicker to administer and just as useful at this age. One rating per joint region (not left/right) — note any asymmetry in Mobility Notes below.</div>
+      <div id="mobilityQualList" class="qr-list"></div>
     </div>
     <div class="fb-card" style="max-width:600px;"><label>Mobility Notes</label><textarea id="fmobc" placeholder="Clinical observations..."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(1)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(3)">Next: Power →</button></div>
@@ -520,6 +538,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab4">
+    <div id="isoNumeric">
     <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
     <div class="fb-grid fb-g3">
       <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
@@ -530,6 +549,12 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder Y Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsyl" placeholder="—"></div><div><span>R</span><input type="number" id="fsyr" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder ER Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fserl" placeholder="—"></div><div><span>R</span><input type="number" id="fserr" placeholder="—"></div></div></div>
       <div class="fb-lr"><div class="fb-lrlbl">Shoulder IR Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsirl" placeholder="—"></div><div><span>R</span><input type="number" id="fsirr" placeholder="—"></div></div></div>
+    </div>
+    </div>
+    <div id="isoQualWrap" class="hidden">
+      <div class="fb-sh">Strength — Clinical Rating</div>
+      <div class="nbox" style="margin-bottom:14px;">Youth isokinetic strength is rated on clinical judgement rather than dynamometer output — one rating per test, not left/right.</div>
+      <div id="isoQualList" class="qr-list"></div>
     </div>
     <div class="fb-sh">IMTP</div>
     <div class="fb-grid fb-g4">
@@ -732,6 +757,7 @@ function restoreState(){
     // so the chk<id> restoration below finds the right elements already in place.
     if(data.__assessType){ASSESS_TYPE=data.__assessType;YOUTH_TIER=data.__youthTier||"y1";}
     buildFTUI();
+    applyYouthUIMode();
     Object.entries(data).forEach(([id,val])=>{
       if(id==="__inj"){const s=JSON.parse(val);Object.assign(_injState,s);INJ.forEach(r=>_updateChip(r));return;}
       if(id==="__assessType"||id==="__youthTier")return;
@@ -740,7 +766,7 @@ function restoreState(){
       if(el.type==="checkbox")el.checked=val;
       else el.value=val;
     });
-    onSpd();onCap();onAna();onAnaB();onFT();
+    onSpd();onCap();onAna();onAnaB();onFT();syncQualChips();
     return data.__assessType||null;
   }catch(e){return null;}
 }
@@ -778,6 +804,7 @@ function continueToForm(){
   document.getElementById("type-screen").classList.add("hidden");
   document.getElementById("form-screen").classList.remove("hidden");
   buildFTUI();
+  applyYouthUIMode();
   applyTypeLabels();
   if(!document.getElementById("fd").value)document.getElementById("fd").value=todayISO();
   saveState();updateProgress();
@@ -815,6 +842,7 @@ function clearForm(){
   });
   INJ.forEach(r=>{_injState[r]="none";_updateChip(r);});
   document.querySelectorAll(".ft-chip input[type=checkbox]").forEach(cb=>{cb.checked=false;cb.dispatchEvent(new Event("change"));});
+  syncQualChips();
   document.getElementById("fd").value=todayISO();
   saveState();updateProgress();
   changeType(); // new athlete — choose assessment type again
@@ -843,6 +871,47 @@ function toggleInj(r){
 })();
 
 // ── Functional test chips — rebuilt whenever assessment type/tier changes ────
+// ── Youth qualitative rating pickers (Mobility + Isokinetic Strength) ────────
+// Built once at load — the measure list never changes — then just shown/hidden
+// per assessment type. Ratings reuse the app-wide Poor/Average/Good vocabulary
+// (rCls/rLbl/rCol) so they slot into the same badges and colour system the
+// numeric tests already use, instead of inventing a second rating language.
+const QUAL_MOBILITY=[["sher","Shoulder ER"],["shir","Shoulder IR"],["hipf","Hip Flexion"],["hipir","Hip Int. Rotation"],["hiper","Hip Ext. Rotation"],["tho","Hip Flexor (Thomas)"],["slr","SLR Test"],["ktw","Knee-to-Wall (Ankle DF)"]];
+const QUAL_ISO=[["ke","Knee Extension"],["kf","Knee Flexion"],["habd","Hip Abduction"],["hadd","Hip Adduction"],["si","Shoulder I Test"],["sy","Shoulder Y Test"],["ser","Shoulder ER Strength"],["sir","Shoulder IR Strength"]];
+function buildQualUI(listId,measures){
+  document.getElementById(listId).innerHTML=measures.map(([key,label])=>`
+    <div class="qr-item">
+      <div class="qr-lbl">${label}</div>
+      <div class="qr-row" id="qr-${key}">
+        <div class="qr-chip" data-r="p" onclick="setQual('${key}','p')">Poor</div>
+        <div class="qr-chip" data-r="a" onclick="setQual('${key}','a')">Average</div>
+        <div class="qr-chip" data-r="g" onclick="setQual('${key}','g')">Good</div>
+        <input type="hidden" id="mq_${key}">
+      </div>
+    </div>`).join("");
+}
+function setQual(key,r){
+  const cur=document.getElementById("mq_"+key).value;
+  document.getElementById("mq_"+key).value=cur===r?"":r; // click again to clear
+  document.querySelectorAll(`#qr-${key} .qr-chip`).forEach(c=>c.classList.toggle("sel",c.dataset.r===r&&cur!==r));
+  saveState();updateProgress();
+}
+function syncQualChips(){
+  document.querySelectorAll('input[id^="mq_"]').forEach(inp=>{
+    const key=inp.id.replace("mq_","");
+    document.querySelectorAll(`#qr-${key} .qr-chip`).forEach(c=>c.classList.toggle("sel",c.dataset.r===inp.value));
+  });
+}
+function applyYouthUIMode(){
+  const isYouth=ASSESS_TYPE==="youth";
+  document.getElementById("mobilityNumeric").classList.toggle("hidden",isYouth);
+  document.getElementById("mobilityQualWrap").classList.toggle("hidden",!isYouth);
+  document.getElementById("isoNumeric").classList.toggle("hidden",isYouth);
+  document.getElementById("isoQualWrap").classList.toggle("hidden",!isYouth);
+}
+buildQualUI("mobilityQualList",QUAL_MOBILITY);
+buildQualUI("isoQualList",QUAL_ISO);
+
 function buildFTUI(){
   const tg=document.getElementById("ftgl"),inp=document.getElementById("finputs");
   const prev={}; // preserve any already-entered values/checks across a rebuild
@@ -994,6 +1063,13 @@ function isoRow(lbl,lV,rV,good,avg){
   return`<tr><td>${lbl}</td><td class="dv" style="color:${lV?rCol(rL):"#7a8fa6"};">${lV?lV.toFixed(2):"—"}</td><td class="dc">${lV?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${rV?rCol(rR):"#7a8fa6"};">${rV?rV.toFixed(2):"—"}</td><td class="dc">${rV?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
 }
 
+// Youth qualitative rating card — single Poor/Average/Good badge, no L/R or LSI.
+function qualCard(label,key){
+  const r=v("mq_"+key);
+  if(!r)return null;
+  return`<div class="mc" style="border-left-color:${rCol(r)};"><div class="ml">${label}</div><div class="mv" style="color:${rCol(r)};font-size:22px;">${rLbl(r)}</div></div>`;
+}
+
 // Renders only the cards that have data — an untested item just doesn't appear,
 // so a blank field is the way to leave any individual test off the report.
 function cardGrid(cards,emptyMsg){
@@ -1032,13 +1108,21 @@ function collectFindings(){
   const bw=nv("fbw")||null;
   const f=v("fsex")==="f";
 
-  // Mobility — goniometry pairs (spinal % has no rated norm table, so it's left out)
-  Object.entries(ROMS()).forEach(([k,nm])=>{
-    ["l","r"].forEach(s=>{
-      const val=gmob(k,s);
-      if(val>0)list.push({domain:"Mobility",label:`${nm.n} (${s.toUpperCase()})`,val,unit:nm.u,good:nm.good,avg:nm.avg,lo:!!nm.lo,rating:rat(val,nm),score:sc(val,nm.good,nm.avg,nm.lo)});
+  // Mobility — goniometry pairs (spinal % has no rated norm table, so it's left out).
+  // Youth uses a single clinical rating per region instead (no numbers to cite).
+  if(ASSESS_TYPE==="youth"){
+    QUAL_MOBILITY.forEach(([k,l])=>{
+      const r=v("mq_"+k);
+      if(r)list.push({domain:"Mobility",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
     });
-  });
+  }else{
+    Object.entries(ROMS()).forEach(([k,nm])=>{
+      ["l","r"].forEach(s=>{
+        const val=gmob(k,s);
+        if(val>0)list.push({domain:"Mobility",label:`${nm.n} (${s.toUpperCase()})`,val,unit:nm.u,good:nm.good,avg:nm.avg,lo:!!nm.lo,rating:rat(val,nm),score:sc(val,nm.good,nm.avg,nm.lo)});
+      });
+    });
+  }
 
   // Power
   const _pw=POWD();
@@ -1047,21 +1131,29 @@ function collectFindings(){
     if(val&&nm)list.push({domain:"Power",label,val,unit,good:nm.good,avg:nm.avg,lo:false,rating:rat(val,nm),score:sc(val,nm.good,nm.avg)});
   });
 
-  // Strength — isokinetic pairs (same good/avg pairs pageStrength rates against)
-  [["Knee Extension","fkel","fker",f?380:500,f?260:350,"N"],
-   ["Knee Flexion","fkfl","fkfr",f?2.0:2.5,f?1.4:1.8," Nm/kg"],
-   ["Hip Abduction","fhabdl","fhabdr",f?1.8:2.2,f?1.3:1.6," Nm/kg"],
-   ["Hip Adduction","fhaddl","fhaddr",f?1.6:2.0,f?1.2:1.5," Nm/kg"],
-   ["Shoulder I Test","fsil","fsir",f?160:220,f?110:150,"N"],
-   ["Shoulder Y Test","fsyl","fsyr",f?130:180,f?90:120,"N"],
-   ["Shoulder ER Strength","fserl","fserr",f?130:180,f?90:130,"N"],
-   ["Shoulder IR Strength","fsirl","fsirr",f?160:220,f?110:150,"N"]
-  ].forEach(([label,idL,idR,good,avg,unit])=>{
-    [["L",idL],["R",idR]].forEach(([side,id])=>{
-      const val=nv(id);
-      if(val)list.push({domain:"Strength",label:`${label} (${side})`,val,unit,good,avg,lo:false,rating:rat(val,{good,avg,lo:false}),score:sc(val,good,avg)});
+  // Strength — isokinetic (same good/avg pairs pageStrength rates against).
+  // Youth uses a single clinical rating per test instead of L/R numbers.
+  if(ASSESS_TYPE==="youth"){
+    QUAL_ISO.forEach(([k,l])=>{
+      const r=v("mq_"+k);
+      if(r)list.push({domain:"Strength",label:l,val:rLbl(r),unit:"",qual:true,rating:r,score:r==="g"?9:r==="a"?5.5:2});
     });
-  });
+  }else{
+    [["Knee Extension","fkel","fker",f?380:500,f?260:350,"N"],
+     ["Knee Flexion","fkfl","fkfr",f?2.0:2.5,f?1.4:1.8," Nm/kg"],
+     ["Hip Abduction","fhabdl","fhabdr",f?1.8:2.2,f?1.3:1.6," Nm/kg"],
+     ["Hip Adduction","fhaddl","fhaddr",f?1.6:2.0,f?1.2:1.5," Nm/kg"],
+     ["Shoulder I Test","fsil","fsir",f?160:220,f?110:150,"N"],
+     ["Shoulder Y Test","fsyl","fsyr",f?130:180,f?90:120,"N"],
+     ["Shoulder ER Strength","fserl","fserr",f?130:180,f?90:130,"N"],
+     ["Shoulder IR Strength","fsirl","fsirr",f?160:220,f?110:150,"N"]
+    ].forEach(([label,idL,idR,good,avg,unit])=>{
+      [["L",idL],["R",idR]].forEach(([side,id])=>{
+        const val=nv(id);
+        if(val)list.push({domain:"Strength",label:`${label} (${side})`,val,unit,good,avg,lo:false,rating:rat(val,{good,avg,lo:false}),score:sc(val,good,avg)});
+      });
+    });
+  }
   const imtp=nv("fimtp");
   if(imtp){const good=f?2.5:3.0,avg=f?2.0:2.5;list.push({domain:"Strength",label:"IMTP Relative Peak Force",val:imtp,unit:" N/kg",good,avg,lo:false,rating:rat(imtp,{good,avg,lo:false}),score:sc(imtp,good,avg)});}
 
@@ -1104,7 +1196,7 @@ function autoFillSummary(){
   [["fkd1t","fkd1d"],["fkd2t","fkd2d"],["fkd3t","fkd3d"]].forEach(([tId,dId],i)=>{
     const item=weak[i];
     document.getElementById(tId).value=item?item.label:"";
-    document.getElementById(dId).value=item?`Measured at ${item.val}${item.unit} — ${item.lo?`above the ${item.good}–${item.avg}${item.unit} target range`:`below the ${item.avg}–${item.good}${item.unit} average band`}. Recommend targeted development here over the next training block.`:"";
+    document.getElementById(dId).value=item?(item.qual?`Rated ${item.val} on clinical assessment. Recommend targeted development here over the next training block.`:`Measured at ${item.val}${item.unit} — ${item.lo?`above the ${item.good}–${item.avg}${item.unit} target range`:`below the ${item.avg}–${item.good}${item.unit} average band`}. Recommend targeted development here over the next training block.`):"";
   });
 
   const domains=["Mobility","Power","Strength","Energy Systems"];
@@ -1248,7 +1340,11 @@ function gen(){
   const cerv=nv("fcerv"),thor=nv("fthor"),lumb=nv("flumb");
 
   let mG=0,mA=0,mP=0,mN=0;
-  Object.entries(ROMS()).forEach(([k,nm])=>{["l","r"].forEach(s=>{const val=gmob(k,s);if(val>0){mN++;const r=rat(val,nm);if(r==="g")mG++;else if(r==="a")mA++;else mP++;}});});
+  if(ASSESS_TYPE==="youth"){
+    QUAL_MOBILITY.forEach(([k])=>{const r=v("mq_"+k);if(r){mN++;if(r==="g")mG++;else if(r==="a")mA++;else mP++;}});
+  }else{
+    Object.entries(ROMS()).forEach(([k,nm])=>{["l","r"].forEach(s=>{const val=gmob(k,s);if(val>0){mN++;const r=rat(val,nm);if(r==="g")mG++;else if(r==="a")mA++;else mP++;}});});
+  }
 
   const S={};
   S.mob=mN>0?Math.round(((mG*10+mA*5+mP*2)/(mN*10))*100)/10:null;
@@ -1363,6 +1459,13 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Mobility</div><div class="psub">Range of motion vs published normative ranges</div></div><div class="pnum">Page ${pnumMobility}</div></div>
   <div class="pbody">
+    ${ASSESS_TYPE==="youth"?`
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox"><strong>How to read:</strong> Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per joint region.</div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
+      ${cardGrid(QUAL_MOBILITY.map(([k,l])=>qualCard(l,k)),"No mobility ratings recorded.")}
+    </div>`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox"><strong>How to read:</strong> Rated vs normative data. <span class="rb rg">Good</span> at/above norm &nbsp;<span class="rb ra">Average</span> within range &nbsp;<span class="rb rp">Poor</span> below norm. LSI target &gt;90%.</div>
     </div>
@@ -1392,7 +1495,7 @@ function gen(){
           </tbody>
         </table>
       </div>
-    </div>
+    </div>`}
     <div class="psec" style="flex:1;justify-content:center;margin-top:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #1c2733;">
         <div style="display:flex;gap:16px;font-size:12px;"><span style="color:#4cdb7a;font-weight:600;">${mG} Good</span><span style="color:#f5a623;font-weight:600;">${mA} Average</span><span style="color:#e05252;font-weight:600;">${mP} Poor</span><span style="color:#7a8fa6;">(${mN} measurements)</span></div>
@@ -1474,6 +1577,14 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Strength</div><div class="psub">Isokinetic dynamometry & IMTP — rated vs published norms</div></div><div class="pnum">Page ${pnumStrength}</div></div>
   <div class="pbody">
+    ${ASSESS_TYPE==="youth"?`
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox">Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per test.</div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry</div>
+      ${cardGrid(QUAL_ISO.map(([k,l])=>qualCard(l,k)),"No isokinetic ratings recorded.")}
+    </div>`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">Rated vs normative data. <strong>LSI target &gt;90%.</strong></div>
     </div>
@@ -1496,7 +1607,7 @@ function gen(){
           ].join("");})()}
         </tbody>
       </table>
-    </div>
+    </div>`}
 
     ${(imtp||rfd)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">IMTP — Isometric Mid-Thigh Pull</div>
