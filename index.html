@@ -197,7 +197,6 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 @media print{#form-screen,#preview-screen>div:first-child{display:none!important;}}
 
 /* ── PREVIEW AREA */
-.ra{flex:1;background:#06090d;padding:20px;overflow-y:auto;}
 .ri{width:834px;margin:0 auto;}
 .phwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;}
 .phwrap .ico{font-size:36px;opacity:.15;margin-bottom:12px;}
@@ -279,6 +278,8 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 .mi2{font-size:10px;font-style:italic;margin-top:5px;border-top:1px solid #1c2733;padding-top:5px;}
 .mc-bdg{position:absolute;top:7px;right:7px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;letter-spacing:.5px;text-transform:uppercase;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bargrid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-bottom:6px;}
+.bargrid-hd{font-family:"Barlow Condensed",sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid #1c2733;}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
 
@@ -297,14 +298,6 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 .dot.pass{background:#4cdb7a;border-color:#4cdb7a;}
 .dot.fail{background:#e05252;border-color:#e05252;}
 
-.dtbl{width:100%;border-collapse:collapse;table-layout:fixed;}
-.dtbl thead th{background:#131b24;color:#c6f135;padding:11px 10px;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
-.dtbl thead th:not(:first-child){text-align:center;}
-.dtbl tbody td{padding:11px 10px;border-bottom:1px solid #1c2733;font-size:12px;color:#b8c8d8;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;}
-.dtbl tbody td:first-child{white-space:normal;font-size:11px;}
-.dtbl .dv{font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:700;text-align:center;}
-.dtbl .dc{text-align:center;}
-.dtbl .sh td{background:#1c2733;padding:7px 10px;font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#c6f135;}
 
 /* Hero */
 .hero{background:#131b24;display:flex;border:1px solid #1c2733;overflow:hidden;}
@@ -1072,17 +1065,39 @@ function energyZoneBars(spdScore,anaScore,capScore){
 
 function foot(){return`<div class="pfooter"><span class="pftag">Adjust Health</span><img src="data:image/jpeg;base64,${LOGO}" class="pflogo"></div>`;}
 
-function romRow(k,nm){
-  const vL=gmob(k,"l"),vR=gmob(k,"r"),hL=vL>0,hR=vR>0;
+// Visual Left/Right comparison bar — a scannable bar pair + LSI badge, shared
+// by Mobility (romRow) and Isokinetic Strength (isoRow). Replaces what used to
+// be plain numeric table rows.
+function lrBarRow(label,lV,rV,nm){
+  const hL=lV>0,hR=rV>0;
   if(!hL&&!hR)return""; // neither side tested — leave this measure off the report
-  const rL=hL?rat(vL,nm):null,rR=hR?rat(vR,nm):null,ls=lsi(hL?vL:null,hR?vR:null);
-  return`<tr><td>${nm.n}</td><td class="dv" style="color:${hL?rCol(rL):"#7a8fa6"};">${hL?vL+nm.u:"—"}</td><td class="dc">${hL?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${hR?rCol(rR):"#7a8fa6"};">${hR?vR+nm.u:"—"}</td><td class="dc">${hR?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
+  const rL=hL?rat(lV,nm):null,rR=hR?rat(rV,nm):null,ls=lsi(hL?lV:null,hR?rV:null);
+  const maxRef=nm.lo?(nm.avg*1.3):(nm.good*1.15);
+  const pct=val=>Math.max(4,Math.min(100,(val/maxRef)*100));
+  const fmt=val=>Math.round(val*100)/100;
+  const bar=(val,rating,has)=>`<div style="flex:1;height:16px;background:#1c2733;border-radius:3px;overflow:hidden;">${has?`<div style="height:100%;width:${pct(val)}%;background:${rCol(rating)};border-radius:3px;"></div>`:""}</div>`;
+  return`<div style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#b8c8d8;">${label}</div>
+      <span class="rb ${lsiCls(ls)}">LSI ${ls!==null?ls+"%":"—"}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+      <div style="width:14px;font-size:9px;font-weight:700;color:#7a8fa6;">L</div>
+      ${bar(lV,rL,hL)}
+      <div style="width:58px;font-size:12px;font-weight:700;text-align:right;color:${hL?rCol(rL):"#7a8fa6"};">${hL?fmt(lV)+nm.u:"—"}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:14px;font-size:9px;font-weight:700;color:#7a8fa6;">R</div>
+      ${bar(rV,rR,hR)}
+      <div style="width:58px;font-size:12px;font-weight:700;text-align:right;color:${hR?rCol(rR):"#7a8fa6"};">${hR?fmt(rV)+nm.u:"—"}</div>
+    </div>
+  </div>`;
 }
-
+function romRow(k,nm){
+  return lrBarRow(nm.n,gmob(k,"l"),gmob(k,"r"),nm);
+}
 function isoRow(lbl,lV,rV,good,avg){
-  if(!lV&&!rV)return""; // neither side tested — leave this measure off the report
-  const nm={good,avg,lo:false};const rL=lV?rat(lV,nm):null,rR=rV?rat(rV,nm):null,ls=lsi(lV,rV);
-  return`<tr><td>${lbl}</td><td class="dv" style="color:${lV?rCol(rL):"#7a8fa6"};">${lV?lV.toFixed(2):"—"}</td><td class="dc">${lV?`<span class="rb ${rCls(rL)}">${rLbl(rL)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dv" style="color:${rV?rCol(rR):"#7a8fa6"};">${rV?rV.toFixed(2):"—"}</td><td class="dc">${rV?`<span class="rb ${rCls(rR)}">${rLbl(rR)}</span>`:`<span class="rb rn">—</span>`}</td><td class="dc"><span class="rb ${lsiCls(ls)}">${ls!==null?ls+"%":"—"}</span></td></tr>`;
+  return lrBarRow(lbl,lV,rV,{good,avg,lo:false,u:""});
 }
 
 // Youth qualitative rating card — single Poor/Average/Good badge, no L/R or LSI.
@@ -1519,22 +1534,21 @@ function gen(){
       </div>
     </div>
     <div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
-      <div style="background:#131b24;border:1px solid #1c2733;padding:24px 16px;">
-        <table class="dtbl">
-          <thead><tr><th style="width:160px;">Region</th><th style="width:70px;">Left</th><th style="width:84px;">Rating</th><th style="width:70px;">Right</th><th style="width:84px;">Rating</th><th style="width:62px;">LSI</th></tr></thead>
-          <tbody>
-            <tr class="sh"><td colspan="6">Upper Limb</td></tr>
-            ${romRow("sher",ROMS().sher)}
-            ${romRow("shir",ROMS().shir)}
-            <tr class="sh"><td colspan="6">Lower Limb</td></tr>
-            ${romRow("hipf",ROMS().hipf)}
-            ${romRow("hipir",ROMS().hipir)}
-            ${romRow("hiper",ROMS().hiper)}
-            ${romRow("tho",ROMS().tho)}
-            ${romRow("slr",ROMS().slr)}
-            ${romRow("ktw",ROMS().ktw)}
-          </tbody>
-        </table>
+      <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
+        <div class="bargrid-hd">Upper Limb</div>
+        <div class="bargrid">
+          ${romRow("sher",ROMS().sher)}
+          ${romRow("shir",ROMS().shir)}
+        </div>
+        <div class="bargrid-hd">Lower Limb</div>
+        <div class="bargrid">
+          ${romRow("hipf",ROMS().hipf)}
+          ${romRow("hipir",ROMS().hipir)}
+          ${romRow("hiper",ROMS().hiper)}
+          ${romRow("tho",ROMS().tho)}
+          ${romRow("slr",ROMS().slr)}
+          ${romRow("ktw",ROMS().ktw)}
+        </div>
       </div>
     </div>`}
     <div class="psec" style="flex:1;justify-content:center;margin-top:10px;">
@@ -1638,23 +1652,26 @@ function gen(){
     </div>
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry</div>
-      <table class="dtbl">
-        <thead><tr><th style="width:230px;">Test</th><th style="width:60px;">Left</th><th style="width:74px;">Rating</th><th style="width:60px;">Right</th><th style="width:74px;">Rating</th><th style="width:56px;">LSI</th></tr></thead>
-        <tbody>
+      <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
+        <div class="bargrid-hd">Lower Limb</div>
+        <div class="bargrid">
           ${(()=>{const f=v("fsex")==="f";return[
             isoRow("Knee Extension (N)",keL,keR,f?380:500,f?260:350),
             isoRow("Knee Flexion (Nm/kg)",kfL,kfR,f?2.0:2.5,f?1.4:1.8),
             isoRow("Hip Abduction (Nm/kg)",habdL,habdR,f?1.8:2.2,f?1.3:1.6),
             isoRow("Hip Adduction (Nm/kg)",haddL,haddR,f?1.6:2.0,f?1.2:1.5)
           ].join("");})()}
+        </div>
+        <div class="bargrid-hd">Upper Limb</div>
+        <div class="bargrid">
           ${(()=>{const f=v("fsex")==="f";return[
             isoRow("Shoulder I Test (N)",siL,siR,f?160:220,f?110:150),
             isoRow("Shoulder Y Test (N)",syL,syR,f?130:180,f?90:120),
             isoRow("Shoulder ER Strength (N) — 90° abd",serL,serR,f?130:180,f?90:130),
             isoRow("Shoulder IR Strength (N) — 90° abd",sirL,sirR,f?160:220,f?110:150)
           ].join("");})()}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>`}
 
     ${(imtp||rfd)?`<div class="psec" style="flex:0 0 auto;">
@@ -1849,10 +1866,37 @@ function gen(){
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Clinical Summary</div><div class="psub">Full interpretation and recommended focus</div></div><div class="pnum">Page ${pnumClinicalSummary}</div></div>
   <div class="pbody">
-    <div class="psec">
-      <div style="background:#131b24;border-left:4px solid #c6f135;padding:28px 32px;flex:1;display:flex;flex-direction:column;justify-content:center;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:#ffffff;margin-bottom:18px;">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete":S.ov>=5?"Good foundation — targeted development will drive significant gains":"Key areas identified for focused development"):"Clinical Summary"}</div>
-        <div style="font-size:13px;color:#b8c8d8;line-height:1.9;white-space:pre-line;">${v("fsummary")}</div>
+    <div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;gap:20px;align-items:stretch;background:#131b24;border:1px solid #1c2733;overflow:hidden;">
+        <div style="width:130px;flex-shrink:0;background:#1c2733;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 10px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Overall</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;line-height:1;color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div>
+          <div style="font-size:10px;color:#7a8fa6;">out of 10</div>
+        </div>
+        <div style="flex:1;min-width:0;padding:26px 30px 26px 4px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;font-style:italic;color:#ffffff;line-height:1.25;">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete.":S.ov>=5?"Good foundation — targeted development will drive significant gains.":"Key areas identified for focused development."):"Clinical Summary"}</div>
+        </div>
+      </div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;margin-top:16px;">
+      <div class="slbl" style="margin-bottom:10px;">Clinician Narrative</div>
+      <div style="background:#131b24;border-left:4px solid #c6f135;padding:24px 28px;">
+        <div style="font-size:13px;color:#b8c8d8;line-height:1.9;white-space:pre-line;max-width:680px;">${v("fsummary")}</div>
+      </div>
+    </div>
+    ${kdas.length?`<div class="psec" style="flex:1;margin-top:18px;">
+      <div class="slbl" style="margin-bottom:10px;">Priority Focus — Next Training Block</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        ${kdas.map(([t,d],i)=>`<div style="display:flex;align-items:center;gap:14px;background:#131b24;border:1px solid #1c2733;padding:10px 16px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#c6f135;color:#0d1117;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#ffffff;">${t}</div>
+        </div>`).join("")}
+      </div>
+    </div>`:""}
+    <div class="psec" style="flex:0 0 auto;margin-top:auto;padding-top:20px;">
+      <div style="border-top:1px solid #1c2733;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:10px;color:#7a8fa6;">Assessed by ${v("fclin")||"—"} on ${dateStr}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;">Get Better. Get Moving. Get Strong.</div>
       </div>
     </div>
   </div>
