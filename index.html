@@ -551,6 +551,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 
   <div class="fb-panel" id="tab4">
     <div class="nbox hidden" id="youthNoteIso" style="margin-bottom:14px;border-left-color:#f5a623;">Youth isokinetic strength is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
+    <div class="fb-card hidden" id="qr-str-card" style="max-width:360px;margin-bottom:16px;"><label>Overall Strength Rating (Clinical)</label><div class="qr-row" id="qr-str"><div class="qr-chip" data-r="p" onclick="setQual('str','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('str','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('str','g')">Good</div><input type="hidden" id="mq_str"></div></div>
     <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
     <div class="fb-grid fb-g3">
       <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
@@ -921,6 +922,16 @@ function toggleInj(r){
 // (rCls/rLbl/rCol) so they slot into the same badges and colour system the
 // numeric tests already use, instead of inventing a second rating language.
 const QUAL_MOBILITY=[["sher","Shoulder ER"],["shir","Shoulder IR"],["hipf","Hip Flexion"],["hipir","Hip Int. Rotation"],["hiper","Hip Ext. Rotation"],["tho","Hip Flexor (Thomas)"],["slr","SLR Test"],["ktw","Knee-to-Wall (Ankle DF)"]];
+const MOBILITY_DESC={
+  sher:"Shoulder external rotation at 90° abduction — hand-behind-head reach.",
+  shir:"Shoulder internal rotation — hand-behind-back reach.",
+  hipf:"Hip flexion — passive knee-to-chest range.",
+  hipir:"Hip internal rotation — seated 90/90 test.",
+  hiper:"Hip external rotation — seated 90/90 test.",
+  tho:"Hip flexor length — Thomas Test.",
+  slr:"Hamstring length — Straight Leg Raise.",
+  ktw:"Ankle dorsiflexion — Knee-to-Wall Test."
+};
 function buildQualUI(listId,measures){
   document.getElementById(listId).innerHTML=measures.map(([key,label])=>`
     <div class="qr-item">
@@ -972,6 +983,10 @@ function applyYouthUIMode(){
   document.getElementById("qr-ana-card").classList.toggle("hidden",!isYouth);
   document.getElementById("anaBikeHd").classList.toggle("hidden",isYouth);
   document.getElementById("anaBikeWrap").classList.toggle("hidden",isYouth);
+
+  // Strength: isokinetic/IMTP has no youth norm at all, so youth gets a single
+  // clinical Poor/Average/Good rating for the whole domain instead of a blank score
+  document.getElementById("qr-str-card").classList.toggle("hidden",!isYouth);
 }
 buildQualUI("mobilityQualList",QUAL_MOBILITY);
 
@@ -1148,11 +1163,63 @@ function isoRow(lbl,lV,rV,good,avg){
   return lrBarRow(lbl,lV,rV,{good,avg,lo:false,u:""});
 }
 
+// Neutral (unrated) L/R comparison bar — for youth isokinetic strength, where
+// there's no published norm to judge Good/Average/Poor against, but the L/R
+// comparison and symmetry (LSI) are still real, useful, and safe to show.
+function lrBarRowN(label,lV,rV,unit){
+  const hL=lV>0,hR=rV>0;
+  if(!hL&&!hR)return"";
+  const ls=lsi(hL?lV:null,hR?rV:null);
+  const ref=Math.max(lV||0,rV||0)*1.15||1;
+  const pct=val=>Math.max(4,Math.min(100,(val/ref)*100));
+  const fmt=val=>Math.round(val*100)/100;
+  const bar=(val,has)=>`<div style="flex:1;height:16px;background:#1c2733;border-radius:3px;overflow:hidden;">${has?`<div style="height:100%;width:${pct(val)}%;background:#5b7a99;border-radius:3px;"></div>`:""}</div>`;
+  return`<div style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#b8c8d8;">${label}</div>
+      <span class="rb ${lsiCls(ls)}">LSI ${ls!==null?ls+"%":"—"}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+      <div style="width:14px;font-size:9px;font-weight:700;color:#7a8fa6;">L</div>
+      ${bar(lV,hL)}
+      <div style="width:58px;font-size:12px;font-weight:700;text-align:right;color:${hL?"#ffffff":"#7a8fa6"};">${hL?fmt(lV)+unit:"—"}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:14px;font-size:9px;font-weight:700;color:#7a8fa6;">R</div>
+      ${bar(rV,hR)}
+      <div style="width:58px;font-size:12px;font-weight:700;text-align:right;color:${hR?"#ffffff":"#7a8fa6"};">${hR?fmt(rV)+unit:"—"}</div>
+    </div>
+  </div>`;
+}
+
 // Youth qualitative rating card — single Poor/Average/Good badge, no L/R or LSI.
 function qualCard(label,key){
   const r=v("mq_"+key);
   if(!r)return null;
   return`<div class="mc" style="border-left-color:${rCol(r)};"><div class="ml">${label}</div><div class="mv" style="color:${rCol(r)};font-size:22px;">${rLbl(r)}</div></div>`;
+}
+
+// Youth qualitative rating card, spectrum-bar style — states what's being
+// tested, then makes the Poor/Average/Good result visually explicit as a
+// segmented indicator rather than just a colored word.
+function qualBar(label,key,desc){
+  const r=v("mq_"+key);
+  if(!r)return null;
+  const col=rCol(r);
+  const segs=["p","a","g"].map(seg=>{
+    const segCol=seg==="g"?"#4cdb7a":seg==="a"?"#f5a623":"#e05252";
+    const on=seg===r;
+    return`<div style="flex:1;height:11px;border-radius:3px;background:${on?segCol:"#1c2733"};"></div>`;
+  }).join("");
+  return`<div class="mc" style="border-left-color:${col};padding:14px 16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:8px;">
+      <div class="ml" style="margin-bottom:0;">${label}</div>
+      <span class="rb ${rCls(r)}">${rLbl(r)}</span>
+    </div>
+    ${desc?`<div style="font-size:9px;color:#7a8fa6;line-height:1.4;margin-bottom:10px;">${desc}</div>`:""}
+    <div style="display:flex;gap:4px;">${segs}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:3px;"><span style="font-size:8px;color:#7a8fa6;">Poor</span><span style="font-size:8px;color:#7a8fa6;">Average</span><span style="font-size:8px;color:#7a8fa6;">Good</span></div>
+  </div>`;
 }
 
 // Plain, unrated stat card — for youth Power/Strength(isokinetic)/Energy Systems,
@@ -1178,6 +1245,29 @@ function subjCard(label,val,unit,ratingKey){
   const r=v("mq_"+ratingKey);
   const col=r?rCol(r):"#c6f135";
   return`<div class="mc" style="border-left-color:${col};">${r?`<span class="mc-bdg rb ${rCls(r)}">${rLbl(r)}</span>`:""}<div class="ml">${label}</div><div class="mv" style="color:${col};">${val}</div><div class="mu">${unit}</div>${r?"":`<div class="mi2" style="color:#7a8fa6;font-size:9px;font-style:italic;">Not rated</div>`}</div>`;
+}
+
+// Featured full-width tile for a youth Energy Systems test — big number +
+// clinician rating badge + short description, since there's no norm to build
+// a calibrated gauge against.
+function heroTile(label,val,unit,ratingKey,desc){
+  if(!val)return"";
+  const r=v("mq_"+ratingKey);
+  const col=r?rCol(r):"#7a8fa6";
+  return`<div class="psec" style="flex:0 0 auto;">
+    <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${col};overflow:hidden;">
+      <div style="padding:22px 24px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:170px;flex-shrink:0;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">${label}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${col};line-height:1;">${val}</div>
+        <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${unit}</div>
+        ${r?`<span class="rb ${rCls(r)}" style="margin-top:6px;align-self:flex-start;">${rLbl(r)}</span>`:`<div style="font-size:10px;color:#7a8fa6;margin-top:4px;">Not rated</div>`}
+      </div>
+      <div style="padding:22px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${desc} No published youth norm — rated by clinical judgement alongside the number.</div>
+        <div style="font-size:11px;color:#b8c8d8;line-height:1.5;">${r==="g"?"<strong style='color:#4cdb7a;'>Good</strong> result for age.":r==="a"?"<strong style='color:#f5a623;'>Average</strong> result for age.":r==="p"?"<strong style='color:#e05252;'>Developing</strong> — priority area.":"Add a clinical rating alongside this test."}</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 // Renders only the cards that have data — an untested item just doesn't appear,
@@ -1268,6 +1358,9 @@ function collectFindings(){
     });
     const imtp=nv("fimtp");
     if(imtp){const good=f?2.5:3.0,avg=f?2.0:2.5;list.push({domain:"Strength",label:"IMTP Relative Peak Force",val:imtp,unit:" N/kg",good,avg,lo:false,rating:rat(imtp,{good,avg,lo:false}),score:sc(imtp,good,avg)});}
+  }else{
+    const strR=v("mq_str");
+    if(strR)list.push({domain:"Strength",label:"Overall Strength",val:rLbl(strR),unit:"",qual:true,rating:strR,score:qScore(strR)});
   }
 
   // Strength — functional tests (tier-aware: reuses FT()/FTNW()/FTNR(), so youth
@@ -1485,7 +1578,7 @@ function gen(){
   }
   const _sf=v("fsex")==="f";
   if(ASSESS_TYPE==="youth"){
-    S.str=null;
+    S.str=v("mq_str")?qScore(v("mq_str")):null;
   }else{
     const sArr=[sc(imtp,_sf?2.5:3.0,_sf?2.0:2.5)].filter(x=>x!==null);
     S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
@@ -1534,8 +1627,10 @@ function gen(){
   <div class="pstripe" style="position:absolute;top:0;left:0;right:0;"></div>
   <img src="data:image/jpeg;base64,${LOGO}" style="height:72px;object-fit:contain;mix-blend-mode:lighten;margin-bottom:32px;">
   <div style="width:52px;height:3px;background:#c6f135;margin:0 auto 24px;"></div>
-  <div style="font-family:'Barlow Condensed',sans-serif;font-size:${TYPE_COVER[ASSESS_TYPE].length>10?64:92}px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:.9;letter-spacing:-2px;white-space:nowrap;">${TYPE_COVER[ASSESS_TYPE]}</div>
-  <div style="font-family:'Barlow Condensed',sans-serif;font-size:130px;font-weight:900;font-style:italic;text-transform:uppercase;color:#c6f135;line-height:.85;margin-bottom:48px;letter-spacing:-3px;">Report</div>
+  <div>
+    ${TYPE_COVER[ASSESS_TYPE].split(" ").map(w=>`<div style="font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:1.02;letter-spacing:-1px;">${w}</div>`).join("")}
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:900;text-transform:uppercase;color:#c6f135;line-height:1.02;letter-spacing:-1px;margin-bottom:40px;">Report</div>
+  </div>
   <div style="border:2px solid #c6f135;padding:14px 56px;margin-bottom:12px;display:inline-block;">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#ffffff;">${name}</div>
   </div>
@@ -1590,13 +1685,34 @@ function gen(){
 
     <!-- SECTION 3: Domain score tiles — the full clinical narrative lives on the Summary
          page only, so this section just grows to fill the rest of the page. -->
-    <div class="psec" style="padding-top:12px;">
+    <div class="psec" style="flex:0 0 auto;padding-top:12px;">
       <div class="slbl" style="margin-bottom:10px;">Domain Scores</div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
-        ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Cap.",S.cap]].map(([l,s])=>{const col=domCol(s);const pct=s!==null?s*10:0;return`<div style="background:#131b24;border:1px solid #1c2733;border-top:3px solid ${col};padding:14px 12px;text-align:center;"><div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:8px;">${l}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:${col};line-height:1;margin-bottom:6px;">${s!==null?s.toFixed(1):"—"}</div><div style="height:4px;background:#1c2733;border-radius:2px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${col};"></div></div>${s!==null?`<div style="margin-top:6px;"><span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span></div>`:""}</div>`;}).join("")}
+        ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Cap.",S.cap]].map(([l,s])=>{const col=domCol(s);const pct=s!==null?s*10:0;return`<div style="background:#131b24;border:1px solid #1c2733;border-top:3px solid ${col};padding:18px 12px;text-align:center;"><div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:10px;">${l}</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;color:${col};line-height:1;margin-bottom:8px;">${s!==null?s.toFixed(1):"—"}</div><div style="height:4px;background:#1c2733;border-radius:2px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:${col};"></div></div>${s!==null?`<div style="margin-top:8px;"><span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span></div>`:`<div style="margin-top:8px;"><span class="rb rn">Not Rated</span></div>`}</div>`;}).join("")}
       </div>
+      <div style="background:#131b24;border-left:3px solid #c6f135;padding:12px 16px;font-size:11px;color:#b8c8d8;line-height:1.6;margin-top:12px;">${ASSESS_TYPE==="youth"?"Youth scores mix approximate reference data (CMJ Height, Broad Jump) with clinician-judged Poor/Average/Good ratings where no published youth norm exists — see each domain page for the specific method used.":"Domain scores are calculated from the tests entered under each section — leave a section blank to exclude it from the Overall Score."}</div>
     </div>
 
+    ${ASSESS_TYPE==="youth"&&readinessTotal!==null?`
+    <div class="psec">
+      <div class="slbl" style="margin-bottom:10px;">Youth 1 → Youth 2 Readiness</div>
+      <div style="flex:1;display:flex;align-items:stretch;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:18px 24px;">
+        <div style="flex-shrink:0;text-align:center;padding-right:20px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness Score</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:16px;color:#7a8fa6;">/12</span></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:6px;">${readinessBand.lbl}</div>
+          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;">AIMS-adapted Youth 1 → Youth 2 movement screen — ${readinessScored.length}/4 movements scored${readinessScored.length<4?" (partial)":""}. A suggested guide, not a published cut-off — see the Summary page for the full breakdown.</div>
+        </div>
+      </div>
+    </div>`:`
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:10px;">Assessment Coverage</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        ${[["Injury Screen",incInjury],["Mobility",incMobility],["Power",incPower],["Strength",incStrength],["Energy Systems",incEnergy]].map(([l,inc])=>`<div style="background:#131b24;border:1px solid ${inc?"#2a3a4a":"#1c2733"};padding:10px 18px;display:flex;align-items:center;gap:9px;opacity:${inc?1:.5};"><div style="width:8px;height:8px;border-radius:50%;background:${inc?"#4cdb7a":"#3a4f63"};flex-shrink:0;"></div><span style="font-size:11px;font-weight:600;color:#b8c8d8;">${l}</span></div>`).join("")}
+      </div>
+    </div>`}
   </div>
   ${foot()}
 </div>
@@ -1610,10 +1726,17 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox"><strong>How to read:</strong> Rated on clinical judgement — <span class="rb rg">Good</span> <span class="rb ra">Average</span> <span class="rb rp">Poor</span> per joint region.</div>
+      <div class="nbox"><strong>How to read:</strong> Each region is rated on clinical judgement against age-appropriate expectations — <span class="rb rg">Good</span> full/functional range &nbsp;<span class="rb ra">Average</span> mild restriction &nbsp;<span class="rb rp">Poor</span> notable restriction.</div>
     </div>
     <div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
-      ${cardGrid(QUAL_MOBILITY.map(([k,l])=>qualCard(l,k)),"No mobility ratings recorded.")}
+      <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 16px;box-sizing:border-box;overflow:hidden;">
+        <div class="bargrid-hd">Upper Limb</div>
+        <div style="margin-bottom:16px;">
+          ${cardGrid(["sher","shir"].map(k=>qualBar(QUAL_MOBILITY.find(([kk])=>kk===k)[1],k,MOBILITY_DESC[k])),"No upper limb ratings recorded.")}
+        </div>
+        <div class="bargrid-hd">Lower Limb</div>
+        ${cardGrid(["hipf","hipir","hiper","tho","slr","ktw"].map(k=>qualBar(QUAL_MOBILITY.find(([kk])=>kk===k)[1],k,MOBILITY_DESC[k])),"No lower limb ratings recorded.")}
+      </div>
     </div>`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox"><strong>How to read:</strong> Rated vs normative data. <span class="rb rg">Good</span> at/above norm &nbsp;<span class="rb ra">Average</span> within range &nbsp;<span class="rb rp">Poor</span> below norm. LSI target &gt;90%.</div>
@@ -1644,12 +1767,15 @@ function gen(){
         </div>
       </div>
     </div>`}
-    <div class="psec" style="flex:1;justify-content:center;margin-top:10px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #1c2733;">
-        <div style="display:flex;gap:16px;font-size:12px;"><span style="color:#4cdb7a;font-weight:600;">${mG} Good</span><span style="color:#f5a623;font-weight:600;">${mA} Average</span><span style="color:#e05252;font-weight:600;">${mP} Poor</span><span style="color:#7a8fa6;">(${mN} measurements)</span></div>
-        ${S.mob!==null?`<span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:${domCol(S.mob)};">Mobility: ${S.mob.toFixed(1)}/10</span>`:""}
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div class="slbl" style="margin-bottom:10px;">Mobility Summary</div>
+      <div style="display:flex;flex-direction:column;gap:14px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${domCol(S.mob)};padding:18px 24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;gap:20px;font-size:12px;"><span style="color:#4cdb7a;font-weight:600;">${mG} Good</span><span style="color:#f5a623;font-weight:600;">${mA} Average</span><span style="color:#e05252;font-weight:600;">${mP} Poor</span><span style="color:#7a8fa6;">(${mN} measurements)</span></div>
+          ${S.mob!==null?`<span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:${domCol(S.mob)};">Mobility: ${S.mob.toFixed(1)}/10</span>`:""}
+        </div>
+        ${v("fmobc")?`<div class="nbox" style="white-space:pre-line;">${v("fmobc")}</div>`:""}
       </div>
-      ${v("fmobc")?`<div class="nbox" style="margin-top:10px;white-space:pre-line;">${v("fmobc")}</div>`:""}
     </div>
   </div>
   ${foot()}
@@ -1664,18 +1790,67 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">CMJ Height and Broad Jump rated vs approximate youth reference data (see note below). RSI has no published youth norm — rated by clinical judgement. Squat Jump isn't used for youth.</div>
+      <div class="nbox">CMJ Height and Broad Jump rated vs approximate youth reference data (see source below each). RSI has no published youth norm — rated by clinical judgement alongside the number. Squat Jump isn't used for youth.</div>
     </div>
-    <div class="psec" style="flex:1;">
+    ${cmjH?`<div class="psec" style="flex:1;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(rat(cmjH,POWDY().cmj))};overflow:hidden;height:100%;">
+        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
+          ${speedo(cmjH,0,Math.round(POWDY().cmj.good*1.3),"cm",rCol(rat(cmjH,POWDY().cmj)),200,158)}
+        </div>
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">CMJ Height</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${rCol(rat(cmjH,POWDY().cmj))};line-height:1;">${cmjH.toFixed(1)}</div>
+          <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">cm</div>
+          <span class="rb ${rCls(rat(cmjH,POWDY().cmj))}" style="margin-top:6px;align-self:flex-start;">${rLbl(rat(cmjH,POWDY().cmj))}</span>
+        </div>
+        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:150px;flex-shrink:0;">
+          <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Good</div><div class="bmv">&gt;${POWDY().cmj.good}cm</div></div>
+          <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Average</div><div class="bmv">${POWDY().cmj.avg}–${POWDY().cmj.good}cm</div></div>
+          <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Poor</div><div class="bmv">&lt;${POWDY().cmj.avg}cm</div></div>
+        </div>
+        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">Vertical jump height, VALD Force Decks. Approx. youth reference — Lesinski et al. 2020.</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${rat(cmjH,POWDY().cmj)==="g"?"<strong style='color:#4cdb7a;'>✓ Above</strong> the approximate reference band for age.":rat(cmjH,POWDY().cmj)==="a"?"<strong style='color:#f5a623;'>→ Around</strong> the approximate reference band for age.":"<strong style='color:#e05252;'>↓ Below</strong> the approximate reference band for age."}</div>
+        </div>
+      </div>
+    </div>`:""}
+    ${rsi?`<div class="psec" style="flex:1;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${v("mq_rsi")?rCol(v("mq_rsi")):"#3a4f63"};overflow:hidden;height:100%;">
+        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
+          ${speedo(rsi,0,2.0,"",v("mq_rsi")?rCol(v("mq_rsi")):"#7a8fa6",200,158)}
+        </div>
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">RSI Mod (Drop Jump)</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${v("mq_rsi")?rCol(v("mq_rsi")):"#ffffff"};line-height:1;">${rsi.toFixed(2)}</div>
+          ${v("mq_rsi")?`<span class="rb ${rCls(v("mq_rsi"))}" style="margin-top:6px;align-self:flex-start;">${rLbl(v("mq_rsi"))}</span>`:`<div style="font-size:10px;color:#7a8fa6;margin-top:4px;">Not rated</div>`}
+        </div>
+        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:150px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;">No published youth norm</div>
+        </div>
+        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">Measures reactive strength — how quickly force is produced on ground contact. Rated by clinical judgement alongside the number.</div>
+          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${v("mq_rsi")==="g"?"<strong style='color:#4cdb7a;'>Good</strong> reactive strength.":v("mq_rsi")==="a"?"<strong style='color:#f5a623;'>Average</strong> reactive strength.":v("mq_rsi")==="p"?"<strong style='color:#e05252;'>Developing</strong> reactive strength.":"Add a clinical rating alongside this test."}</div>
+        </div>
+      </div>
+    </div>`:""}
+    ${(bj||slL||slR||cmjRPP)?`<div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:8px;">Horizontal Projection &amp; Other Power Measures</div>
       ${cardGrid([
-        normCard("CMJ Height",cmjH?cmjH.toFixed(1):null,"cm",POWDY().cmj,"vs approx. youth norm — Lesinski et al. 2020"),
-        plainCard("CMJ Rel. Peak Power",cmjRPP?cmjRPP.toFixed(1):null,"W/kg"),
-        subjCard("RSI Mod (Drop Jump)",rsi?rsi.toFixed(2):null,"","rsi"),
         normCard("Broad Jump",bj?bj.toFixed(2):null,"m",POWDY().bj,"vs approx. youth norm — Thomas et al. 2020"),
         plainCard("SL Broad Jump — Left",slL?slL.toFixed(2):null,"m"),
-        plainCard("SL Broad Jump — Right",slR?slR.toFixed(2):null,"m")
+        plainCard("SL Broad Jump — Right",slR?slR.toFixed(2):null,"m"),
+        plainCard("CMJ Rel. Peak Power",cmjRPP?cmjRPP.toFixed(1):null,"W/kg")
       ],"No power tests recorded.")}
-    </div>`:`
+    </div>`:""}
+    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
+      const bits=[];
+      if(cmjH)bits.push(rat(cmjH,POWDY().cmj)==="g"?"CMJ height is above the approximate reference band for age":rat(cmjH,POWDY().cmj)==="a"?"CMJ height is around the approximate reference band for age":"CMJ height is the clearest opportunity here");
+      if(rsi&&v("mq_rsi"))bits.push(v("mq_rsi")==="g"?"reactive strength stands out":v("mq_rsi")==="a"?"reactive strength is solid":"reactive strength is developing");
+      if(bj)bits.push(rat(bj,POWDY().bj)==="g"?"broad jump is above the approximate reference band":rat(bj,POWDY().bj)==="a"?"broad jump is on track for age":"broad jump has room to grow");
+      if(slL&&slR&&lsi(slL,slR)<90)bits.push(`limb symmetry needs attention (${lsi(slL,slR)}% LSI)`);
+      return bits.length?bits.join("; ")+".":"Enter power test data to generate.";
+    })()}</div></div></div>
+    `:`
     ${(cmjH||cmjRPP||eur!==null)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Countermovement Jump (CMJ)</div>
       <div class="nbox" style="margin-bottom:10px;">Measures vertical/explosive power.</div>
@@ -1748,20 +1923,39 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">Recorded as-is — no validated youth dynamometer norms exist to rate these tests against. Still valuable to track session-to-session.</div>
+      <div class="nbox">No validated youth dynamometer norms exist, so isokinetic figures are shown as real numbers with L/R comparison rather than a Good/Average/Poor judgement. <strong>Overall Strength</strong> below is the clinician's own rating, formed from these tests plus IMTP.</div>
     </div>
-    <div class="psec" style="flex:0 0 auto;">
-      <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry</div>
-      ${cardGrid([
-        plainCard("Knee Extension — L",keL?keL.toFixed(1):null,"N"),plainCard("Knee Extension — R",keR?keR.toFixed(1):null,"N"),
-        plainCard("Knee Flexion — L",kfL?kfL.toFixed(2):null,"Nm/kg"),plainCard("Knee Flexion — R",kfR?kfR.toFixed(2):null,"Nm/kg"),
-        plainCard("Hip Abduction — L",habdL?habdL.toFixed(2):null,"Nm/kg"),plainCard("Hip Abduction — R",habdR?habdR.toFixed(2):null,"Nm/kg"),
-        plainCard("Hip Adduction — L",haddL?haddL.toFixed(2):null,"Nm/kg"),plainCard("Hip Adduction — R",haddR?haddR.toFixed(2):null,"Nm/kg"),
-        plainCard("Shoulder I Test — L",siL?siL.toFixed(1):null,"N"),plainCard("Shoulder I Test — R",siR?siR.toFixed(1):null,"N"),
-        plainCard("Shoulder Y Test — L",syL?syL.toFixed(1):null,"N"),plainCard("Shoulder Y Test — R",syR?syR.toFixed(1):null,"N"),
-        plainCard("Shoulder ER Strength — L",serL?serL.toFixed(1):null,"N"),plainCard("Shoulder ER Strength — R",serR?serR.toFixed(1):null,"N"),
-        plainCard("Shoulder IR Strength — L",sirL?sirL.toFixed(1):null,"N"),plainCard("Shoulder IR Strength — R",sirR?sirR.toFixed(1):null,"N")
-      ],"No isokinetic tests recorded.")}
+    ${v("mq_str")?`<div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:center;gap:16px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(v("mq_str"))};padding:16px 20px;">
+        <div style="flex-shrink:0;text-align:center;padding-right:16px;border-right:1px solid #1c2733;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Overall Strength</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:${rCol(v("mq_str"))};line-height:1;">${rLbl(v("mq_str"))}</div>
+        </div>
+        <div style="flex:1;font-size:11px;color:#b8c8d8;line-height:1.6;">Clinical judgement, formed from isokinetic dynamometry and IMTP results below.</div>
+      </div>
+    </div>`:""}
+    <div class="psec" style="flex:1;overflow:hidden;">
+      <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry — L / R Comparison</div>
+      <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
+        <div class="bargrid-hd">Lower Limb</div>
+        <div class="bargrid">
+          ${[
+            lrBarRowN("Knee Extension",keL,keR," N"),
+            lrBarRowN("Knee Flexion",kfL,kfR," Nm/kg"),
+            lrBarRowN("Hip Abduction",habdL,habdR," Nm/kg"),
+            lrBarRowN("Hip Adduction",haddL,haddR," Nm/kg")
+          ].join("")}
+        </div>
+        <div class="bargrid-hd">Upper Limb</div>
+        <div class="bargrid">
+          ${[
+            lrBarRowN("Shoulder I Test",siL,siR," N"),
+            lrBarRowN("Shoulder Y Test",syL,syR," N"),
+            lrBarRowN("Shoulder ER Strength",serL,serR," N"),
+            lrBarRowN("Shoulder IR Strength",sirL,sirR," N")
+          ].join("")}
+        </div>
+      </div>
     </div>`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">Rated vs normative data. <strong>LSI target &gt;90%.</strong></div>
@@ -1828,6 +2022,7 @@ function gen(){
       if(asym.length)bits.push(`${asym.map(([n,v])=>`${n} ${v}%`).join(", ")} below the 90% symmetry target`);
       else if(lsis.length)bits.push("limb symmetry within target across the board");
       if(imtp&&ASSESS_TYPE!=="youth")bits.push(imtp>=3.0?"excellent isometric strength":imtp>=2.5?"good isometric strength":"isometric strength is a development area");
+      if(ASSESS_TYPE==="youth"&&v("mq_str"))bits.push(v("mq_str")==="g"?"overall strength rates well for age":v("mq_str")==="a"?"overall strength is average for age":"overall strength is a development area");
       if(fd.length>0){
         const fw=FTNW(),fr=FTNR();
         const rated=fd.map(item=>{
@@ -1856,14 +2051,23 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">No credible youth norm exists for sprint or aerobic/anaerobic testing — each is rated by clinical judgement alongside the real number.</div>
     </div>
-    <div class="psec" style="flex:1;">
+    ${heroTile(st.l,sv?sv.toFixed(2):null,st.u,"spd","Speed / PCr system — explosive single effort.")}
+    ${heroTile(ct.l,cv?String(cv):null,ct.u,"cap","Aerobic capacity — sustained oxidative effort.")}
+    ${(av||adec)?`<div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:8px;">Anaerobic Capacity</div>
       ${cardGrid([
-        subjCard(st.l,sv?sv:null,st.u,"spd"),
-        subjCard(ct.l,cv?cv:null,ct.u,"cap"),
         av?subjCard(at.l+" — Best",av,at.u,"ana"):null,
         av&&adec?plainCard("Fatigue Decrement",adec,"%"):null
-      ],"No energy systems tests recorded.")}
-    </div>`:`
+      ],"No anaerobic test recorded.")}
+    </div>`:""}
+    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Energy Systems Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
+      const bits=[];
+      if(sv&&v("mq_spd"))bits.push(v("mq_spd")==="g"?"speed rates well for age":v("mq_spd")==="a"?"speed is average for age":"speed is a development area");
+      if(cv&&v("mq_cap"))bits.push(v("mq_cap")==="g"?"aerobic capacity rates well for age":v("mq_cap")==="a"?"aerobic capacity is average for age":"aerobic capacity is a development area");
+      if(av&&v("mq_ana"))bits.push(v("mq_ana")==="g"?"anaerobic capacity rates well for age":v("mq_ana")==="a"?"anaerobic capacity is average for age":"anaerobic capacity is a development area");
+      return bits.length?bits.join("; ")+".":"Enter energy systems data to generate.";
+    })()}</div></div></div>
+    `:`
 
     <!-- System zone header cards -->
     <div class="psec" style="flex:0 0 auto;">
