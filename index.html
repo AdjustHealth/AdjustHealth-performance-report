@@ -1728,16 +1728,17 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox"><strong>How to read:</strong> Each region is rated on clinical judgement against age-appropriate expectations — <span class="rb rg">Good</span> full/functional range &nbsp;<span class="rb ra">Average</span> mild restriction &nbsp;<span class="rb rp">Poor</span> notable restriction.</div>
     </div>
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
+    ${(()=>{
+      const upperCards=["sher","shir"].map(k=>qualBar(QUAL_MOBILITY.find(([kk])=>kk===k)[1],k,MOBILITY_DESC[k])).filter(Boolean);
+      const lowerCards=["hipf","hipir","hiper","tho","slr","ktw"].map(k=>qualBar(QUAL_MOBILITY.find(([kk])=>kk===k)[1],k,MOBILITY_DESC[k])).filter(Boolean);
+      if(!upperCards.length&&!lowerCards.length)return`<div class="psec" style="flex:0 0 auto;margin-top:12px;"><div class="nbox" style="color:#7a8fa6;">No mobility ratings recorded.</div></div>`;
+      return`<div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
       <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 16px;box-sizing:border-box;overflow:hidden;">
-        <div class="bargrid-hd">Upper Limb</div>
-        <div style="margin-bottom:16px;">
-          ${cardGrid(["sher","shir"].map(k=>qualBar(QUAL_MOBILITY.find(([kk])=>kk===k)[1],k,MOBILITY_DESC[k])),"No upper limb ratings recorded.")}
-        </div>
-        <div class="bargrid-hd">Lower Limb</div>
-        ${cardGrid(["hipf","hipir","hiper","tho","slr","ktw"].map(k=>qualBar(QUAL_MOBILITY.find(([kk])=>kk===k)[1],k,MOBILITY_DESC[k])),"No lower limb ratings recorded.")}
+        ${upperCards.length?`<div class="bargrid-hd">Upper Limb</div><div style="margin-bottom:16px;">${cardGrid(upperCards,"")}</div>`:""}
+        ${lowerCards.length?`<div class="bargrid-hd">Lower Limb</div>${cardGrid(lowerCards,"")}`:""}
       </div>
-    </div>`:`
+    </div>`;
+    })()}`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox"><strong>How to read:</strong> Rated vs normative data. <span class="rb rg">Good</span> at/above norm &nbsp;<span class="rb ra">Average</span> within range &nbsp;<span class="rb rp">Poor</span> below norm. LSI target &gt;90%.</div>
     </div>
@@ -1749,24 +1750,17 @@ function gen(){
         ${spbar("Lumbar Flexion",lumb)}
       </div>
     </div>
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
+    ${(()=>{
+      const upperRows=[romRow("sher",ROMS().sher),romRow("shir",ROMS().shir)].filter(Boolean);
+      const lowerRows=[romRow("hipf",ROMS().hipf),romRow("hipir",ROMS().hipir),romRow("hiper",ROMS().hiper),romRow("tho",ROMS().tho),romRow("slr",ROMS().slr),romRow("ktw",ROMS().ktw)].filter(Boolean);
+      if(!upperRows.length&&!lowerRows.length)return`<div class="psec" style="flex:0 0 auto;margin-top:12px;"><div class="nbox" style="color:#7a8fa6;">No mobility measurements recorded.</div></div>`;
+      return`<div class="psec" style="flex:0 0 auto;margin-top:12px;overflow:hidden;">
       <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
-        <div class="bargrid-hd">Upper Limb</div>
-        <div class="bargrid">
-          ${romRow("sher",ROMS().sher)}
-          ${romRow("shir",ROMS().shir)}
-        </div>
-        <div class="bargrid-hd">Lower Limb</div>
-        <div class="bargrid">
-          ${romRow("hipf",ROMS().hipf)}
-          ${romRow("hipir",ROMS().hipir)}
-          ${romRow("hiper",ROMS().hiper)}
-          ${romRow("tho",ROMS().tho)}
-          ${romRow("slr",ROMS().slr)}
-          ${romRow("ktw",ROMS().ktw)}
-        </div>
+        ${upperRows.length?`<div class="bargrid-hd">Upper Limb</div><div class="bargrid">${upperRows.join("")}</div>`:""}
+        ${lowerRows.length?`<div class="bargrid-hd">Lower Limb</div><div class="bargrid">${lowerRows.join("")}</div>`:""}
       </div>
-    </div>`}
+    </div>`;
+    })()}`}
     <div class="psec" style="flex:0 0 auto;margin-top:12px;">
       <div class="slbl" style="margin-bottom:10px;">Mobility Summary</div>
       <div style="display:flex;flex-direction:column;gap:14px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${domCol(S.mob)};padding:18px 24px;">
@@ -1792,8 +1786,8 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">CMJ Height and Broad Jump rated vs approximate youth reference data (see source below each). RSI has no published youth norm — rated by clinical judgement alongside the number. Squat Jump isn't used for youth.</div>
     </div>
-    ${cmjH?`<div class="psec" style="flex:1;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(rat(cmjH,POWDY().cmj))};overflow:hidden;height:100%;">
+    ${cmjH?`<div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(rat(cmjH,POWDY().cmj))};overflow:hidden;">
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
           ${speedo(cmjH,0,Math.round(POWDY().cmj.good*1.3),"cm",rCol(rat(cmjH,POWDY().cmj)),200,158)}
         </div>
@@ -1814,8 +1808,8 @@ function gen(){
         </div>
       </div>
     </div>`:""}
-    ${rsi?`<div class="psec" style="flex:1;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${v("mq_rsi")?rCol(v("mq_rsi")):"#3a4f63"};overflow:hidden;height:100%;">
+    ${rsi?`<div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${v("mq_rsi")?rCol(v("mq_rsi")):"#3a4f63"};overflow:hidden;">
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
           ${speedo(rsi,0,2.0,"",v("mq_rsi")?rCol(v("mq_rsi")):"#7a8fa6",200,158)}
         </div>
@@ -1842,7 +1836,7 @@ function gen(){
         plainCard("CMJ Rel. Peak Power",cmjRPP?cmjRPP.toFixed(1):null,"W/kg")
       ],"No power tests recorded.")}
     </div>`:""}
-    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
       const bits=[];
       if(cmjH)bits.push(rat(cmjH,POWDY().cmj)==="g"?"CMJ height is above the approximate reference band for age":rat(cmjH,POWDY().cmj)==="a"?"CMJ height is around the approximate reference band for age":"CMJ height is the clearest opportunity here");
       if(rsi&&v("mq_rsi"))bits.push(v("mq_rsi")==="g"?"reactive strength stands out":v("mq_rsi")==="a"?"reactive strength is solid":"reactive strength is developing");
@@ -1902,7 +1896,7 @@ function gen(){
         </div>`:null
       ],"No broad jump tests recorded.")}
     </div>`:""}
-    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
       const bits=[];
       if(cmjH)bits.push(sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"vertical power is above norm":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"vertical power is around average":"vertical power is the clearest opportunity here");
       if(rsi)bits.push(rsi>=POWD().rsi.good?"reactive strength stands out":rsi>=POWD().rsi.avg?"reactive strength is solid":"reactive strength is developing");
@@ -1934,55 +1928,54 @@ function gen(){
         <div style="flex:1;font-size:11px;color:#b8c8d8;line-height:1.6;">Clinical judgement, formed from isokinetic dynamometry and IMTP results below.</div>
       </div>
     </div>`:""}
-    <div class="psec" style="flex:1;overflow:hidden;">
+    ${(()=>{
+      const lowerRows=[
+        lrBarRowN("Knee Extension",keL,keR," N"),
+        lrBarRowN("Knee Flexion",kfL,kfR," Nm/kg"),
+        lrBarRowN("Hip Abduction",habdL,habdR," Nm/kg"),
+        lrBarRowN("Hip Adduction",haddL,haddR," Nm/kg")
+      ].filter(Boolean);
+      const upperRows=[
+        lrBarRowN("Shoulder I Test",siL,siR," N"),
+        lrBarRowN("Shoulder Y Test",syL,syR," N"),
+        lrBarRowN("Shoulder ER Strength",serL,serR," N"),
+        lrBarRowN("Shoulder IR Strength",sirL,sirR," N")
+      ].filter(Boolean);
+      if(!lowerRows.length&&!upperRows.length)return`<div class="psec" style="flex:0 0 auto;"><div class="nbox" style="color:#7a8fa6;">No isokinetic tests recorded.</div></div>`;
+      return`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry — L / R Comparison</div>
       <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
-        <div class="bargrid-hd">Lower Limb</div>
-        <div class="bargrid">
-          ${[
-            lrBarRowN("Knee Extension",keL,keR," N"),
-            lrBarRowN("Knee Flexion",kfL,kfR," Nm/kg"),
-            lrBarRowN("Hip Abduction",habdL,habdR," Nm/kg"),
-            lrBarRowN("Hip Adduction",haddL,haddR," Nm/kg")
-          ].join("")}
-        </div>
-        <div class="bargrid-hd">Upper Limb</div>
-        <div class="bargrid">
-          ${[
-            lrBarRowN("Shoulder I Test",siL,siR," N"),
-            lrBarRowN("Shoulder Y Test",syL,syR," N"),
-            lrBarRowN("Shoulder ER Strength",serL,serR," N"),
-            lrBarRowN("Shoulder IR Strength",sirL,sirR," N")
-          ].join("")}
-        </div>
+        ${lowerRows.length?`<div class="bargrid-hd">Lower Limb</div><div class="bargrid">${lowerRows.join("")}</div>`:""}
+        ${upperRows.length?`<div class="bargrid-hd">Upper Limb</div><div class="bargrid">${upperRows.join("")}</div>`:""}
       </div>
-    </div>`:`
+    </div>`;
+    })()}`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">Rated vs normative data. <strong>LSI target &gt;90%.</strong></div>
     </div>
-    <div class="psec" style="flex:0 0 auto;">
+    ${(()=>{
+      const f=v("fsex")==="f";
+      const lowerRows=[
+        isoRow("Knee Extension (N)",keL,keR,f?380:500,f?260:350),
+        isoRow("Knee Flexion (Nm/kg)",kfL,kfR,f?2.0:2.5,f?1.4:1.8),
+        isoRow("Hip Abduction (Nm/kg)",habdL,habdR,f?1.8:2.2,f?1.3:1.6),
+        isoRow("Hip Adduction (Nm/kg)",haddL,haddR,f?1.6:2.0,f?1.2:1.5)
+      ].filter(Boolean);
+      const upperRows=[
+        isoRow("Shoulder I Test (N)",siL,siR,f?160:220,f?110:150),
+        isoRow("Shoulder Y Test (N)",syL,syR,f?130:180,f?90:120),
+        isoRow("Shoulder ER Strength (N) — 90° abd",serL,serR,f?130:180,f?90:130),
+        isoRow("Shoulder IR Strength (N) — 90° abd",sirL,sirR,f?160:220,f?110:150)
+      ].filter(Boolean);
+      if(!lowerRows.length&&!upperRows.length)return`<div class="psec" style="flex:0 0 auto;"><div class="nbox" style="color:#7a8fa6;">No isokinetic tests recorded.</div></div>`;
+      return`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry</div>
       <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
-        <div class="bargrid-hd">Lower Limb</div>
-        <div class="bargrid">
-          ${(()=>{const f=v("fsex")==="f";return[
-            isoRow("Knee Extension (N)",keL,keR,f?380:500,f?260:350),
-            isoRow("Knee Flexion (Nm/kg)",kfL,kfR,f?2.0:2.5,f?1.4:1.8),
-            isoRow("Hip Abduction (Nm/kg)",habdL,habdR,f?1.8:2.2,f?1.3:1.6),
-            isoRow("Hip Adduction (Nm/kg)",haddL,haddR,f?1.6:2.0,f?1.2:1.5)
-          ].join("");})()}
-        </div>
-        <div class="bargrid-hd">Upper Limb</div>
-        <div class="bargrid">
-          ${(()=>{const f=v("fsex")==="f";return[
-            isoRow("Shoulder I Test (N)",siL,siR,f?160:220,f?110:150),
-            isoRow("Shoulder Y Test (N)",syL,syR,f?130:180,f?90:120),
-            isoRow("Shoulder ER Strength (N) — 90° abd",serL,serR,f?130:180,f?90:130),
-            isoRow("Shoulder IR Strength (N) — 90° abd",sirL,sirR,f?160:220,f?110:150)
-          ].join("");})()}
-        </div>
+        ${lowerRows.length?`<div class="bargrid-hd">Lower Limb</div><div class="bargrid">${lowerRows.join("")}</div>`:""}
+        ${upperRows.length?`<div class="bargrid-hd">Upper Limb</div><div class="bargrid">${upperRows.join("")}</div>`:""}
       </div>
-    </div>`}
+    </div>`;
+    })()}`}
 
     ${(imtp||rfd)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">IMTP — Isometric Mid-Thigh Pull</div>
@@ -2008,12 +2001,10 @@ function gen(){
         </div>`:null
       ],"No IMTP data recorded.")}
     </div>`:""}
-    <div class="psec" style="flex:1;">
+    <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
       <div class="nbox" style="margin-bottom:12px;">Rated as <strong>relative strength</strong> (kg ÷ BW). BW: ${bw?bw+" kg":"not entered"}.</div>
-      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
       ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
-      </div>
     </div>
     <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${(()=>{
       const bits=[];
@@ -2060,7 +2051,7 @@ function gen(){
         av&&adec?plainCard("Fatigue Decrement",adec,"%"):null
       ],"No anaerobic test recorded.")}
     </div>`:""}
-    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Energy Systems Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Energy Systems Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
       const bits=[];
       if(sv&&v("mq_spd"))bits.push(v("mq_spd")==="g"?"speed rates well for age":v("mq_spd")==="a"?"speed is average for age":"speed is a development area");
       if(cv&&v("mq_cap"))bits.push(v("mq_cap")==="g"?"aerobic capacity rates well for age":v("mq_cap")==="a"?"aerobic capacity is average for age":"aerobic capacity is a development area");
@@ -2088,8 +2079,8 @@ function gen(){
     </div>
 
     <!-- PCr test row -->
-    ${sv?`<div class="psec" style="flex:1;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;height:100%;">
+    ${sv?`<div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;">
         <!-- Gauge -->
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
           ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd>=5?"#c6f135":"#e05252",200,158)}
@@ -2116,8 +2107,8 @@ function gen(){
     </div>`:""}
 
     <!-- Aerobic test row -->
-    ${cv?`<div class="psec" style="flex:1;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;height:100%;">
+    ${cv?`<div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;">
         <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
           ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap>=5?"#c6f135":"#e05252",200,158)}
         </div>
