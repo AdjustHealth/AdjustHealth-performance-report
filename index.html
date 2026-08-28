@@ -510,17 +510,35 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div id="mobilityQualList" class="qr-list"></div>
     </div>
     <div class="fb-card" style="max-width:600px;"><label>Mobility Notes</label><textarea id="fmobc" placeholder="Clinical observations..."></textarea></div>
+    <div id="readinessWrap" class="hidden">
+      <div class="fb-sh">Youth 1 → Youth 2 Readiness (optional)</div>
+      <div class="nbox" style="margin-bottom:14px;">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming. Score each 0–3. Optional — leave blank to leave it off the report. The suggested band below is a practical starting point, not a published cut-off — adjust it to your own judgement.</div>
+      <div class="fb-grid fb-g4">
+        <div class="fb-card"><label>Overhead Squat</label><select id="fr_osq"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+        <div class="fb-card"><label>Push-Up</label><select id="fr_pushup"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+        <div class="fb-card"><label>Lunge</label><select id="fr_lunge"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+        <div class="fb-card"><label>Front Brace + Shoulder Touch</label><select id="fr_brace"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+      </div>
+    </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(1)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(3)">Next: Power →</button></div>
   </div>
 
   <div class="fb-panel" id="tab3">
-    <div class="nbox hidden" id="youthNotePower" style="margin-bottom:14px;border-left-color:#f5a623;">Youth power is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
+    <div class="nbox hidden" id="youthNotePower" style="margin-bottom:14px;border-left-color:#f5a623;">CMJ Height and Broad Jump are rated vs approximate youth reference data (Lesinski et al. 2020 / Thomas et al. 2020 — see report for detail). RSI has no published youth norm, so it's rated by your own clinical judgement alongside the number. Squat Jump isn't needed for youth.</div>
     <div class="fb-sh">Vertical — VALD Force Decks</div>
     <div class="fb-grid fb-g4">
       <div class="fb-card"><label>CMJ Height (cm)</label><input id="fcmjh" type="number" step="0.1" placeholder="—"></div>
       <div class="fb-card"><label>CMJ Rel. Peak Power (W/kg)</label><input id="fcmjrpp" type="number" step="0.1" placeholder="—"></div>
-      <div class="fb-card"><label>Squat Jump Height (cm)</label><input id="fsjh" type="number" step="0.1" placeholder="—"></div>
-      <div class="fb-card"><label>RSI Mod (Drop Jump)</label><input id="frsi" type="number" step="0.01" placeholder="—"></div>
+      <div class="fb-card" id="sjhCard"><label>Squat Jump Height (cm)</label><input id="fsjh" type="number" step="0.1" placeholder="—"></div>
+      <div class="fb-card">
+        <label>RSI Mod (Drop Jump)</label><input id="frsi" type="number" step="0.01" placeholder="—">
+        <div class="qr-row hidden" id="qr-rsi" style="margin-top:8px;">
+          <div class="qr-chip" data-r="p" onclick="setQual('rsi','p')">Poor</div>
+          <div class="qr-chip" data-r="a" onclick="setQual('rsi','a')">Average</div>
+          <div class="qr-chip" data-r="g" onclick="setQual('rsi','g')">Good</div>
+          <input type="hidden" id="mq_rsi">
+        </div>
+      </div>
     </div>
     <div class="fb-sh">Horizontal</div>
     <div class="fb-grid fb-g3">
@@ -559,26 +577,29 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab5">
-    <div class="nbox hidden" id="youthNoteEnergy" style="margin-bottom:14px;border-left-color:#f5a623;">Youth energy systems are recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
+    <div class="nbox hidden" id="youthNoteEnergy" style="margin-bottom:14px;border-left-color:#f5a623;">No credible youth norm exists for sprint or aerobic/anaerobic testing, so the menu is trimmed to the simplest option per test and each is rated by your own clinical judgement alongside the number.</div>
     <div class="fb-sh">Speed — PCr System</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Test Type</label><select id="fspdtype" onchange="onSpd()"><option value="10m">10m Sprint</option><option value="20m">20m Sprint</option><option value="40m">40m Sprint</option><option value="505">505 Agility</option><option value="lane">Lane Agility</option></select></div>
       <div class="fb-card"><label id="fspdlbl">10m Sprint (sec)</label><input id="fspdval" type="number" step="0.01" placeholder="—"></div>
+      <div class="fb-card hidden" id="qr-spd-card"><label>Clinical Rating</label><div class="qr-row" id="qr-spd"><div class="qr-chip" data-r="p" onclick="setQual('spd','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('spd','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('spd','g')">Good</div><input type="hidden" id="mq_spd"></div></div>
     </div>
     <div class="fb-sh">Aerobic Capacity</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Test Type</label><select id="fcaptype" onchange="onCap()"><option value="mas">Treadmill Ramp MAS (km/h)</option><option value="wb">Watt Bike 3min Peak (W)</option><option value="run6">6min Run Time Trial (m)</option><option value="row">2km Row (min)</option><option value="yoyo">Yo-Yo IRT Level 1</option><option value="cooper">Cooper 12min Run (m)</option></select></div>
       <div class="fb-card"><label id="fcaplbl">MAS (km/h)</label><input id="fcapval" type="number" step="0.1" placeholder="—"></div>
-      <div class="fb-card" style="display:flex;align-items:center;"><div id="fcapnote" style="font-size:11px;color:#7a8fa6;font-style:italic;line-height:1.5;">Start 8km/h +1km/h per min.</div></div>
+      <div class="fb-card" id="fcapnoteCard" style="display:flex;align-items:center;"><div id="fcapnote" style="font-size:11px;color:#7a8fa6;font-style:italic;line-height:1.5;">Start 8km/h +1km/h per min.</div></div>
+      <div class="fb-card hidden" id="qr-cap-card"><label>Clinical Rating</label><div class="qr-row" id="qr-cap"><div class="qr-chip" data-r="p" onclick="setQual('cap','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('cap','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('cap','g')">Good</div><input type="hidden" id="mq_cap"></div></div>
     </div>
     <div class="fb-sh">Anaerobic — Run (optional)</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Run Test</label><select id="fanatype" onchange="onAna()"><option value="rsa">RSA 5×30m</option></select></div>
       <div class="fb-card"><label id="fanalbest">Best Sprint Time (sec)</label><input id="fanabest" type="number" step="0.01" placeholder="—"></div>
       <div class="fb-card"><label id="fanaldec">Fatigue Decrement (%)</label><input id="fanadec" type="number" step="0.1" placeholder="—"></div>
+      <div class="fb-card hidden" id="qr-ana-card"><label>Clinical Rating</label><div class="qr-row" id="qr-ana"><div class="qr-chip" data-r="p" onclick="setQual('ana','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('ana','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('ana','g')">Good</div><input type="hidden" id="mq_ana"></div></div>
     </div>
-    <div class="fb-sh">Anaerobic — Bike (optional)</div>
-    <div class="fb-grid fb-g3" style="max-width:700px;">
+    <div class="fb-sh hidden" id="anaBikeHd">Anaerobic — Bike (optional)</div>
+    <div class="fb-grid fb-g3 hidden" id="anaBikeWrap" style="max-width:700px;">
       <div class="fb-card"><label>Bike Test</label><select id="fanabtype" onchange="onAnaB()"><option value="wb10">Watt Bike 10s Peak</option></select></div>
       <div class="fb-card"><label id="fanaBlbl">Peak Power (W)</label><input id="fanabval" type="number" placeholder="—"></div>
     </div>
@@ -672,6 +693,23 @@ const ROMS=()=>v("fsex")==="f"?ROMS_F:ROMS_M;
 const POWD_M={cmj:{good:36,avg:28},sjh:{good:32,avg:24},rsi:{good:1.5,avg:1.0},bj:{good:2.20,avg:1.90},sl:{good:1.90,avg:1.60},rpp:{good:55,avg:45}};
 const POWD_F={cmj:{good:28,avg:20},sjh:{good:24,avg:17},rsi:{good:1.2,avg:0.8},bj:{good:1.90,avg:1.60},sl:{good:1.50,avg:1.20},rpp:{good:42,avg:34}};
 const POWD=()=>v("fsex")==="f"?POWD_F:POWD_M;
+// Youth CMJ/Broad Jump — approximate, extrapolated from real published youth data
+// (explicitly approved as "around about" by the client, not exact age-matched):
+// CMJ: Lesinski et al. 2020 (PLOS ONE), Optojump, N=703 elite German youth athletes —
+//   verified directly from the paper. Only ages 12-15 had n≥30 to report; Youth 1's
+//   figures are extrapolated below that, not independently sourced.
+//   P50 boys: age12=24.8cm, 13=27.4, 14=28.5, 15=34.4 | girls: 12=23.5, 13=25.3, 14=26.7, 15=26.4 (plateaus)
+// Broad Jump: Thomas et al. 2020 (Eur J Transl Myology), N=2140 across 7 European
+//   countries, general (non-elite) population, ages 6-18 — paper confirmed genuine,
+//   but the exact percentile table was paywalled; figures below are approximate.
+const POWD_Y1_M={cmj:{good:25,avg:21},bj:{good:1.65,avg:1.47}};
+const POWD_Y1_F={cmj:{good:24,avg:20},bj:{good:1.44,avg:1.40}};
+const POWD_Y2_M={cmj:{good:34,avg:27},bj:{good:2.07,avg:1.75}};
+const POWD_Y2_F={cmj:{good:26,avg:25},bj:{good:1.55,avg:1.47}};
+const POWDY=()=>{
+  const f=v("fsex")==="f";
+  return YOUTH_TIER==="y1"?(f?POWD_Y1_F:POWD_Y1_M):(f?POWD_Y2_F:POWD_Y2_M);
+};
 const FT_ADULT=[{id:"sq",l:"Back Squat",u:"kg",rm:true},{id:"bp",l:"Bench Press",u:"kg",rm:true},{id:"dl",l:"Deadlift",u:"kg",rm:true},{id:"pc",l:"1RM Power Clean",u:"kg"},{id:"cj",l:"1RM Clean & Jerk",u:"kg"},{id:"sn",l:"1RM Snatch",u:"kg"},{id:"pu",l:"Max Push-Ups",u:"reps"},{id:"pul",l:"Max Pull-Ups",u:"reps"},{id:"chu",l:"Max Chin-Ups",u:"reps"},{id:"dip",l:"Max Dips",u:"reps"},{id:"plk",l:"Plank Hold",u:"sec"},{id:"clfl",l:"SL Calf Raise L",u:"reps"},{id:"clfr",l:"SL Calf Raise R",u:"reps"}];
 // Youth 1 (8-12): no barbell/loaded lifts at all — ASCA Level 1-2 (bodyweight, bands, machines only).
 const FT_YOUTH1=FT_ADULT.filter(t=>["pu","pul","chu","dip","plk","clfl","clfr"].includes(t.id))
@@ -701,6 +739,23 @@ const CAPC=k=>v("fsex")==="f"?CAPC_F[k]||CAPC_F["mas"]:CAPC_M[k]||CAPC_M["mas"];
 const ANAC_M={"rsa":{l:"RSA 5×30m",u:"sec",note:"5×30m sprint. Best time = peak speed. Decrement = fatigue index.",good:3.9,avg:4.3,lo:true,el:"<3.9s",go:"3.9–4.3s",de:">4.3s"},"wb10":{l:"Watt Bike 10s Peak",u:"W",note:"10s maximal sprint. Peak power output.",good:900,avg:650,lo:false,el:">900 W",go:"650–900 W",de:"<650 W"}};
 const ANAC_F={"rsa":{l:"RSA 5×30m",u:"sec",note:"5×30m sprint. Best time = peak speed. Decrement = fatigue index.",good:4.3,avg:4.8,lo:true,el:"<4.3s",go:"4.3–4.8s",de:">4.8s"},"wb10":{l:"Watt Bike 10s Peak",u:"W",note:"10s maximal sprint. Peak power output.",good:620,avg:450,lo:false,el:">620 W",go:"450–620 W",de:"<450 W"}};
 const ANAC=k=>v("fsex")==="f"?ANAC_F[k]||ANAC_F["rsa"]:ANAC_M[k]||ANAC_M["rsa"];
+
+// Youth Energy Systems: no credible youth norm exists for any of these (confirmed —
+// the closest real data was a rugby-union-specific sprint table, not general
+// population), so the test menu is simplified to the quickest, lowest-equipment
+// option per category, and results are shown as a real number + a clinician-picked
+// Poor/Average/Good rating rather than an invented threshold.
+const SPD_OPTS_ALL=[["10m","10m Sprint"],["20m","20m Sprint"],["40m","40m Sprint"],["505","505 Agility"],["lane","Lane Agility"]];
+const SPD_OPTS_YOUTH=[["10m","10m Sprint"],["20m","20m Sprint"]];
+const CAP_OPTS_ALL=[["mas","Treadmill Ramp MAS (km/h)"],["wb","Watt Bike 3min Peak (W)"],["run6","6min Run Time Trial (m)"],["row","2km Row (min)"],["yoyo","Yo-Yo IRT Level 1"],["cooper","Cooper 12min Run (m)"]];
+const CAP_OPTS_YOUTH=[["run6","6min Run Time Trial (m)"],["yoyo","Yo-Yo IRT Level 1"]];
+function setSelectOptions(selectId,opts,onChangeFn){
+  const sel=document.getElementById(selectId);
+  const cur=sel.value;
+  sel.innerHTML=opts.map(([val,label])=>`<option value="${val}">${label}</option>`).join("");
+  sel.value=opts.some(([val])=>val===cur)?cur:opts[0][0];
+  if(onChangeFn)onChangeFn();
+}
 
 // Functional strength — M norms (absolute kg or reps)
 const FTNW_M={sq:[1.5,1.2],bp:[1.0,.75],dl:[1.8,1.4],pc:[1.0,.75],cj:[1.1,.85],sn:[.85,.65]};
@@ -902,6 +957,21 @@ function applyYouthUIMode(){
   document.getElementById("youthNoteIso").classList.toggle("hidden",!isYouth);
   document.getElementById("youthNotePower").classList.toggle("hidden",!isYouth);
   document.getElementById("youthNoteEnergy").classList.toggle("hidden",!isYouth);
+  document.getElementById("readinessWrap").classList.toggle("hidden",!isYouth);
+
+  // Power: no Squat Jump for youth; RSI gets a clinical-rating chip alongside the number
+  document.getElementById("sjhCard").classList.toggle("hidden",isYouth);
+  document.getElementById("qr-rsi").classList.toggle("hidden",!isYouth);
+
+  // Energy Systems: trimmed test menu + clinical-rating chip for youth, since no
+  // credible youth norm exists for any of these tests
+  setSelectOptions("fspdtype",isYouth?SPD_OPTS_YOUTH:SPD_OPTS_ALL,onSpd);
+  setSelectOptions("fcaptype",isYouth?CAP_OPTS_YOUTH:CAP_OPTS_ALL,onCap);
+  document.getElementById("qr-spd-card").classList.toggle("hidden",!isYouth);
+  document.getElementById("qr-cap-card").classList.toggle("hidden",!isYouth);
+  document.getElementById("qr-ana-card").classList.toggle("hidden",!isYouth);
+  document.getElementById("anaBikeHd").classList.toggle("hidden",isYouth);
+  document.getElementById("anaBikeWrap").classList.toggle("hidden",isYouth);
 }
 buildQualUI("mobilityQualList",QUAL_MOBILITY);
 
@@ -1093,6 +1163,23 @@ function plainCard(label,val,unit){
   return`<div class="mc"><div class="ml">${label}</div><div class="mv">${val}</div><div class="mu">${unit}</div></div>`;
 }
 
+// Real-norm-rated stat card — used for the youth metrics that do have a sourced
+// (if approximate) reference value, e.g. youth CMJ height / broad jump.
+function normCard(label,val,unit,nm,src){
+  if(!val)return null;
+  const r=rat(val,nm),col=rCol(r);
+  return`<div class="mc" style="border-left-color:${col};"><span class="mc-bdg rb ${rCls(r)}">${rLbl(r)}</span><div class="ml">${label}</div><div class="mv" style="color:${col};">${val}</div><div class="mu">${unit}</div>${src?`<div class="mi2" style="color:#7a8fa6;font-size:9px;font-style:italic;">${src}</div>`:""}</div>`;
+}
+
+// Number + clinician-picked Poor/Average/Good rating, for tests with a real value
+// but no published youth norm to auto-rate them against.
+function subjCard(label,val,unit,ratingKey){
+  if(!val)return null;
+  const r=v("mq_"+ratingKey);
+  const col=r?rCol(r):"#c6f135";
+  return`<div class="mc" style="border-left-color:${col};">${r?`<span class="mc-bdg rb ${rCls(r)}">${rLbl(r)}</span>`:""}<div class="ml">${label}</div><div class="mv" style="color:${col};">${val}</div><div class="mu">${unit}</div>${r?"":`<div class="mi2" style="color:#7a8fa6;font-size:9px;font-style:italic;">Not rated</div>`}</div>`;
+}
+
 // Renders only the cards that have data — an untested item just doesn't appear,
 // so a blank field is the way to leave any individual test off the report.
 function cardGrid(cards,emptyMsg){
@@ -1147,10 +1234,14 @@ function collectFindings(){
     });
   }
 
-  // Power — real numbers are still recorded and shown for youth, but there's no
-  // youth force-plate norm to rate them against, so they're left out of the
-  // gradable findings entirely rather than judged against adult thresholds.
-  if(ASSESS_TYPE!=="youth"){
+  // Power — CMJ Height and Broad Jump get a real (if approximate) youth rating;
+  // RSI has no norm at all, so it's graded from the clinician's own chip pick.
+  if(ASSESS_TYPE==="youth"){
+    const _py=POWDY();
+    const cmjhv=nv("fcmjh");if(cmjhv)list.push({domain:"Power",label:"CMJ Height",val:cmjhv,unit:" cm",good:_py.cmj.good,avg:_py.cmj.avg,lo:false,rating:rat(cmjhv,_py.cmj),score:sc(cmjhv,_py.cmj.good,_py.cmj.avg)});
+    const bjv=nv("fbj");if(bjv)list.push({domain:"Power",label:"Broad Jump",val:bjv,unit:" m",good:_py.bj.good,avg:_py.bj.avg,lo:false,rating:rat(bjv,_py.bj),score:sc(bjv,_py.bj.good,_py.bj.avg)});
+    const rsiR=v("mq_rsi"),rsiV=nv("frsi");if(rsiR&&rsiV)list.push({domain:"Power",label:"RSI Mod (Drop Jump)",val:rsiV,unit:"",subjective:true,rating:rsiR,score:qScore(rsiR)});
+  }else{
     const _pw=POWD();
     [["CMJ Height","fcmjh","cmj"," cm"],["Squat Jump Height","fsjh","sjh"," cm"],["RSI Mod (Drop Jump)","frsi","rsi",""],["Broad Jump","fbj","bj"," m"]].forEach(([label,id,key,unit])=>{
       const val=nv(id),nm=_pw[key];
@@ -1195,9 +1286,16 @@ function collectFindings(){
     }
   });
 
-  // Energy Systems — same reasoning: numbers are recorded and shown for youth,
-  // just not rated against adult sprint/aerobic norms.
-  if(ASSESS_TYPE!=="youth"){
+  // Energy Systems — no credible youth norm exists for any of these, so each is
+  // graded from the clinician's own chip pick rather than an adult threshold.
+  if(ASSESS_TYPE==="youth"){
+    const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk),spdR=v("mq_spd");
+    if(sv&&spdR)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,subjective:true,rating:spdR,score:qScore(spdR)});
+    const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck),capR=v("mq_cap");
+    if(cv&&capR)list.push({domain:"Energy Systems",label:ct.l,val:cv,unit:" "+ct.u,subjective:true,rating:capR,score:qScore(capR)});
+    const ak=v("fanatype")||"rsa",av=nv("fanabest"),at=ANAC(ak),anaR=v("mq_ana");
+    if(av&&anaR)list.push({domain:"Energy Systems",label:at.l,val:av,unit:" "+at.u,subjective:true,rating:anaR,score:qScore(anaR)});
+  }else{
     const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
     if(sv)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,good:st.good,avg:st.avg,lo:true,rating:rat(sv,{good:st.good,avg:st.avg,lo:true}),score:sc(sv,st.good,st.avg,true)});
     const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
@@ -1220,7 +1318,11 @@ function autoFillSummary(){
   [["fkd1t","fkd1d"],["fkd2t","fkd2d"],["fkd3t","fkd3d"]].forEach(([tId,dId],i)=>{
     const item=weak[i];
     document.getElementById(tId).value=item?item.label:"";
-    document.getElementById(dId).value=item?(item.qual?`Rated ${item.val} on clinical assessment. Recommend targeted development here over the next training block.`:`Measured at ${item.val}${item.unit} — ${item.lo?`above the ${item.good}–${item.avg}${item.unit} target range`:`below the ${item.avg}–${item.good}${item.unit} average band`}. Recommend targeted development here over the next training block.`):"";
+    document.getElementById(dId).value=item?(
+      item.qual?`Rated ${item.val} on clinical assessment. Recommend targeted development here over the next training block.`:
+      item.subjective?`Measured at ${item.val}${item.unit}, rated ${rLbl(item.rating)} on clinical assessment. Recommend targeted development here over the next training block.`:
+      `Measured at ${item.val}${item.unit} — ${item.lo?`above the ${item.good}–${item.avg}${item.unit} target range`:`below the ${item.avg}–${item.good}${item.unit} average band`}. Recommend targeted development here over the next training block.`
+    ):"";
   });
 
   const domains=["Mobility","Power","Strength","Energy Systems"];
@@ -1355,7 +1457,7 @@ function gen(){
   const abk=v("fanabtype")||"wb10",abv=nv("fanabval"),abt=ANAC(abk);
   const S_ana_run=av?Math.round(sc(av,at.good,at.avg,at.lo)*10)/10:null;
   const S_ana_bike=abv?Math.round(sc(abv,abt.good,abt.avg,abt.lo)*10)/10:null;
-  const S_ana=ASSESS_TYPE==="youth"?null:(S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike);
+  const S_ana=ASSESS_TYPE==="youth"?(av?qScore(v("mq_ana")):null):(S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike);
   const cerv=nv("fcerv"),thor=nv("fthor"),lumb=nv("flumb");
 
   let mG=0,mA=0,mP=0,mN=0;
@@ -1365,15 +1467,18 @@ function gen(){
     Object.entries(ROMS()).forEach(([k,nm])=>{["l","r"].forEach(s=>{const val=gmob(k,s);if(val>0){mN++;const r=rat(val,nm);if(r==="g")mG++;else if(r==="a")mA++;else mP++;}});});
   }
 
-  // Power, Strength (isokinetic/IMTP) and Energy Systems have no valid youth
-  // norm to score against, so those domain scores stay null for youth reports
-  // — an honest "not rated" rather than a score derived from adult thresholds.
-  // The real numbers still get recorded and shown on their own pages either way.
+  // Strength (isokinetic/IMTP) still has no valid youth norm at all, so it stays
+  // null for youth. Power and Energy Systems now mix real (if approximate) youth
+  // reference data — CMJ height and broad jump — with clinician-picked ratings
+  // for the tests that have no norm to compare against (RSI, sprint, aerobic,
+  // anaerobic) — see POWDY() and the mq_rsi/mq_spd/mq_cap/mq_ana chips.
   const S={};
   S.mob=mN>0?Math.round(((mG*10+mA*5+mP*2)/(mN*10))*100)/10:null;
   const _pw=POWD();
   if(ASSESS_TYPE==="youth"){
-    S.pow=null;
+    const _py=POWDY();
+    const pArr=[sc(cmjH,_py.cmj.good,_py.cmj.avg),sc(bj,_py.bj.good,_py.bj.avg),rsi?qScore(v("mq_rsi")):null].filter(x=>x!==null);
+    S.pow=pArr.length?Math.round(pArr.reduce((a,b)=>a+b)/pArr.length*10)/10:null;
   }else{
     const pArr=[sc(cmjH,_pw.cmj.good,_pw.cmj.avg),sc(eur,1.10,1.00),sc(rsi,_pw.rsi.good,_pw.rsi.avg),sc(bj,_pw.bj.good,_pw.bj.avg)].filter(x=>x!==null);
     S.pow=pArr.length?Math.round(pArr.reduce((a,b)=>a+b)/pArr.length*10)/10:null;
@@ -1386,8 +1491,8 @@ function gen(){
     S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
   }
   if(ASSESS_TYPE==="youth"){
-    S.spd=null;
-    S.cap=null;
+    S.spd=sv?qScore(v("mq_spd")):null;
+    S.cap=cv?qScore(v("mq_cap")):null;
   }else{
     S.spd=sv?Math.round(sc(sv,st.good,st.avg,true)*10)/10:null;
     S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
@@ -1409,6 +1514,14 @@ function gen(){
   const all=[S.mob,S.pow,S.str,S.spd,S.cap].filter(x=>x!==null);
   S.ov=all.length?Math.round(all.reduce((a,b)=>a+b)/all.length*10)/10:null;
   const kdas=[[v("fkd1t"),v("fkd1d")],[v("fkd2t"),v("fkd2d")],[v("fkd3t"),v("fkd3d")]].filter(([t])=>t);
+
+  // Youth 1 -> Youth 2 Readiness — 4-movement screen adapted from AIMS, 0-3 each.
+  // Only shown once at least one movement has been scored.
+  const readinessItems=[["fr_osq","Overhead Squat"],["fr_pushup","Push-Up"],["fr_lunge","Lunge"],["fr_brace","Front Brace + Shoulder Touch"]]
+    .map(([id,label])=>({label,score:v(id)!==""?parseInt(v(id),10):null}));
+  const readinessScored=readinessItems.filter(r=>r.score!==null);
+  const readinessTotal=readinessScored.length?readinessScored.reduce((a,b)=>a+b.score,0):null;
+  const readinessBand=readinessTotal===null?null:readinessTotal>=9?{lbl:"Likely ready for Youth 2",col:"#4cdb7a"}:readinessTotal>=5?{lbl:"Developing — reassess soon",col:"#f5a623"}:{lbl:"Not yet — continue Youth 1 focus",col:"#e05252"};
 
   document.getElementById("phwrap").style.display="none";
   const pages=document.getElementById("pages");
@@ -1551,16 +1664,14 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">Recorded as-is — no validated youth force-plate norms exist to rate these tests against. Still valuable to track session-to-session.</div>
+      <div class="nbox">CMJ Height and Broad Jump rated vs approximate youth reference data (see note below). RSI has no published youth norm — rated by clinical judgement. Squat Jump isn't used for youth.</div>
     </div>
     <div class="psec" style="flex:1;">
       ${cardGrid([
-        plainCard("CMJ Height",cmjH?cmjH.toFixed(1):null,"cm"),
+        normCard("CMJ Height",cmjH?cmjH.toFixed(1):null,"cm",POWDY().cmj,"vs approx. youth norm — Lesinski et al. 2020"),
         plainCard("CMJ Rel. Peak Power",cmjRPP?cmjRPP.toFixed(1):null,"W/kg"),
-        plainCard("Squat Jump Height",sjH?sjH.toFixed(1):null,"cm"),
-        plainCard("EUR (CMJ ÷ SJ)",eur!==null?eur.toFixed(2):null,""),
-        plainCard("RSI Mod (Drop Jump)",rsi?rsi.toFixed(2):null,""),
-        plainCard("Broad Jump",bj?bj.toFixed(2):null,"m"),
+        subjCard("RSI Mod (Drop Jump)",rsi?rsi.toFixed(2):null,"","rsi"),
+        normCard("Broad Jump",bj?bj.toFixed(2):null,"m",POWDY().bj,"vs approx. youth norm — Thomas et al. 2020"),
         plainCard("SL Broad Jump — Left",slL?slL.toFixed(2):null,"m"),
         plainCard("SL Broad Jump — Right",slR?slR.toFixed(2):null,"m")
       ],"No power tests recorded.")}
@@ -1743,15 +1854,14 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">Recorded as-is — no validated youth sprint/aerobic norms exist to rate these against. Still valuable to track session-to-session.</div>
+      <div class="nbox">No credible youth norm exists for sprint or aerobic/anaerobic testing — each is rated by clinical judgement alongside the real number.</div>
     </div>
     <div class="psec" style="flex:1;">
       ${cardGrid([
-        plainCard(st.l,sv?sv:null,st.u),
-        plainCard(ct.l,cv?cv:null,ct.u),
-        plainCard(at.l+" — Best",av?av:null,at.u),
-        av&&adec?plainCard("Fatigue Decrement",adec,"%"):null,
-        plainCard(abt.l,abv?abv:null,abt.u)
+        subjCard(st.l,sv?sv:null,st.u,"spd"),
+        subjCard(ct.l,cv?cv:null,ct.u,"cap"),
+        av?subjCard(at.l+" — Best",av,at.u,"ana"):null,
+        av&&adec?plainCard("Fatigue Decrement",adec,"%"):null
       ],"No energy systems tests recorded.")}
     </div>`:`
 
@@ -1867,7 +1977,7 @@ function gen(){
         <div>
           <div class="slbl" style="margin-bottom:10px;">Domain Scores</div>
           ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Capacity",S.cap]].map(([lbl,s])=>`<div class="sbrow"><div class="sblbl">${lbl}</div><div class="sbtrk"><div class="sbfil" style="width:${s!==null?s*10:0}%;background:${s!==null?(s>=5?"#c6f135":"#e05252"):"#7a8fa6"};"></div></div><div class="sbnums"><div class="sbval" style="color:${s!==null?(s>=5?"#c6f135":"#e05252"):"#7a8fa6"};">${s!==null?s.toFixed(1):"—"}<span style="font-size:9px;color:#7a8fa6;">/10</span></div>${s!==null?`<span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span>`:""}</div></div>`).join("")}
-          <div style="padding:7px 10px;background:#1c2733;font-size:9px;color:#7a8fa6;margin-top:6px;">Scores vs VALD, ACSM &amp; Norkin &amp; White normative data. <span class="rb rg">Strong</span>≥7.5 <span class="rb ra">Avg</span>5–7.4 <span class="rb rp">Focus</span>&lt;5</div>
+          <div style="padding:7px 10px;background:#1c2733;font-size:9px;color:#7a8fa6;margin-top:6px;">${ASSESS_TYPE==="youth"?"Scores mix approximate youth reference data (CMJ, Broad Jump, Mobility) with clinician-judged ratings where no youth norm exists.":"Scores vs VALD, ACSM &amp; Norkin &amp; White normative data."} <span class="rb rg">Strong</span>≥7.5 <span class="rb ra">Avg</span>5–7.4 <span class="rb rp">Focus</span>&lt;5</div>
         </div>
         <div>
           <div class="slbl" style="margin-bottom:8px;">Radar Profile</div>
@@ -1875,6 +1985,19 @@ function gen(){
         </div>
       </div>
     </div>
+    ${ASSESS_TYPE==="youth"&&readinessTotal!==null?`
+    <div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:stretch;gap:16px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:16px 20px;">
+        <div style="flex-shrink:0;text-align:center;padding-right:16px;border-right:1px solid #1c2733;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:14px;color:#7a8fa6;">/12</span></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:4px;">${readinessBand.lbl}</div>
+          <div style="font-size:11px;color:#7a8fa6;">Youth 1 → Youth 2 movement screen (AIMS-adapted) — ${readinessScored.length}/4 movements scored${readinessScored.length<4?", partial":""}. This band is a suggested guide, not a published cut-off.</div>
+        </div>
+      </div>
+    </div>`:""}
     <div class="psec">
       <div class="slbl" style="margin-bottom:12px;">Key Development Areas</div>
       ${kdas.length?`<div style="display:flex;flex-direction:column;gap:10px;height:100%;">${kdas.map(([t,d],i)=>`<div style="flex:1;background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;display:flex;align-items:center;gap:14px;min-height:0;"><div style="width:34px;height:34px;border-radius:50%;background:#c6f135;color:#0d1117;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div><div style="flex:1;min-width:0;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:#ffffff;letter-spacing:1px;margin-bottom:5px;">${t}</div>${d?`<div style="font-size:12px;color:#b8c8d8;line-height:1.5;">${d}</div>`:""}</div></div>`).join("")}</div>`:`<div style="background:#131b24;border-left:4px solid #2a3a4a;padding:18px;color:#7a8fa6;font-size:11px;">Add key development areas in the sidebar.</div>`}
