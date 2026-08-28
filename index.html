@@ -639,8 +639,8 @@ document.getElementById("tslogo").src="data:image/jpeg;base64,"+LOGO;
 // ── Assessment type / youth tier ──────────────────────────────────────────────
 let ASSESS_TYPE="performance"; // "performance" | "youth" | "movestrong"
 let YOUTH_TIER="y1"; // "y1" (8-12) | "y2" (13-18) — only relevant when ASSESS_TYPE==="youth"
-const TYPE_LABELS={performance:"Performance Report",youth:"Youth Report",movestrong:"MoveStrong Report"};
-const TYPE_COVER={performance:"Performance",youth:"Youth",movestrong:"MoveStrong"};
+const TYPE_LABELS={performance:"Performance Report",youth:"Youth Performance Report",movestrong:"MoveStrong Report"};
+const TYPE_COVER={performance:"Performance",youth:"Youth Performance",movestrong:"MoveStrong"};
 
 const INJ=["Neck","Back","Shoulders","Hips","Knees","Ankles"];
 // ROM norms — athletic population 18–35yr, field/court sport
@@ -1421,7 +1421,7 @@ function gen(){
   <div class="pstripe" style="position:absolute;top:0;left:0;right:0;"></div>
   <img src="data:image/jpeg;base64,${LOGO}" style="height:72px;object-fit:contain;mix-blend-mode:lighten;margin-bottom:32px;">
   <div style="width:52px;height:3px;background:#c6f135;margin:0 auto 24px;"></div>
-  <div style="font-family:'Barlow Condensed',sans-serif;font-size:92px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:.9;letter-spacing:-2px;">${TYPE_COVER[ASSESS_TYPE]}</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:${TYPE_COVER[ASSESS_TYPE].length>10?64:92}px;font-weight:900;text-transform:uppercase;color:#ffffff;line-height:.9;letter-spacing:-2px;white-space:nowrap;">${TYPE_COVER[ASSESS_TYPE]}</div>
   <div style="font-family:'Barlow Condensed',sans-serif;font-size:130px;font-weight:900;font-style:italic;text-transform:uppercase;color:#c6f135;line-height:.85;margin-bottom:48px;letter-spacing:-3px;">Report</div>
   <div style="border:2px solid #c6f135;padding:14px 56px;margin-bottom:12px;display:inline-block;">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#ffffff;">${name}</div>
@@ -1616,7 +1616,14 @@ function gen(){
         </div>`:null
       ],"No broad jump tests recorded.")}
     </div>`:""}
-    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${[cmjH?`CMJ ${cmjH.toFixed(1)}cm — ${sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"above norm.":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"average.":"below norm."}`:null,eur!==null?`EUR ${eur.toFixed(2)} — ${eur>=1.10?"good elastic energy use.":eur>=1.00?"average elastic energy use.":"below target elastic energy use."}`:null,rsi?`RSI Mod ${rsi.toFixed(2)} — ${rsi>=POWD().rsi.good?"excellent reactive strength.":rsi>=POWD().rsi.avg?"good reactive strength.":"developing reactive strength."}`:null,slL&&slR?`SL LSI ${lsi(slL,slR)}% — ${lsi(slL,slR)>=90?"limb symmetry within target.":"asymmetry noted."}`:null].filter(Boolean).join(" ")||"Enter power test data to generate."}</div></div></div>`}
+    <div class="psec" style="flex:1;justify-content:center;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:20px 24px;"><div class="slbl" style="margin-bottom:10px;">Power Interpretation</div><div style="font-size:12px;color:#b8c8d8;line-height:1.9;">${(()=>{
+      const bits=[];
+      if(cmjH)bits.push(sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=7.5?"vertical power is above norm":sc(cmjH,POWD().cmj.good,POWD().cmj.avg)>=5?"vertical power is around average":"vertical power is the clearest opportunity here");
+      if(rsi)bits.push(rsi>=POWD().rsi.good?"reactive strength stands out":rsi>=POWD().rsi.avg?"reactive strength is solid":"reactive strength is developing");
+      if(bj)bits.push(sc(bj,POWD().bj.good,POWD().bj.avg)>=7.5?"broad jump is excellent":sc(bj,POWD().bj.good,POWD().bj.avg)>=5?"broad jump is on track":"broad jump has room to grow");
+      if(slL&&slR&&lsi(slL,slR)<90)bits.push(`limb symmetry needs attention (${lsi(slL,slR)}% LSI)`);
+      return bits.length?bits.join("; ")+".":"Enter power test data to generate.";
+    })()}</div></div></div>`}
   </div>
   ${foot()}
 </div>
@@ -1703,7 +1710,26 @@ function gen(){
       ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
       </div>
     </div>
-    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${[keL&&keR?`Knee ext LSI ${lsi(keL,keR)}% — ${lsi(keL,keR)>=90?"symmetry within target.":"asymmetry noted."}`:null,kfL&&kfR?`Knee flex LSI ${lsi(kfL,kfR)}% — ${lsi(kfL,kfR)>=90?"symmetrical.":"asymmetry noted."}`:null,habdL&&habdR?`Hip abd LSI ${lsi(habdL,habdR)}% — ${lsi(habdL,habdR)>=90?"symmetrical.":"asymmetry noted."}`:null,imtp?(ASSESS_TYPE==="youth"?`IMTP ${imtp.toFixed(2)} N/kg — recorded for tracking.`:`IMTP ${imtp.toFixed(2)} N/kg — ${imtp>=3.0?"excellent isometric strength.":imtp>=2.5?"good isometric strength.":"developing isometric strength."}`):null,fd.length>0?fd.map(item=>{const fw=FTNW(),fr=FTNR();if(fw[item.id]){if(!bw)return`${item.label} ${item.val}kg — enter bodyweight for a rating.`;const ratio=item.scoreVal/bw;const[g,a]=fw[item.id];return`${item.label} ${item.val}kg — ${ratio>=g?"strong.":ratio>=a?"average.":"developing."}`;}else if(fr[item.id]){const[g,a]=fr[item.id];return`${item.label} ${item.val} ${item.u} — ${item.val>=g?"excellent.":item.val>=a?"good.":"developing."}`;}return null;}).filter(Boolean).join(" "):null].filter(Boolean).join(" ")||"Enter strength data to generate interpretation."}</div></div></div>
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${(()=>{
+      const bits=[];
+      const lsis=[["Knee ext",keL,keR],["Knee flex",kfL,kfR],["Hip abd",habdL,habdR]].filter(([,l,r])=>l&&r).map(([n,l,r])=>[n,lsi(l,r)]);
+      const asym=lsis.filter(([,v])=>v<90);
+      if(asym.length)bits.push(`${asym.map(([n,v])=>`${n} ${v}%`).join(", ")} below the 90% symmetry target`);
+      else if(lsis.length)bits.push("limb symmetry within target across the board");
+      if(imtp&&ASSESS_TYPE!=="youth")bits.push(imtp>=3.0?"excellent isometric strength":imtp>=2.5?"good isometric strength":"isometric strength is a development area");
+      if(fd.length>0){
+        const fw=FTNW(),fr=FTNR();
+        const rated=fd.map(item=>{
+          if(fw[item.id]&&bw){const ratio=item.scoreVal/bw,[g,a]=fw[item.id];return{label:item.label,rating:ratio>=g?"g":ratio>=a?"a":"p"};}
+          if(fr[item.id]){const[g,a]=fr[item.id];return{label:item.label,rating:item.val>=g?"g":item.val>=a?"a":"p"};}
+          return null;
+        }).filter(Boolean);
+        const weak=rated.filter(r=>r.rating==="p");
+        if(weak.length)bits.push(`${weak.map(w=>w.label).join(", ")} developing relative to bodyweight`);
+        else if(rated.length)bits.push("functional strength tests rate strong-to-average across the board");
+      }
+      return bits.length?bits.join("; ")+".":"Enter strength data to generate interpretation.";
+    })()}</div></div></div>
   </div>
   ${foot()}
 </div>
