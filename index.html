@@ -550,8 +550,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab4">
-    <div class="nbox hidden" id="youthNoteIso" style="margin-bottom:14px;border-left-color:#f5a623;">Youth isokinetic strength is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time.</div>
-    <div class="fb-card hidden" id="qr-str-card" style="max-width:360px;margin-bottom:16px;"><label>Overall Strength Rating (Clinical)</label><div class="qr-row" id="qr-str"><div class="qr-chip" data-r="p" onclick="setQual('str','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('str','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('str','g')">Good</div><input type="hidden" id="mq_str"></div></div>
+    <div class="nbox hidden" id="youthNoteIso" style="margin-bottom:14px;border-left-color:#f5a623;">Youth isokinetic strength is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time. The Strength domain score on this report is instead calculated from the Functional Strength tests below, which do have published ASCA benchmarks.</div>
     <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
     <div class="fb-grid fb-g3">
       <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
@@ -573,6 +572,8 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
     <div class="nbox" style="margin-bottom:12px;">Leave any test blank to leave it out of the report — same as everywhere else in this form. Enter <strong>Bodyweight</strong> above (in the IMTP row) to get accurate Strong/Avg/Developing ratings on the weighted lifts below — they're scored as a multiple of bodyweight, not raw kg.</div>
     <div class="nbox hidden" id="youthNoteY1" style="margin-bottom:12px;border-left-color:#f5a623;">No barbell tests available for Youth 1 (8–12) — per the ASCA Position Stand on Resistance Training for Children and Youth, this age band trains and tests using bodyweight, bands and machine exercises only. Bodyweight tests below are shown unrated (no age-specific norm published) — use the ASCA competency benchmark noted under each as a pass guide.</div>
     <div class="nbox hidden" id="youthNoteY2" style="margin-bottom:12px;border-left-color:#f5a623;">Youth 2 (13–18): Bench Press is rated as %-bodyweight per ASCA's youth progression gates (40% BW at 13 → 70% BW boys / 50% BW girls by 15+). Squat &amp; Deadlift are shown for tracking only and left unrated — ASCA does not publish a relative-strength benchmark for these lifts in youth, and recommends they only be introduced under coaching accredited to at least ASCA Level 2, using an 8–15RM training range rather than maximal loads. Olympic lift variants are not included in the youth battery.</div>
+    <div class="nbox" style="margin-bottom:12px;">Untick a test the athlete didn't do — same as the Report Sections checkboxes, it just leaves that test out of the report.</div>
+    <div class="ft-grid" id="ftSelGrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;"></div>
     <div class="fb-grid fb-g4" id="finputs"></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(3)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(5)">Next: Energy Systems →</button></div>
   </div>
@@ -765,9 +766,9 @@ const FTNR_M={pu:[40,25],pul:[15,8],chu:[12,6],dip:[20,10],plk:[120,60],clfl:[25
 const FTNR_F={pu:[25,12],pul:[8,3],chu:[6,2],dip:[12,5],plk:[90,45],clfl:[20,12],clfr:[20,12]};
 // Youth 2 Bench Press only — direct from ASCA Position Stand functional gates: 40% BW ×10 reps
 // unlocks entry to Level 3 (~age 13); 70% BW (boys) / 50% BW (girls) ×10 reps is the Level 4 gate
-// (~age 15+). Used here as the avg/good pair across the whole 13-18 tier. Squat/Deadlift and all
-// Youth 1 bodyweight tests deliberately have NO norm table entry — see FT_YOUTH1/2 .hint text —
-// so fcard() falls back to showing the raw value unrated rather than inventing a benchmark.
+// (~age 15+). Used here as the avg/good pair across the whole 13-18 tier. Squat/Deadlift
+// deliberately have NO norm table entry — see FT_YOUTH2 .hint text — so fcard() falls back to
+// showing the raw value unrated rather than inventing a benchmark.
 const FTNW_Y2_M={bp:[.7,.4]};
 const FTNW_Y2_F={bp:[.5,.4]};
 const FTNW=()=>{
@@ -776,9 +777,24 @@ const FTNW=()=>{
   if(ASSESS_TYPE==="youth")return{}; // Youth 1 — no loaded-lift norms at all
   return f?FTNW_F:FTNW_M;
 };
+// Youth bodyweight-rep gates — the exact ASCA competency numbers already cited in each test's
+// .hint text (FT_YOUTH1/2 above), now wired in as a real pass/fail gate rather than just shown as
+// decorative text. There's no graded "average" tier published for these — ASCA states them as a
+// single competency benchmark — so good and avg are set equal, making fcard()/rat() a straight
+// pass ("Good") / fail ("Developing") call rather than inventing a middle band.
+// SL Calf Raise has no published youth benchmark at all and is deliberately left out — still
+// shown on the report, just unrated. Y2 girls' Pull-Up alternative (30s arm hang) is a different
+// test to what's recorded here (reps), so it's left unrated for girls rather than misapplying the
+// boys' rep count.
+const FTNR_Y1_M={pu:[10,10],pul:[10,10],chu:[10,10],dip:[10,10],plk:[60,60]};
+const FTNR_Y1_F={pu:[10,10],pul:[10,10],chu:[10,10],dip:[10,10],plk:[60,60]};
+const FTNR_Y2_M={pu:[10,10],pul:[10,10],chu:[10,10],dip:[10,10],plk:[90,90]};
+const FTNR_Y2_F={pu:[10,10],chu:[10,10],dip:[10,10],plk:[90,90]};
 const FTNR=()=>{
-  if(ASSESS_TYPE==="youth")return{}; // no published bodyweight-rep norms for youth — shown unrated
-  return v("fsex")==="f"?FTNR_F:FTNR_M;
+  const f=v("fsex")==="f";
+  if(ASSESS_TYPE==="youth"&&YOUTH_TIER==="y1")return f?FTNR_Y1_F:FTNR_Y1_M;
+  if(ASSESS_TYPE==="youth")return f?FTNR_Y2_F:FTNR_Y2_M;
+  return f?FTNR_F:FTNR_M;
 };
 
 // ── localStorage auto-save ───────────────────────────────────────────────────
@@ -811,7 +827,7 @@ function restoreState(){
       if(el.type==="checkbox")el.checked=val;
       else el.value=val;
     });
-    onSpd();onCap();onAna();onAnaB();syncQualChips();
+    onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();
     return data.__assessType||null;
   }catch(e){return null;}
 }
@@ -968,7 +984,7 @@ function applyYouthUIMode(){
   document.getElementById("youthNoteIso").classList.toggle("hidden",!isYouth);
   document.getElementById("youthNotePower").classList.toggle("hidden",!isYouth);
   document.getElementById("youthNoteEnergy").classList.toggle("hidden",!isYouth);
-  document.getElementById("readinessWrap").classList.toggle("hidden",!isYouth);
+  document.getElementById("readinessWrap").classList.toggle("hidden",!(isYouth&&YOUTH_TIER==="y1"));
 
   // Power: no Squat Jump for youth; RSI gets a clinical-rating chip alongside the number
   document.getElementById("sjhCard").classList.toggle("hidden",isYouth);
@@ -984,22 +1000,23 @@ function applyYouthUIMode(){
   document.getElementById("anaBikeHd").classList.toggle("hidden",isYouth);
   document.getElementById("anaBikeWrap").classList.toggle("hidden",isYouth);
 
-  // Strength: isokinetic/IMTP has no youth norm at all, so youth gets a single
-  // clinical Poor/Average/Good rating for the whole domain instead of a blank score
-  document.getElementById("qr-str-card").classList.toggle("hidden",!isYouth);
 }
 buildQualUI("mobilityQualList",QUAL_MOBILITY);
 
-// Functional Strength tests are always shown, no opt-in checkbox — consistent
-// with every other section in the app, where a blank field is simply excluded
-// from the report rather than requiring an extra click to "activate" it first.
+// Functional Strength tests are pick-which-apply: a checkbox per test (defaulting
+// to selected) picks which ones this athlete actually did. Unticking a test hides
+// its input and drops it from the report, same as the Report Sections checkboxes
+// on the Athlete tab — the value (if any) is kept, just not shown or scored.
 function buildFTUI(){
   const inp=document.getElementById("finputs");
-  const prev={}; // preserve any already-entered values across a rebuild
+  const sel=document.getElementById("ftSelGrid");
+  const prev={},prevSel={}; // preserve entered values + selection across a rebuild
   FT_ADULT.forEach(t=>{
-    const i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id);
+    const i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id),c=document.getElementById("ftsel_"+t.id);
     prev[t.id]={val:i?i.value:"",rm:r?r.value:null};
+    if(c)prevSel[t.id]=c.checked;
   });
+  sel.innerHTML=FT().map(t=>`<div class="ft-chip"><input type="checkbox" id="ftsel_${t.id}" checked onchange="syncFTSel()"><label for="ftsel_${t.id}">${t.l}</label></div>`).join("");
   inp.innerHTML="";
   FT().forEach(t=>{
     inp.innerHTML+=t.rm?
@@ -1014,14 +1031,24 @@ function buildFTUI(){
       :`<div class="fb-card" id="fi${t.id}"><label>${t.l} (${t.u})</label><input id="f${t.id}" type="number" step="0.01" placeholder="—">${t.hint?`<div style="font-size:9px;color:#7a8fa6;font-style:italic;margin-top:6px;">${t.hint}</div>`:""}</div>`;
   });
   FT().forEach(t=>{
-    const p=prev[t.id];if(!p)return;
-    const i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id);
-    if(i&&p.val)i.value=p.val;
-    if(r&&p.rm)r.value=p.rm;
+    const p=prev[t.id];
+    const i=document.getElementById("f"+t.id),r=document.getElementById("frm_"+t.id),c=document.getElementById("ftsel_"+t.id);
+    if(p&&i&&p.val)i.value=p.val;
+    if(p&&r&&p.rm)r.value=p.rm;
+    if(c&&t.id in prevSel)c.checked=prevSel[t.id];
   });
+  syncFTSel();
   document.getElementById("youthNoteY1").classList.toggle("hidden",!(ASSESS_TYPE==="youth"&&YOUTH_TIER==="y1"));
   document.getElementById("youthNoteY2").classList.toggle("hidden",!(ASSESS_TYPE==="youth"&&YOUTH_TIER==="y2"));
 }
+// Show/hide each functional test's input card to match its selection checkbox.
+function syncFTSel(){
+  FT().forEach(t=>{
+    const c=document.getElementById("ftsel_"+t.id),card=document.getElementById("fi"+t.id);
+    if(c&&card)card.classList.toggle("hidden",!c.checked);
+  });
+}
+function ftIsSelected(id){const c=document.getElementById("ftsel_"+id);return!c||c.checked;}
 
 // ── Keyboard shortcut P/F on injury tab ──────────────────────────────────────
 document.addEventListener("keydown",function(e){
@@ -1270,6 +1297,25 @@ function heroTile(label,val,unit,ratingKey,desc){
   </div>`;
 }
 
+// Readiness screen row — 0-3 movement-quality score shown as a 4-segment scale,
+// used on the dedicated Youth 1->2 Readiness page.
+const READINESS_COL=["#e05252","#f5a623","#c6f135","#4cdb7a"];
+const READINESS_LBL=["Unable to perform","Major compensations","Minor compensations","Performed correctly"];
+function readinessRow(item){
+  const scored=item.score!==null;
+  const col=scored?READINESS_COL[item.score]:"#3a4f63";
+  const segs=[0,1,2,3].map(i=>`<div style="flex:1;height:11px;border-radius:3px;background:${scored&&i<=item.score?READINESS_COL[item.score]:"#1c2733"};"></div>`).join("");
+  return`<div class="mc" style="border-left-color:${col};padding:14px 16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:8px;">
+      <div class="ml" style="margin-bottom:0;">${item.label}</div>
+      ${scored?`<span class="rb" style="background:${col}2e;color:${col};">${item.score}/3</span>`:`<span class="rb rn">Not scored</span>`}
+    </div>
+    <div style="font-size:9px;color:#7a8fa6;line-height:1.4;margin-bottom:10px;">${item.desc}</div>
+    <div style="display:flex;gap:4px;">${segs}</div>
+    <div style="margin-top:6px;font-size:11px;font-weight:600;color:${col};">${scored?READINESS_LBL[item.score]:"—"}</div>
+  </div>`;
+}
+
 // Renders only the cards that have data — an untested item just doesn't appear,
 // so a blank field is the way to leave any individual test off the report.
 function cardGrid(cards,emptyMsg){
@@ -1358,15 +1404,13 @@ function collectFindings(){
     });
     const imtp=nv("fimtp");
     if(imtp){const good=f?2.5:3.0,avg=f?2.0:2.5;list.push({domain:"Strength",label:"IMTP Relative Peak Force",val:imtp,unit:" N/kg",good,avg,lo:false,rating:rat(imtp,{good,avg,lo:false}),score:sc(imtp,good,avg)});}
-  }else{
-    const strR=v("mq_str");
-    if(strR)list.push({domain:"Strength",label:"Overall Strength",val:rLbl(strR),unit:"",qual:true,rating:strR,score:qScore(strR)});
   }
 
   // Strength — functional tests (tier-aware: reuses FT()/FTNW()/FTNR(), so youth
   // tests without a published norm are correctly skipped rather than guessed at)
   const fw=FTNW(),fr=FTNR();
   FT().forEach(t=>{
+    if(!ftIsSelected(t.id))return;
     const val=nv("f"+t.id);if(!val)return;
     const rmType=t.rm?(v("frm_"+t.id)||"3RM"):null;
     const scoreVal=rmType==="1RM"?val/1.1:val;
@@ -1538,6 +1582,7 @@ function gen(){
   const serL=nv("fserl"),serR=nv("fserr"),sirL=nv("fsirl"),sirR=nv("fsirr");
   const imtp=nv("fimtp"),rfd=nv("frfd");
   const fd=FT().map(t=>{
+    if(!ftIsSelected(t.id))return null;
     const val=nv("f"+t.id);if(!val)return null;
     const rmType=t.rm?(v("frm_"+t.id)||"3RM"):null;
     const scoreVal=rmType==="1RM"?val/1.1:val; // Epley estimate: 1RM ≈ 3RM × 1.1
@@ -1578,7 +1623,16 @@ function gen(){
   }
   const _sf=v("fsex")==="f";
   if(ASSESS_TYPE==="youth"){
-    S.str=v("mq_str")?qScore(v("mq_str")):null;
+    // Isokinetic dynamometry and IMTP have no published youth norm (see Strength page notes),
+    // so the Strength domain score comes from whichever Functional Strength tests have a real
+    // ASCA-cited bodyweight/rep benchmark — same scoring math as collectFindings()'s FT loop.
+    const _fw=FTNW(),_fr=FTNR();
+    const strArr=fd.map(item=>{
+      if(_fw[item.id]&&bw){const[g,a]=_fw[item.id];return sc(item.scoreVal/bw,g,a);}
+      if(_fr[item.id]){const[g,a]=_fr[item.id];return sc(item.val,g,a);}
+      return null;
+    }).filter(x=>x!==null);
+    S.str=strArr.length?Math.round(strArr.reduce((a,b)=>a+b)/strArr.length*10)/10:null;
   }else{
     const sArr=[sc(imtp,_sf?2.5:3.0,_sf?2.0:2.5)].filter(x=>x!==null);
     S.str=sArr.length?Math.round(sArr.reduce((a,b)=>a+b)/sArr.length*10)/10:null;
@@ -1591,6 +1645,7 @@ function gen(){
     S.cap=cv?Math.round(sc(cv,ct.good,ct.avg,!ct.hi)*10)/10:null;
   }
 
+  const isY1=ASSESS_TYPE==="youth"&&YOUTH_TIER==="y1";
   // Report Sections — sections unticked in the Athlete tab are left out of both
   // the generated pages and the domain score / radar / overall-score maths,
   // even if the tab still holds data from before it was switched off.
@@ -1609,9 +1664,12 @@ function gen(){
   const kdas=[[v("fkd1t"),v("fkd1d")],[v("fkd2t"),v("fkd2d")],[v("fkd3t"),v("fkd3d")]].filter(([t])=>t);
 
   // Youth 1 -> Youth 2 Readiness — 4-movement screen adapted from AIMS, 0-3 each.
-  // Only shown once at least one movement has been scored.
-  const readinessItems=[["fr_osq","Overhead Squat"],["fr_pushup","Push-Up"],["fr_lunge","Lunge"],["fr_brace","Front Brace + Shoulder Touch"]]
-    .map(([id,label])=>({label,score:v(id)!==""?parseInt(v(id),10):null}));
+  const readinessItems=[
+    ["fr_osq","Overhead Squat","Bodyweight squat with arms overhead — screens ankle/hip mobility and core control."],
+    ["fr_pushup","Push-Up","Standard push-up — screens upper body pushing strength and trunk stability."],
+    ["fr_lunge","Lunge","Forward lunge — screens single-leg control and knee/hip alignment."],
+    ["fr_brace","Front Brace + Shoulder Touch","Plank hold with alternating shoulder taps — screens core and shoulder stability under load."]
+  ].map(([id,label,desc])=>({label,desc,score:v(id)!==""?parseInt(v(id),10):null}));
   const readinessScored=readinessItems.filter(r=>r.score!==null);
   const readinessTotal=readinessScored.length?readinessScored.reduce((a,b)=>a+b.score,0):null;
   const readinessBand=readinessTotal===null?null:readinessTotal>=9?{lbl:"Likely ready for Youth 2",col:"#4cdb7a"}:readinessTotal>=5?{lbl:"Developing — reassess soon",col:"#f5a623"}:{lbl:"Not yet — continue Youth 1 focus",col:"#e05252"};
@@ -1693,26 +1751,12 @@ function gen(){
       <div style="background:#131b24;border-left:3px solid #c6f135;padding:12px 16px;font-size:11px;color:#b8c8d8;line-height:1.6;margin-top:12px;">${ASSESS_TYPE==="youth"?"Youth scores mix approximate reference data (CMJ Height, Broad Jump) with clinician-judged Poor/Average/Good ratings where no published youth norm exists — see each domain page for the specific method used.":"Domain scores are calculated from the tests entered under each section — leave a section blank to exclude it from the Overall Score."}</div>
     </div>
 
-    ${ASSESS_TYPE==="youth"&&readinessTotal!==null?`
-    <div class="psec">
-      <div class="slbl" style="margin-bottom:10px;">Youth 1 → Youth 2 Readiness</div>
-      <div style="flex:1;display:flex;align-items:stretch;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:18px 24px;">
-        <div style="flex-shrink:0;text-align:center;padding-right:20px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness Score</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:16px;color:#7a8fa6;">/12</span></div>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:6px;">${readinessBand.lbl}</div>
-          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;">AIMS-adapted Youth 1 → Youth 2 movement screen — ${readinessScored.length}/4 movements scored${readinessScored.length<4?" (partial)":""}. A suggested guide, not a published cut-off — see the Summary page for the full breakdown.</div>
-        </div>
-      </div>
-    </div>`:`
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:10px;">Assessment Coverage</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        ${[["Injury Screen",incInjury],["Mobility",incMobility],["Power",incPower],["Strength",incStrength],["Energy Systems",incEnergy]].map(([l,inc])=>`<div style="background:#131b24;border:1px solid ${inc?"#2a3a4a":"#1c2733"};padding:10px 18px;display:flex;align-items:center;gap:9px;opacity:${inc?1:.5};"><div style="width:8px;height:8px;border-radius:50%;background:${inc?"#4cdb7a":"#3a4f63"};flex-shrink:0;"></div><span style="font-size:11px;font-weight:600;color:#b8c8d8;">${l}</span></div>`).join("")}
+        ${[["Injury Screen",incInjury],["Mobility",incMobility],...(isY1?[["Readiness",true]]:[]),["Power",incPower],["Strength",incStrength],["Energy Systems",incEnergy]].map(([l,inc])=>`<div style="background:#131b24;border:1px solid ${inc?"#2a3a4a":"#1c2733"};padding:10px 18px;display:flex;align-items:center;gap:9px;opacity:${inc?1:.5};"><div style="width:8px;height:8px;border-radius:50%;background:${inc?"#4cdb7a":"#3a4f63"};flex-shrink:0;"></div><span style="font-size:11px;font-weight:600;color:#b8c8d8;">${l}</span></div>`).join("")}
       </div>
-    </div>`}
+    </div>
   </div>
   ${foot()}
 </div>
@@ -1775,6 +1819,39 @@ function gen(){
   ${foot()}
 </div>
 `;
+
+  const pnumReadiness=isY1?++pageCount:null;
+  const pageReadiness=isY1?`
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Readiness</div><div class="psub">Youth 1 → Youth 2 movement screen</div></div><div class="pnum">Page ${pnumReadiness}</div></div>
+  <div class="pbody">
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming. Each movement is scored 0–3. Optional — the band below is a practical starting point, not a published cut-off.</div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      ${cardGrid(readinessItems.map(readinessRow),"")}
+    </div>
+    ${readinessTotal!==null?`
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div style="display:flex;align-items:stretch;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:18px 24px;">
+        <div style="flex-shrink:0;text-align:center;padding-right:20px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness Score</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:16px;color:#7a8fa6;">/12</span></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:6px;">${readinessBand.lbl}</div>
+          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;">${readinessScored.length}/4 movements scored${readinessScored.length<4?" (partial — score all 4 for a complete picture)":""}.</div>
+        </div>
+      </div>
+    </div>`:`
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div class="nbox" style="color:#7a8fa6;">Not yet assessed — score the 4 movements above on the Mobility tab to generate a readiness band.</div>
+    </div>`}
+  </div>
+  ${foot()}
+</div>
+`:"";
 
   const pnumPower=incPower?++pageCount:null;
   const pagePower=`
@@ -1917,15 +1994,16 @@ function gen(){
   <div class="pbody">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">No validated youth dynamometer norms exist, so isokinetic figures are shown as real numbers with L/R comparison rather than a Good/Average/Poor judgement. <strong>Overall Strength</strong> below is the clinician's own rating, formed from these tests plus IMTP.</div>
+      <div class="nbox">No validated youth dynamometer norms exist, so isokinetic figures are shown as real numbers with L/R comparison rather than a Good/Average/Poor judgement. <strong>Overall Strength</strong> below is calculated automatically from the Functional Strength tests, which do have published ASCA competency benchmarks.</div>
     </div>
-    ${v("mq_str")?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;align-items:center;gap:16px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(v("mq_str"))};padding:16px 20px;">
+    ${S.str!==null?`<div class="psec" style="flex:0 0 auto;">
+      <div style="display:flex;align-items:center;gap:16px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${domCol(S.str)};padding:16px 20px;">
         <div style="flex-shrink:0;text-align:center;padding-right:16px;border-right:1px solid #1c2733;">
           <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Overall Strength</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:${rCol(v("mq_str"))};line-height:1;">${rLbl(v("mq_str"))}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:${domCol(S.str)};line-height:1;">${S.str.toFixed(1)}<span style="font-size:14px;color:#7a8fa6;">/10</span></div>
+          <div style="margin-top:4px;"><span class="rb ${S.str>=7.5?"rg":S.str>=5?"ra":"rp"}">${S.str>=7.5?"Strong":S.str>=5?"Average":"Focus"}</span></div>
         </div>
-        <div style="flex:1;font-size:11px;color:#b8c8d8;line-height:1.6;">Clinical judgement, formed from isokinetic dynamometry and IMTP results below.</div>
+        <div style="flex:1;font-size:11px;color:#b8c8d8;line-height:1.6;">Calculated from Functional Strength results vs ASCA competency benchmarks (below) — isokinetic dynamometry and IMTP are tracked for reference but don't feed this score, as no published youth norm exists for either.</div>
       </div>
     </div>`:""}
     ${(()=>{
@@ -2013,7 +2091,7 @@ function gen(){
       if(asym.length)bits.push(`${asym.map(([n,v])=>`${n} ${v}%`).join(", ")} below the 90% symmetry target`);
       else if(lsis.length)bits.push("limb symmetry within target across the board");
       if(imtp&&ASSESS_TYPE!=="youth")bits.push(imtp>=3.0?"excellent isometric strength":imtp>=2.5?"good isometric strength":"isometric strength is a development area");
-      if(ASSESS_TYPE==="youth"&&v("mq_str"))bits.push(v("mq_str")==="g"?"overall strength rates well for age":v("mq_str")==="a"?"overall strength is average for age":"overall strength is a development area");
+      if(ASSESS_TYPE==="youth"&&S.str!==null)bits.push(S.str>=7.5?"overall strength rates well for age":S.str>=5?"overall strength is average for age":"overall strength is a development area");
       if(fd.length>0){
         const fw=FTNW(),fr=FTNR();
         const rated=fd.map(item=>{
@@ -2180,7 +2258,7 @@ function gen(){
         </div>
       </div>
     </div>
-    ${ASSESS_TYPE==="youth"&&readinessTotal!==null?`
+    ${isY1&&readinessTotal!==null?`
     <div class="psec" style="flex:0 0 auto;">
       <div style="display:flex;align-items:stretch;gap:16px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:16px 20px;">
         <div style="flex-shrink:0;text-align:center;padding-right:16px;border-right:1px solid #1c2733;">
@@ -2189,7 +2267,7 @@ function gen(){
         </div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:4px;">${readinessBand.lbl}</div>
-          <div style="font-size:11px;color:#7a8fa6;">Youth 1 → Youth 2 movement screen (AIMS-adapted) — ${readinessScored.length}/4 movements scored${readinessScored.length<4?", partial":""}. This band is a suggested guide, not a published cut-off.</div>
+          <div style="font-size:11px;color:#7a8fa6;">Youth 1 → Youth 2 movement screen (AIMS-adapted) — ${readinessScored.length}/4 movements scored${readinessScored.length<4?", partial":""}. See the Readiness page for the full breakdown.</div>
         </div>
       </div>
     </div>`:""}
@@ -2252,6 +2330,7 @@ function gen(){
 
   pages.innerHTML=pageCover+pageAthlete+
     (incMobility?pageMobility:"")+
+    pageReadiness+
     (incPower?pagePower:"")+
     (incStrength?pageStrength:"")+
     (incEnergy?pageEnergy:"")+
