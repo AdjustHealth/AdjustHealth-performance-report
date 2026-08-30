@@ -254,6 +254,30 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 }
 .psec+.psec{border-top:1px solid #1c2733;padding-top:12px;margin-top:12px;}
 
+/* Domain pages (Mobility/Power/Strength/Energy) split into a main results
+   column + a persistent reference sidebar. The sidebar's own content (score
+   ring, rationale, static benchmark reference) always renders in full — so
+   the page reads as deliberately designed even on a day only half the tests
+   got done, instead of the amount of white space depending on data entry. */
+.pgrid2{flex:1;min-height:0;display:grid;grid-template-columns:1fr 216px;gap:0;overflow:hidden;}
+.pmain{display:flex;flex-direction:column;justify-content:flex-start;min-height:0;overflow:hidden;padding-right:22px;border-right:1px solid #1c2733;}
+.psidebar{display:flex;flex-direction:column;justify-content:space-between;min-height:0;overflow:hidden;padding-left:22px;gap:14px;}
+.sic{width:34px;height:34px;flex-shrink:0;}
+.shd{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.shd-lbl{font-family:"Barlow Condensed",sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;}
+.sring-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;flex-shrink:0;padding:6px 0 4px;}
+.swhy{background:#131b24;border-left:3px solid #38bdf8;padding:11px 13px;font-size:10.5px;color:#b8c8d8;line-height:1.65;flex-shrink:0;}
+.swhy-hd{font-family:"Barlow Condensed",sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:5px;}
+.sref{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+.sref-hd{font-family:"Barlow Condensed",sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:7px;flex-shrink:0;}
+.sref-row{padding:6px 0;border-bottom:1px solid #1c2733;}
+.sref-row:last-child{border-bottom:none;}
+.sref-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sref-hdrow{display:flex;align-items:center;gap:7px;}
+.sref-lbl{flex:1;color:#e6edf3;font-size:10px;font-weight:600;min-width:0;}
+.sref-val{color:#7a8fa6;font-size:9px;line-height:1.4;margin:2px 0 0 14px;}
+.stag{font-size:9px;color:#3a4f63;font-style:italic;line-height:1.5;flex-shrink:0;border-top:1px solid #1c2733;padding-top:8px;}
+
 .pfooter{
   height:26px;background:#131b24;border-top:1px solid #1c2733;
   display:flex;align-items:center;justify-content:space-between;
@@ -1186,6 +1210,48 @@ function gauge(val,good,avg,unit){
   return`<svg width="100" height="82" viewBox="0 0 100 82" style="flex-shrink:0;"><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="#1c2733" stroke-width="${sw}" stroke-dasharray="${ci*.75} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-225 ${cx} ${cx})"/><circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-dasharray="${pct*ci*.75} ${ci}" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-225 ${cx} ${cx})"/><text x="${cx}" y="${cx+3}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="15" font-weight="700">${parseFloat(val).toFixed(2)}</text><text x="${cx}" y="${cx+14}" text-anchor="middle" fill="#7a8fa6" font-size="8" font-family="Barlow,sans-serif">${unit}</text></svg>`;
 }
 
+// ── Domain sidebar — persistent right-column reference panel used on the
+// Mobility/Power/Strength/Energy pages. Its content (icon, score ring,
+// rationale, static reference list) doesn't depend on how much data was
+// entered, so these pages hold their composition even on a light session.
+function domainDonut(score,size=112){
+  const r=(size-14)/2,cx=size/2,cy=size/2,ci=2*Math.PI*r;
+  const col=score===null?"#2a3a4a":domCol(score);
+  const pct=score===null?0:Math.max(0,Math.min(1,score/10));
+  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1c2733" stroke-width="9"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(pct*ci).toFixed(1)} ${ci.toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy-2}" text-anchor="middle" fill="#ffffff" font-family="Barlow Condensed,sans-serif" font-size="30" font-weight="900">${score!==null?score.toFixed(1):"—"}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" fill="#7a8fa6" font-size="9" font-family="Barlow,sans-serif">out of 10</text>
+  </svg>`;
+}
+const DOMAIN_ICONS={
+  mobility:`<svg class="sic" viewBox="0 0 34 34" fill="none"><path d="M17 4a3 3 0 100 6 3 3 0 000-6z" fill="#c6f135"/><path d="M17 11v8m0 0l-6 9m6-9l6 9M9 15l8-2 8 2" stroke="#c6f135" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  power:`<svg class="sic" viewBox="0 0 34 34" fill="none"><path d="M19 3L8 19h7l-2 12 12-17h-7l1-11z" fill="#c6f135"/></svg>`,
+  strength:`<svg class="sic" viewBox="0 0 34 34" fill="none"><rect x="3" y="14" width="4" height="6" rx="1" fill="#c6f135"/><rect x="8" y="11" width="3" height="12" rx="1" fill="#c6f135"/><rect x="12" y="15" width="10" height="4" rx="1" fill="#c6f135"/><rect x="23" y="11" width="3" height="12" rx="1" fill="#c6f135"/><rect x="27" y="14" width="4" height="6" rx="1" fill="#c6f135"/></svg>`,
+  energy:`<svg class="sic" viewBox="0 0 34 34" fill="none"><path d="M3 18h6l3-8 5 16 3-8h11" stroke="#c6f135" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+};
+function sidebarShell(iconKey,label,score,whyText,refHd,refRows,tag){
+  return`<div class="psidebar">
+    <div>
+      <div class="shd">${DOMAIN_ICONS[iconKey]}<div class="shd-lbl">${label}</div></div>
+      <div class="sring-wrap">
+        ${domainDonut(score)}
+        <div style="margin-top:6px;">${score!==null?`<span class="rb ${score>=7.5?"rg":score>=5?"ra":"rp"}">${score>=7.5?"Strong":score>=5?"Average":"Focus Area"}</span>`:`<span class="rb rn">Not Rated</span>`}</div>
+      </div>
+    </div>
+    <div class="swhy"><div class="swhy-hd">Why It Matters</div>${whyText}</div>
+    <div class="sref">
+      <div class="sref-hd">${refHd}</div>
+      ${refRows}
+    </div>
+    ${tag?`<div class="stag">${tag}</div>`:""}
+  </div>`;
+}
+function srefRow(label,val,col){
+  return`<div class="sref-row"><div class="sref-hdrow"><div class="sref-dot" style="background:${col||"#3a4f63"};"></div><div class="sref-lbl">${label}</div></div><div class="sref-val">${val}</div></div>`;
+}
+
 function energyZoneBars(spdScore,anaScore,capScore){
   const W=200,H=150,pad=18,barW=44,gap=16,baseline=H-28;
   const zones=[
@@ -1849,7 +1915,7 @@ function gen(){
 <div class="page">
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Mobility</div><div class="psub">Range of motion vs published normative ranges</div></div><div class="pnum">Page ${pnumMobility}</div></div>
-  <div class="pbody">
+  <div class="pbody"><div class="pgrid2"><div class="pmain">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox"><strong>How to read:</strong> Each region is rated on clinical judgement against age-appropriate expectations — <span class="rb rg">Good</span> full/functional range &nbsp;<span class="rb ra">Average</span> mild restriction &nbsp;<span class="rb rp">Poor</span> notable restriction.</div>
@@ -1897,6 +1963,21 @@ function gen(){
         ${v("fmobc")?`<div class="nbox" style="white-space:pre-line;">${v("fmobc")}</div>`:""}
       </div>
     </div>
+    </div>${(()=>{
+      const regions=ASSESS_TYPE==="youth"
+        ?QUAL_MOBILITY.map(([k,l])=>{const r=v("mq_"+k);return{l,tested:!!r,col:r==="g"?"#4cdb7a":r==="a"?"#f5a623":r==="p"?"#e05252":null,val:r?rLbl(r):"Untested"};})
+        :[["sher","Shoulder ER"],["shir","Shoulder IR"],["hipf","Hip Flexion"],["hipir","Hip Int. Rot."],["hiper","Hip Ext. Rot."],["tho","Hip Flexor"],["slr","SLR"],["ktw","Knee-to-Wall"]].map(([k,l])=>{
+          const lV=gmob(k,"l"),rV=gmob(k,"r"),nm=ROMS()[k];
+          const ranks=[lV>0?rat(lV,nm):null,rV>0?rat(rV,nm):null].filter(Boolean);
+          const rank={p:0,a:1,g:2};const r=ranks.length?ranks.reduce((w,c)=>rank[c]<rank[w]?c:w):null;
+          return{l,tested:!!r,col:r==="g"?"#4cdb7a":r==="a"?"#f5a623":r==="p"?"#e05252":null,val:r?rLbl(r):"Untested"};
+        });
+      const rows=regions.map(r=>srefRow(r.l,r.val,r.col)).join("");
+      return sidebarShell("mobility","Mobility",S.mob,
+        "Restrictions upstream of a joint are consistently linked to compensatory loading patterns — screening range early lets programming address a limiter before it shows up as reduced power or an injury flag.",
+        "Regions Assessed",rows,
+        ASSESS_TYPE==="youth"?"Rated on clinical judgement against age-appropriate expectations.":"Rated vs published goniometric norms. LSI target &gt;90%.");
+    })()}</div>
   </div>
   ${foot()}
 </div>
@@ -1940,49 +2021,39 @@ function gen(){
 <div class="page">
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Power</div><div class="psub">VALD Force Decks — vertical & horizontal projection</div></div><div class="pnum">Page ${pnumPower}</div></div>
-  <div class="pbody">
+  <div class="pbody"><div class="pgrid2"><div class="pmain">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">CMJ Height and Broad Jump rated vs approximate youth reference data (see source below each). RSI has no published youth norm — rated by clinical judgement alongside the number. Squat Jump isn't used for youth.</div>
     </div>
     ${cmjH?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(rat(cmjH,POWDY().cmj))};overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(cmjH,0,Math.round(POWDY().cmj.good*1.3),"cm",rCol(rat(cmjH,POWDY().cmj)),200,158)}
-        </div>
-        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${rCol(rat(cmjH,POWDY().cmj))};overflow:hidden;">
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:110px;flex-shrink:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">CMJ Height</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${rCol(rat(cmjH,POWDY().cmj))};line-height:1;">${cmjH.toFixed(1)}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:${rCol(rat(cmjH,POWDY().cmj))};line-height:1;">${cmjH.toFixed(1)}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">cm</div>
           <span class="rb ${rCls(rat(cmjH,POWDY().cmj))}" style="margin-top:6px;align-self:flex-start;">${rLbl(rat(cmjH,POWDY().cmj))}</span>
         </div>
-        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:150px;flex-shrink:0;">
-          <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Good</div><div class="bmv">&gt;${POWDY().cmj.good}cm</div></div>
-          <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Average</div><div class="bmv">${POWDY().cmj.avg}–${POWDY().cmj.good}cm</div></div>
-          <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Poor</div><div class="bmv">&lt;${POWDY().cmj.avg}cm</div></div>
-        </div>
-        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">Vertical jump height, VALD Force Decks. Approx. youth reference — Lesinski et al. 2020.</div>
-          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${rat(cmjH,POWDY().cmj)==="g"?"<strong style='color:#4cdb7a;'>✓ Above</strong> the approximate reference band for age.":rat(cmjH,POWDY().cmj)==="a"?"<strong style='color:#f5a623;'>→ Around</strong> the approximate reference band for age.":"<strong style='color:#e05252;'>↓ Below</strong> the approximate reference band for age."}</div>
+        <div style="padding:12px 16px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+          <div style="display:flex;gap:6px;">
+            <div class="bm" style="flex:1;border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Good</div><div class="bmv">&gt;${POWDY().cmj.good}cm</div></div>
+            <div class="bm" style="flex:1;border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Avg</div><div class="bmv">${POWDY().cmj.avg}–${POWDY().cmj.good}cm</div></div>
+            <div class="bm" style="flex:1;border-color:#e05252;"><div class="bml" style="color:#e05252;">Poor</div><div class="bmv">&lt;${POWDY().cmj.avg}cm</div></div>
+          </div>
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;">Vertical jump height, VALD Force Decks. Approx. youth reference — Lesinski et al. 2020. ${rat(cmjH,POWDY().cmj)==="g"?"<strong style='color:#4cdb7a;'>✓ Above</strong> the reference band for age.":rat(cmjH,POWDY().cmj)==="a"?"<strong style='color:#f5a623;'>→ Around</strong> the reference band for age.":"<strong style='color:#e05252;'>↓ Below</strong> the reference band for age."}</div>
         </div>
       </div>
     </div>`:""}
     ${rsi?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${v("mq_rsi")?rCol(v("mq_rsi")):"#3a4f63"};overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(rsi,0,2.0,"",v("mq_rsi")?rCol(v("mq_rsi")):"#7a8fa6",200,158)}
-        </div>
-        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">RSI Mod (Drop Jump)</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${v("mq_rsi")?rCol(v("mq_rsi")):"#ffffff"};line-height:1;">${rsi.toFixed(2)}</div>
+      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${v("mq_rsi")?rCol(v("mq_rsi")):"#3a4f63"};overflow:hidden;">
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:110px;flex-shrink:0;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">RSI Mod</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:${v("mq_rsi")?rCol(v("mq_rsi")):"#ffffff"};line-height:1;">${rsi.toFixed(2)}</div>
           ${v("mq_rsi")?`<span class="rb ${rCls(v("mq_rsi"))}" style="margin-top:6px;align-self:flex-start;">${rLbl(v("mq_rsi"))}</span>`:`<div style="font-size:10px;color:#7a8fa6;margin-top:4px;">Not rated</div>`}
         </div>
-        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:150px;flex-shrink:0;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;">No published youth norm</div>
-        </div>
-        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">Measures reactive strength — how quickly force is produced on ground contact. Rated by clinical judgement alongside the number.</div>
-          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${v("mq_rsi")==="g"?"<strong style='color:#4cdb7a;'>Good</strong> reactive strength.":v("mq_rsi")==="a"?"<strong style='color:#f5a623;'>Average</strong> reactive strength.":v("mq_rsi")==="p"?"<strong style='color:#e05252;'>Developing</strong> reactive strength.":"Add a clinical rating alongside this test."}</div>
+        <div style="padding:12px 16px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;">No published youth norm — drop jump reactive strength</div>
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;">Measures reactive strength — how quickly force is produced on ground contact. Rated by clinical judgement alongside the number. ${v("mq_rsi")==="g"?"<strong style='color:#4cdb7a;'>Good</strong> reactive strength.":v("mq_rsi")==="a"?"<strong style='color:#f5a623;'>Average</strong> reactive strength.":v("mq_rsi")==="p"?"<strong style='color:#e05252;'>Developing</strong> reactive strength.":"Add a clinical rating alongside this test."}</div>
         </div>
       </div>
     </div>`:""}
@@ -2063,6 +2134,20 @@ function gen(){
       if(slL&&slR&&lsi(slL,slR)<90)bits.push(`limb symmetry needs attention (${lsi(slL,slR)}% LSI)`);
       return bits.length?bits.join("; ")+".":"Enter power test data to generate.";
     })()}</div></div></div>`}
+    </div>${(()=>{
+      const isYouth=ASSESS_TYPE==="youth";
+      const cmjNm=isYouth?POWDY().cmj:{good:36,avg:28},bjNm=isYouth?POWDY().bj:{good:2.20,avg:1.80};
+      const rows=[
+        srefRow("CMJ Height",`>${cmjNm.good}cm good`,cmjH?rCol(rat(cmjH,cmjNm)):null),
+        srefRow("Broad Jump",`>${bjNm.good}m good`,bj?rCol(rat(bj,bjNm)):null),
+        srefRow("RSI Mod",isYouth?"Clinical judgement":">1.50 excellent",rsi?(isYouth?(v("mq_rsi")?rCol(v("mq_rsi")):null):(rsi>=1.5?"#4cdb7a":rsi>=1.0?"#f5a623":"#e05252")):null),
+        srefRow("Rel. Peak Power",isYouth?"No youth norm":">55 W/kg excellent",cmjRPP?(isYouth?"#7a8fa6":(cmjRPP>=55?"#4cdb7a":cmjRPP>=45?"#f5a623":"#e05252")):null)
+      ].join("");
+      return sidebarShell("power","Power",S.pow,
+        "Vertical and horizontal power output are the base rate-of-force qualities that sprint speed and change-of-direction ability are built from — a limiter here tends to surface everywhere else on the field.",
+        "Benchmark Reference",rows,
+        "VALD Force Decks. "+(isYouth?"Approx. youth reference — Lesinski 2020 / Thomas 2020.":"Adult field-sport norms."));
+    })()}</div>
   </div>
   ${foot()}
 </div>
@@ -2073,7 +2158,7 @@ function gen(){
 <div class="page">
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Strength</div><div class="psub">Isokinetic dynamometry & IMTP — rated vs published norms</div></div><div class="pnum">Page ${pnumStrength}</div></div>
-  <div class="pbody">
+  <div class="pbody"><div class="pgrid2"><div class="pmain">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">No validated youth dynamometer norms exist, so isokinetic figures are shown as real numbers with L/R comparison rather than a Good/Average/Poor judgement. <strong>Overall Strength</strong> below is calculated automatically from the Functional Strength tests, which do have published ASCA competency benchmarks.</div>
@@ -2165,8 +2250,11 @@ function gen(){
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
       <div class="nbox" style="margin-bottom:12px;">Rated as <strong>relative strength</strong> (kg ÷ BW). BW: ${bw?bw+" kg":"not entered"}.</div>
       ${fd.length>0?(()=>{
-        const compact=fd.length>6;
-        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(${compact?"128px":"150px"},1fr));gap:${compact?"8px":"14px"};">${fd.map(item=>fcard(item,bw,compact)).join("")}</div>`;
+        // Main column is narrower now that the page carries a reference sidebar,
+        // so a full battery (up to 13 tests for adults) needs a tighter grid than
+        // it did at full page width to still fit without the page clipping it.
+        const compact=fd.length>5;
+        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(${compact?"96px":"140px"},1fr));gap:${compact?"6px":"12px"};">${fd.map(item=>fcard(item,bw,compact)).join("")}</div>`;
       })():`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
     </div>
     <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${(()=>{
@@ -2190,6 +2278,26 @@ function gen(){
       }
       return bits.length?bits.join("; ")+".":"Enter strength data to generate interpretation.";
     })()}</div></div></div>
+    </div>${(()=>{
+      const fw=FTNW(),fr=FTNR();
+      const rows=FT().map(t=>{
+        const item=fd.find(f=>f.id===t.id);
+        let col=null;
+        if(item){
+          if(fw[t.id]&&bw){const ratio=item.scoreVal/bw,[g,a]=fw[t.id];col=ratio>=g?"#4cdb7a":ratio>=a?"#f5a623":"#e05252";}
+          else if(fr[t.id]){const[g,a]=fr[t.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";}
+          else col="#38bdf8";
+        }
+        const bench=t.hint?t.hint.replace(/^ASCA benchmark:\s*/,""):(fw[t.id]?`${fw[t.id][0]}× BW good`:fr[t.id]?`>${fr[t.id][0]}${t.u==="reps"?" reps":t.u==="sec"?"s":t.u} good`:"Tracking only");
+        return srefRow(t.l,bench,col);
+      }).join("");
+      return sidebarShell("strength","Strength",S.str,
+        ASSESS_TYPE==="youth"
+          ?"Functional strength underpins force production for every other domain — and for youth specifically, the ASCA benchmarks alongside each test are competency gates to clear before loaded barbell work is introduced."
+          :"Functional strength underpins force production for every other domain — the benchmarks alongside each test below show where loaded or bodyweight capacity is the limiting factor.",
+        ASSESS_TYPE==="youth"?"ASCA Test Battery":"Test Battery",rows,
+        "Blue = tracked, no norm published. Green/amber/red = rated vs benchmark.");
+    })()}</div>
   </div>
   ${foot()}
 </div>
@@ -2200,7 +2308,7 @@ function gen(){
 <div class="page">
   <div class="pstripe"></div>
   <div class="phdr"><div><div class="ptitle">Energy Systems</div><div class="psub">Speed, conditioning & aerobic capacity</div></div><div class="pnum">Page ${pnumEnergy}</div></div>
-  <div class="pbody">
+  <div class="pbody"><div class="pgrid2"><div class="pmain">
     ${ASSESS_TYPE==="youth"?`
     <div class="psec" style="flex:0 0 auto;">
       <div class="nbox">No credible youth norm exists for sprint or aerobic/anaerobic testing — each is rated by clinical judgement alongside the real number.</div>
@@ -2243,52 +2351,40 @@ function gen(){
 
     <!-- PCr test row -->
     ${sv?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;">
-        <!-- Gauge -->
-        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(sv,st.good*.85,st.avg*1.15,st.u,S.spd>=5?"#c6f135":"#e05252",200,158)}
-        </div>
-        <!-- Big number + label -->
-        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;">
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:110px;flex-shrink:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">${st.l}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.spd)};line-height:1;">${sv.toFixed(2)}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:${domCol(S.spd)};line-height:1;">${sv.toFixed(2)}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${st.u}</div>
           <span class="rb ${S.spd>=7.5?"rg":S.spd>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.spd>=7.5?"Excellent":S.spd>=5?"Good":"Developing"}</span>
         </div>
-        <!-- Benchmarks -->
-        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:140px;flex-shrink:0;">
-          <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Elite</div><div class="bmv">${st.el}</div></div>
-          <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">${st.go}</div></div>
-          <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Average</div><div class="bmv">${st.de}</div></div>
-        </div>
-        <!-- Note -->
-        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${st.note}</div>
-          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.spd>=7.5?"<strong style='color:#c6f135;'>✓ Excellent</strong> — elite-level acceleration.":S.spd>=5?"<strong style='color:#f5a623;'>→ Good</strong> acceleration.":"<strong style='color:#e05252;'>↓ Developing</strong> acceleration."}</div>
+        <div style="padding:12px 16px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+          <div style="display:flex;gap:6px;">
+            <div class="bm" style="flex:1;border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Elite</div><div class="bmv">${st.el}</div></div>
+            <div class="bm" style="flex:1;border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">${st.go}</div></div>
+            <div class="bm" style="flex:1;border-color:#e05252;"><div class="bml" style="color:#e05252;">Avg</div><div class="bmv">${st.de}</div></div>
+          </div>
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;">${st.note} ${S.spd>=7.5?"<strong style='color:#c6f135;'>✓ Excellent</strong> — elite-level acceleration.":S.spd>=5?"<strong style='color:#f5a623;'>→ Good</strong> acceleration.":"<strong style='color:#e05252;'>↓ Developing</strong> acceleration."}</div>
         </div>
       </div>
     </div>`:""}
 
     <!-- Aerobic test row -->
     ${cv?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;align-items:stretch;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:center;padding:10px 14px;border-right:1px solid #1c2733;flex-shrink:0;">
-          ${speedo(cv,ct.hi?Math.round(ct.avg*.65):ct.good*1.5,ct.hi?Math.round(ct.good*1.15):Math.round(ct.avg*.5),ct.u,S.cap>=5?"#c6f135":"#e05252",200,158)}
-        </div>
-        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:130px;flex-shrink:0;">
+      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;">
+        <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:110px;flex-shrink:0;">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">${ct.l}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;color:${domCol(S.cap)};line-height:1;">${cv}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:${domCol(S.cap)};line-height:1;">${cv}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${ct.u}</div>
           <span class="rb ${S.cap>=7.5?"rg":S.cap>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.cap>=7.5?"Excellent":S.cap>=5?"Good":"Developing"}</span>
         </div>
-        <div style="padding:14px 16px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:140px;flex-shrink:0;">
-          <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">${ct.el}</div></div>
-          <div class="bm" style="border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">${ct.go}</div></div>
-          <div class="bm" style="border-color:#e05252;"><div class="bml" style="color:#e05252;">Developing</div><div class="bmv">${ct.de}</div></div>
-        </div>
-        <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;margin-bottom:6px;">${ct.note}</div>
-          <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">${S.cap>=7.5?"<strong style='color:#4cdb7a;'>✓ Excellent</strong> aerobic capacity.":S.cap>=5?"<strong style='color:#f5a623;'>→ Good</strong> aerobic capacity.":"<strong style='color:#e05252;'>↓ Developing</strong> aerobic capacity."}</div>
+        <div style="padding:12px 16px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px;">
+          <div style="display:flex;gap:6px;">
+            <div class="bm" style="flex:1;border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">${ct.el}</div></div>
+            <div class="bm" style="flex:1;border-color:#f5a623;"><div class="bml" style="color:#f5a623;">Good</div><div class="bmv">${ct.go}</div></div>
+            <div class="bm" style="flex:1;border-color:#e05252;"><div class="bml" style="color:#e05252;">Develop.</div><div class="bmv">${ct.de}</div></div>
+          </div>
+          <div style="font-size:10px;color:#7a8fa6;line-height:1.6;">${ct.note} ${S.cap>=7.5?"<strong style='color:#4cdb7a;'>✓ Excellent</strong> aerobic capacity.":S.cap>=5?"<strong style='color:#f5a623;'>→ Good</strong> aerobic capacity.":"<strong style='color:#e05252;'>↓ Developing</strong> aerobic capacity."}</div>
         </div>
       </div>
     </div>`:""}
@@ -2311,6 +2407,20 @@ function gen(){
       </div>
     </div>
 `}
+    </div>${(()=>{
+      const energyScores=[S.spd,S_ana,S.cap].filter(x=>x!==null&&x!==undefined);
+      const overall=energyScores.length?Math.round((energyScores.reduce((a,b)=>a+b,0)/energyScores.length)*10)/10:null;
+      const zoneCol=s=>s===null||s===undefined?null:s>=7.5?"#4cdb7a":s>=5?"#f5a623":"#e05252";
+      const rows=[
+        srefRow("PCr — Speed","0–10s explosive",zoneCol(S.spd)),
+        srefRow("Anaerobic","10–120s repeat efforts",zoneCol(S_ana)),
+        srefRow("Aerobic","2min+ sustained output",zoneCol(S.cap))
+      ].join("");
+      return sidebarShell("energy","Energy Systems",overall,
+        "Speed, anaerobic and aerobic capacity sit on one continuum from explosive single efforts to sustained output — testing across all three shows where an athlete's engine actually limits their game, not just how fast they are in a straight line.",
+        "Energy System Zones",rows,
+        ASSESS_TYPE==="youth"?"No credible youth norm exists for these tests — each is rated by clinical judgement.":"Sprint: Haugen 2012/2019. Aerobic: ACSM standards.");
+    })()}</div>
   </div>
   ${foot()}
 </div>
