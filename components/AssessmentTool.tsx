@@ -20,9 +20,13 @@ function isToolMessage(data: unknown): data is SaveMessage | ReadyMessage {
 export default function AssessmentTool({
   assessmentId = null,
   initialFormData = null,
+  presetType = null,
+  presetTier = null,
 }: {
   assessmentId?: string | null;
   initialFormData?: Record<string, unknown> | null;
+  presetType?: string | null;
+  presetTier?: string | null;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
@@ -30,16 +34,33 @@ export default function AssessmentTool({
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    function onMessage(e: MessageEvent) {
-      if (e.source !== iframeRef.current?.contentWindow) return;
-      if (!isToolMessage(e.data)) return;
+  const sentInitRef = useRef(false);
 
-      if (e.data.type === "embedded-ready" && initialFormData) {
+  useEffect(() => {
+    function sendInitialData() {
+      if (sentInitRef.current) return;
+      sentInitRef.current = true;
+      if (initialFormData) {
         iframeRef.current?.contentWindow?.postMessage(
           { type: "hydrate", formData: initialFormData },
           "*"
         );
+      } else if (presetType) {
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: "preset", assessType: presetType, youthTier: presetTier },
+          "*"
+        );
+      }
+    }
+
+    function onMessage(e: MessageEvent) {
+      if (e.source !== iframeRef.current?.contentWindow) return;
+      if (!isToolMessage(e.data)) return;
+
+      // Fallback in case onLoad fires before this listener is attached
+      // (e.g. a cached iframe) — sendInitialData() is idempotent.
+      if (e.data.type === "embedded-ready") {
+        sendInitialData();
       }
 
       if (e.data.type === "save") {
@@ -57,7 +78,7 @@ export default function AssessmentTool({
           : await createAssessment(formData, summary);
       } catch {
         setStatus("error");
-        setErrorMsg("Supabase isn't configured yet — see SETUP.md.");
+        setErrorMsg("Couldn't reach the database — see SETUP.md.");
         return;
       }
 
@@ -74,9 +95,21 @@ export default function AssessmentTool({
       setTimeout(() => setStatus("idle"), 2500);
     }
 
+    const iframeEl = iframeRef.current;
+    // The child announces "embedded-ready" via postMessage once its script
+    // runs, but that has no queue — if it fires before this listener is
+    // attached (always true on a real user click, since the iframe's
+    // document + script can finish before React re-renders), the message
+    // is lost forever. The iframe's own onLoad DOM event only fires after
+    // the child document (and its synchronous listener setup) is fully
+    // loaded, so sending from there can't race.
+    iframeEl?.addEventListener("load", sendInitialData);
     window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [id, initialFormData, router]);
+    return () => {
+      iframeEl?.removeEventListener("load", sendInitialData);
+      window.removeEventListener("message", onMessage);
+    };
+  }, [id, initialFormData, presetType, presetTier, router]);
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>

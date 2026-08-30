@@ -860,6 +860,11 @@ if(EMBEDDED){
       applyTypeLabels();
       updateProgress();
     }
+    if(e.data.type==="preset"&&e.data.assessType){
+      selectType(e.data.assessType);
+      if(e.data.assessType==="youth"&&e.data.youthTier)selectTier(e.data.youthTier);
+      continueToForm();
+    }
   });
   const initEmbedded=()=>{
     document.getElementById("saveToAppBtn")?.classList.remove("hidden");

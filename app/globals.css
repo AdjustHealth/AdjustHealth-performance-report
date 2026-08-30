@@ -84,6 +84,11 @@ textarea {
   border-radius: 6px;
 }
 
+a.card:hover {
+  border-color: #c6f135;
+  transform: translateY(-2px);
+}
+
 .input,
 select.input {
   width: 100%;
