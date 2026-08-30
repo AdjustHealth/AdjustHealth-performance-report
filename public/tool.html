@@ -230,11 +230,18 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 .psub{font-size:10px;color:#c6f135;font-style:italic;margin-top:3px;}
 .pnum{background:#c6f135;color:#0d1117;font-family:"Barlow Condensed",sans-serif;font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
 
-/* BODY: fills remaining space, sections distribute evenly */
+/* BODY: fills remaining space. Most sections are pinned to their natural
+   height (flex:0 0 auto, set per-section in the generator) so partial data
+   doesn't stretch/break their internal layout — centering the body's own
+   free space here means a sparsely-filled page still reads as deliberately
+   composed instead of top-heavy with a dead zone underneath. A section that
+   opts back into flex:1 (e.g. the Summary page's Key Development Areas) still
+   consumes the free space itself and this becomes a no-op. */
 .pbody{
   flex:1;min-height:0;
   padding:20px 28px;
   display:flex;flex-direction:column;
+  justify-content:center;
   gap:0;overflow:hidden;
 }
 
@@ -1388,19 +1395,35 @@ function spbar(lbl,pct){
   return`<div class="spbrow"><div class="spblbl">${lbl}</div><div class="spbtrk"><div class="spbfil" style="width:${pct}%;background:${col};"></div></div><div class="spbpct" style="color:${col};">${pct}%</div><span class="rb ${pct>=75?"rg":pct>=50?"ra":"rp"}" style="margin-left:8px;">${pct>=75?"Good":pct>=50?"Avg":"Poor"}</span></div>`;
 }
 
-function fcard(item,bw){
-  let col="#c6f135",badge="";
+function fcard(item,bw,compact){
+  let col="#c6f135",bdgCls="",bdgLbl="";
   const fw=FTNW(),fr=FTNR();
   if(fw[item.id]){
     if(bw){
       const ratio=item.scoreVal/bw;
       const[g,a]=fw[item.id];
       col=ratio>=g?"#4cdb7a":ratio>=a?"#f5a623":"#e05252";
-      badge=`<span class="mc-bdg rb ${ratio>=g?"rg":ratio>=a?"ra":"rp"}">${ratio>=g?"Strong":ratio>=a?"Avg":"Developing"}</span>`;
+      bdgCls=ratio>=g?"rg":ratio>=a?"ra":"rp";bdgLbl=ratio>=g?"Strong":ratio>=a?"Avg":"Developing";
     }
   }
-  else if(fr[item.id]){const[g,a]=fr[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";badge=`<span class="mc-bdg rb ${item.val>=g?"rg":item.val>=a?"ra":"rp"}">${item.val>=g?"Good":item.val>=a?"Avg":"Developing"}</span>`;}
-  const hint=item.hint?`<div class="mu" style="font-style:italic;margin-top:3px;">${item.hint}</div>`:"";
+  else if(fr[item.id]){const[g,a]=fr[item.id];col=item.val>=g?"#4cdb7a":item.val>=a?"#f5a623":"#e05252";bdgCls=item.val>=g?"rg":item.val>=a?"ra":"rp";bdgLbl=item.val>=g?"Good":item.val>=a?"Avg":"Developing";}
+  const hint=item.hint?`<div class="mu" style="font-style:italic;margin-top:${compact?2:3}px;">${item.hint}</div>`:"";
+  // Compact mode keeps a full functional-strength battery (up to 10 tests for
+  // Youth 2) from overflowing the fixed-height page — same info, smaller cells.
+  // The rating badge moves out of its usual absolute top-right corner (which
+  // overlaps long labels like "Max Push-Ups" at this width) into the label row.
+  if(compact){
+    return`<div class="mc" style="border-left-color:${col};padding:10px 12px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">
+        <div class="ml" style="margin-bottom:0;">${item.label}</div>
+        ${bdgLbl?`<span class="rb ${bdgCls}" style="flex-shrink:0;">${bdgLbl}</span>`:""}
+      </div>
+      <div class="mv" style="color:${col};font-size:24px;margin-top:4px;">${item.val}</div>
+      <div class="mu">${item.u}</div>
+      ${hint}
+    </div>`;
+  }
+  const badge=bdgLbl?`<span class="mc-bdg rb ${bdgCls}">${bdgLbl}</span>`:"";
   return`<div class="mc" style="border-left-color:${col};padding:20px 18px;">${badge}<div class="ml">${item.label}</div><div class="mv" style="color:${col};font-size:38px;">${item.val}</div><div class="mu">${item.u}</div>${hint}</div>`;
 }
 
@@ -2141,7 +2164,10 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
       <div class="nbox" style="margin-bottom:12px;">Rated as <strong>relative strength</strong> (kg ÷ BW). BW: ${bw?bw+" kg":"not entered"}.</div>
-      ${fd.length>0?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">${fd.map(item=>fcard(item,bw)).join("")}</div>`:`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
+      ${fd.length>0?(()=>{
+        const compact=fd.length>6;
+        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(${compact?"128px":"150px"},1fr));gap:${compact?"8px":"14px"};">${fd.map(item=>fcard(item,bw,compact)).join("")}</div>`;
+      })():`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
     </div>
     <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${(()=>{
       const bits=[];
