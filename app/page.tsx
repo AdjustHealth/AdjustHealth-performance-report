@@ -104,11 +104,16 @@ export default async function HomePage({
             Performance Report
           </div>
         </div>
-        <form action={signOut}>
-          <button type="submit" className="btn">
-            Sign Out
-          </button>
-        </form>
+        <div style={{ display: "flex", gap: 10 }}>
+          <Link href="/athletes" className="btn" style={{ padding: "7px 14px", fontSize: 12 }}>
+            Athletes
+          </Link>
+          <form action={signOut}>
+            <button type="submit" className="btn">
+              Sign Out
+            </button>
+          </form>
+        </div>
       </div>
 
       <div className="slbl" style={{ marginBottom: 14 }}>
@@ -245,7 +250,15 @@ export default async function HomePage({
                         postMessage handshake; a full navigation always works. */}
                     <a href={`/assessment/${a.id}`} style={{ fontWeight: 600 }}>
                       {a.athlete_name}
-                    </a>
+                    </a>{" "}
+                    <Link
+                      href={`/athletes/${encodeURIComponent(a.athlete_name)}`}
+                      className="muted"
+                      style={{ fontSize: 11 }}
+                      title="View history"
+                    >
+                      (history)
+                    </Link>
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     {TYPE_LABEL[a.assess_type] ?? a.assess_type}
