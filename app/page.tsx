@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { sql, isDbConfigured } from "@/lib/db";
+import { isAuthConfigured } from "@/lib/auth";
 import { signOut } from "@/lib/actions";
 import DeleteAssessmentButton from "@/components/DeleteAssessmentButton";
 import SetupNotice from "@/components/SetupNotice";
-import { isSupabaseConfigured } from "@/lib/supabase/is-configured";
 
 const TYPE_LABEL: Record<string, string> = {
   performance: "Performance",
@@ -11,13 +11,30 @@ const TYPE_LABEL: Record<string, string> = {
   movestrong: "MoveStrong",
 };
 
+type Row = {
+  id: string;
+  athlete_name: string;
+  assess_type: string;
+  youth_tier: string | null;
+  clinician: string | null;
+  assessment_date: string | null;
+  overall_score: number | null;
+};
+
 export default async function HomePage() {
-  if (!isSupabaseConfigured()) return <SetupNotice />;
-  const supabase = await createClient();
-  const { data: assessments, error } = await supabase
-    .from("assessments")
-    .select("id, athlete_name, assess_type, youth_tier, clinician, assessment_date, overall_score, created_at")
-    .order("created_at", { ascending: false });
+  if (!isDbConfigured() || !isAuthConfigured()) return <SetupNotice />;
+
+  let assessments: Row[] = [];
+  let error: string | null = null;
+  try {
+    assessments = (await sql()`
+      select id, athlete_name, assess_type, youth_tier, clinician, assessment_date::text as assessment_date, overall_score::float8 as overall_score
+      from assessments
+      order by created_at desc
+    `) as unknown as Row[];
+  } catch (e) {
+    error = e instanceof Error ? e.message : "Unknown error";
+  }
 
   return (
     <div style={{ maxWidth: 1000, margin: "0 auto", padding: "32px 24px" }}>
@@ -44,11 +61,11 @@ export default async function HomePage() {
 
       {error && (
         <div className="card" style={{ padding: 16, color: "#e05252", fontSize: 13 }}>
-          Couldn&apos;t load assessments: {error.message}
+          Couldn&apos;t load assessments: {error}
         </div>
       )}
 
-      {!error && (!assessments || assessments.length === 0) && (
+      {!error && assessments.length === 0 && (
         <div className="card" style={{ padding: 32, textAlign: "center" }}>
           <div className="muted" style={{ marginBottom: 14 }}>
             No assessments saved yet.
@@ -59,7 +76,7 @@ export default async function HomePage() {
         </div>
       )}
 
-      {!error && assessments && assessments.length > 0 && (
+      {!error && assessments.length > 0 && (
         <div className="card" style={{ overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>

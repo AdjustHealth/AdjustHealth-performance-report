@@ -1,11 +1,13 @@
 -- Adjust Health Performance Report — saved assessments
--- Run this once in your Supabase project's SQL editor (or via `supabase db push`).
+-- Run this once against your Postgres database (Vercel Postgres / Neon SQL
+-- editor, or `psql "$DATABASE_URL" -f db/migrations/0001_init.sql`).
+
+create extension if not exists pgcrypto;
 
 create table if not exists assessments (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  created_by uuid references auth.users(id) on delete set null,
 
   -- Denormalized summary columns for the list page — kept in sync on every save
   -- from the tool's own computed report, never recomputed server-side.
@@ -23,30 +25,10 @@ create table if not exists assessments (
 
 create index if not exists assessments_created_at_idx on assessments (created_at desc);
 
-alter table assessments enable row level security;
-
--- Single-tenant internal tool: any signed-in user can read/write any assessment.
--- Tighten this (e.g. filter on created_by) if this ever needs to support more
--- than one clinician with separate caseloads.
-create policy "Authenticated users can read assessments"
-  on assessments for select
-  to authenticated
-  using (true);
-
-create policy "Authenticated users can insert assessments"
-  on assessments for insert
-  to authenticated
-  with check (true);
-
-create policy "Authenticated users can update assessments"
-  on assessments for update
-  to authenticated
-  using (true);
-
-create policy "Authenticated users can delete assessments"
-  on assessments for delete
-  to authenticated
-  using (true);
+-- No row-level security here: this is a single-tenant internal tool with one
+-- shared login, and the database is never reached directly from the browser —
+-- only from server-side code behind the app's own password gate (see
+-- proxy.ts / lib/auth.ts). Access control lives at the app layer, not the DB.
 
 -- Keep updated_at current on every write.
 create or replace function set_updated_at()

@@ -1,34 +1,23 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { login } from "@/lib/actions";
+import { isAuthConfigured } from "@/lib/auth";
 import SetupNotice from "@/components/SetupNotice";
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  if (!isAuthConfigured()) return <SetupNotice />;
+  const { error } = await searchParams;
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-      return;
+  async function handleLogin(formData: FormData) {
+    "use server";
+    const password = String(formData.get("password") || "");
+    const result = await login(password);
+    if (result && "error" in result) {
+      const { redirect } = await import("next/navigation");
+      redirect("/login?error=1");
     }
-    router.push("/");
-    router.refresh();
-  }
-
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return <SetupNotice />;
   }
 
   return (
@@ -41,7 +30,7 @@ export default function LoginPage() {
         padding: 20,
       }}
     >
-      <form onSubmit={onSubmit} className="card" style={{ width: 360, padding: 32 }}>
+      <form action={handleLogin} className="card" style={{ width: 360, padding: 32 }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div className="hd" style={{ fontSize: 28, letterSpacing: -0.5 }}>
             Adjust<span className="accent">Health</span>
@@ -50,37 +39,17 @@ export default function LoginPage() {
             Performance Report — sign in
           </div>
         </div>
-        <div style={{ marginBottom: 14 }}>
-          <label className="muted" style={{ fontSize: 11, display: "block", marginBottom: 6 }}>
-            Email
-          </label>
-          <input
-            className="input"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-        </div>
         <div style={{ marginBottom: 20 }}>
           <label className="muted" style={{ fontSize: 11, display: "block", marginBottom: 6 }}>
             Password
           </label>
-          <input
-            className="input"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
+          <input className="input" type="password" name="password" required autoFocus autoComplete="current-password" />
         </div>
         {error && (
-          <div style={{ color: "#e05252", fontSize: 12, marginBottom: 14 }}>{error}</div>
+          <div style={{ color: "#e05252", fontSize: 12, marginBottom: 14 }}>Incorrect password.</div>
         )}
-        <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={loading}>
-          {loading ? "Signing in…" : "Sign In"}
+        <button type="submit" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+          Sign In
         </button>
       </form>
     </div>
