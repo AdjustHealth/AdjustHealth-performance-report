@@ -627,6 +627,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <button class="fb-btn fb-btn-outline" onclick="showTab(5)">← Back</button>
       <button class="fb-btn fb-btn-outline" onclick="genAndShow()" style="padding:14px 28px;font-size:13px;letter-spacing:2px;">Preview Report</button>
       <button class="fb-btn fb-btn-primary" onclick="finishAndPrint()" style="padding:14px 36px;font-size:15px;letter-spacing:3px;">Finish &amp; Print PDF</button>
+      <button class="fb-btn fb-btn-primary hidden" id="saveToAppBtn" onclick="saveToApp()" style="padding:14px 36px;font-size:15px;letter-spacing:3px;background:#38bdf8;border-color:#38bdf8;">💾 Save Assessment</button>
     </div>
   </div>
 
@@ -643,6 +644,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
     <div style="display:flex;gap:10px;">
       <button class="fb-btn fb-btn-outline" onclick="showForm()">← Edit Data</button>
       <button class="fb-btn fb-btn-primary" onclick="doPrint()">📄 Save as PDF</button>
+      <button class="fb-btn fb-btn-primary hidden" id="saveToAppBtn2" onclick="saveToApp()" style="background:#38bdf8;border-color:#38bdf8;">💾 Save Assessment</button>
     </div>
   </div>
   <div style="padding:24px;">
@@ -799,41 +801,93 @@ const FTNR=()=>{
 
 // ── localStorage auto-save ───────────────────────────────────────────────────
 const SAVE_KEY="adjustv8";
-function saveState(){
+// Collects every field on the form into a plain object — the single source of
+// truth for both localStorage autosave and the "save to app" postMessage payload
+// used when this tool is embedded in the Next.js shell (see EMBEDDED section below).
+function collectFormData(){
   const data={};
   document.querySelectorAll("#form-screen input:not([type=checkbox]):not([type=radio]),#form-screen select,#form-screen textarea").forEach(el=>{if(el.id)data[el.id]=el.value;});
   document.querySelectorAll("#form-screen input[type=checkbox]").forEach(el=>{if(el.id)data[el.id]=el.checked;});
-  // injury state
   data.__inj=JSON.stringify(_injState);
   data.__assessType=ASSESS_TYPE;
   data.__youthTier=YOUTH_TIER;
-  localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+  return data;
+}
+// Applies a previously-collected form data object back onto the form — shared by
+// localStorage restore and postMessage hydrate.
+function applyFormData(data){
+  if(data.__assessType){ASSESS_TYPE=data.__assessType;YOUTH_TIER=data.__youthTier||"y1";}
+  buildFTUI();
+  applyYouthUIMode();
+  Object.entries(data).forEach(([id,val])=>{
+    if(id==="__inj"){const s=JSON.parse(val);Object.assign(_injState,s);INJ.forEach(r=>_updateChip(r));return;}
+    if(id==="__assessType"||id==="__youthTier")return;
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.type==="checkbox")el.checked=val;
+    else el.value=val;
+  });
+  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();
+}
+function saveState(){
+  localStorage.setItem(SAVE_KEY,JSON.stringify(collectFormData()));
 }
 function restoreState(){
   const raw=localStorage.getItem(SAVE_KEY);
   if(!raw)return null;
   try{
     const data=JSON.parse(raw);
-    // Set assessment type/tier first and rebuild the Strength-tab chip DOM to match,
-    // so the chk<id> restoration below finds the right elements already in place.
-    if(data.__assessType){ASSESS_TYPE=data.__assessType;YOUTH_TIER=data.__youthTier||"y1";}
-    buildFTUI();
-    applyYouthUIMode();
-    Object.entries(data).forEach(([id,val])=>{
-      if(id==="__inj"){const s=JSON.parse(val);Object.assign(_injState,s);INJ.forEach(r=>_updateChip(r));return;}
-      if(id==="__assessType"||id==="__youthTier")return;
-      const el=document.getElementById(id);
-      if(!el)return;
-      if(el.type==="checkbox")el.checked=val;
-      else el.value=val;
-    });
-    onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();
+    applyFormData(data);
     return data.__assessType||null;
   }catch(e){return null;}
 }
 // Auto-save on any input change
 document.addEventListener("input",saveState);
 document.addEventListener("change",saveState);
+
+// ── Embedding support — when this tool is loaded inside an <iframe> by the
+// Next.js shell (adjusthealth-performance-report app), it exchanges the full
+// form state with the parent page via postMessage instead of (or alongside)
+// localStorage, so an assessment can be saved to and reloaded from Supabase.
+const EMBEDDED=window.parent!==window;
+if(EMBEDDED){
+  window.addEventListener("message",e=>{
+    if(!e.data||typeof e.data!=="object")return;
+    if(e.data.type==="hydrate"&&e.data.formData){
+      document.getElementById("type-screen").classList.add("hidden");
+      document.getElementById("form-screen").classList.remove("hidden");
+      applyFormData(e.data.formData);
+      applyTypeLabels();
+      updateProgress();
+    }
+  });
+  const initEmbedded=()=>{
+    document.getElementById("saveToAppBtn")?.classList.remove("hidden");
+    document.getElementById("saveToAppBtn2")?.classList.remove("hidden");
+    window.parent.postMessage({type:"embedded-ready"},"*");
+  };
+  // This script runs near the end of <body>, so DOMContentLoaded has often
+  // already fired by the time this listener would attach — check readyState
+  // directly instead of assuming the event is still pending.
+  if(document.readyState==="loading")window.addEventListener("DOMContentLoaded",initEmbedded);
+  else initEmbedded();
+}
+function saveToApp(){
+  if(!EMBEDDED)return;
+  const ovEl=document.getElementById("ov-score-val");
+  window.parent.postMessage({
+    type:"save",
+    formData:collectFormData(),
+    summary:{
+      athleteName:v("fn")||"Unnamed Athlete",
+      assessType:ASSESS_TYPE,
+      youthTier:ASSESS_TYPE==="youth"?YOUTH_TIER:null,
+      clinician:v("fclin")||null,
+      assessmentDate:v("fd")||null,
+      overallScore:ovEl?(parseFloat(ovEl.textContent)||null):null
+    }
+  },"*");
+}
 
 // ── Assessment type / youth tier selector ─────────────────────────────────────
 let _pendingType=null,_pendingTier="y1";
@@ -1733,7 +1787,7 @@ function gen(){
         <!-- Overall score tile -->
         <div style="background:#131b24;border:1px solid #1c2733;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;text-align:center;">
           <div style="font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:6px;">Overall Score</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;line-height:1;color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div>
+          <div id="ov-score-val" style="font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;line-height:1;color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div>
           <div style="font-size:9px;color:#7a8fa6;margin-top:2px;">out of 10</div>
           <div style="width:40px;height:2px;background:#c6f135;margin:10px auto;"></div>
           <div style="font-size:10px;color:#b8c8d8;line-height:1.4;">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete":S.ov>=5?"Good foundation":"Key areas for development"):"Complete assessment"}</div>
