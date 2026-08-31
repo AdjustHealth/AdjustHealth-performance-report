@@ -573,15 +573,26 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   <div class="fb-panel" id="tab4">
     <div class="nbox hidden" id="youthNoteIso" style="margin-bottom:14px;border-left-color:#f5a623;">Youth isokinetic strength is recorded as-is — there's no validated youth norm to rate it against, so figures show without a Good/Average/Poor judgement. Still worth tracking over time. The Strength domain score on this report is instead calculated from the Functional Strength tests below, which do have published ASCA benchmarks.</div>
     <div class="fb-sh">Isokinetic Dynamometry — Left / Right</div>
+    <div class="nbox" style="margin-bottom:12px;">Untick a test the athlete didn't do. Lower limb is pre-selected — it's the highest-yield for landing/cutting mechanics in most sports; tick the shoulder tests on for overhead/throwing/racquet/swimming athletes.</div>
+    <div class="ft-grid" id="isoSelGrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;">
+      <div class="ft-chip"><input type="checkbox" id="isosel_ke" checked onchange="syncIsoSel()"><label for="isosel_ke">Knee Extension</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_kf" checked onchange="syncIsoSel()"><label for="isosel_kf">Knee Flexion</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_habd" checked onchange="syncIsoSel()"><label for="isosel_habd">Hip Abduction</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_hadd" checked onchange="syncIsoSel()"><label for="isosel_hadd">Hip Adduction</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_si" onchange="syncIsoSel()"><label for="isosel_si">Shoulder I Test</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_sy" onchange="syncIsoSel()"><label for="isosel_sy">Shoulder Y Test</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_ser" onchange="syncIsoSel()"><label for="isosel_ser">Shoulder ER</label></div>
+      <div class="ft-chip"><input type="checkbox" id="isosel_sir" onchange="syncIsoSel()"><label for="isosel_sir">Shoulder IR</label></div>
+    </div>
     <div class="fb-grid fb-g3">
-      <div class="fb-lr"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Knee Flexion (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkfl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fkfr" step="0.01" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Hip Abduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhabdl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhabdr" step="0.01" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Hip Adduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhaddl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhaddr" step="0.01" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Shoulder I Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsil" placeholder="—"></div><div><span>R</span><input type="number" id="fsir" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Shoulder Y Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsyl" placeholder="—"></div><div><span>R</span><input type="number" id="fsyr" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Shoulder ER Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fserl" placeholder="—"></div><div><span>R</span><input type="number" id="fserr" placeholder="—"></div></div></div>
-      <div class="fb-lr"><div class="fb-lrlbl">Shoulder IR Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsirl" placeholder="—"></div><div><span>R</span><input type="number" id="fsirr" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_ke"><div class="fb-lrlbl">Knee Extension (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkel" step="0.1" placeholder="—"></div><div><span>R</span><input type="number" id="fker" step="0.1" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_kf"><div class="fb-lrlbl">Knee Flexion (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fkfl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fkfr" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_habd"><div class="fb-lrlbl">Hip Abduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhabdl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhabdr" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_hadd"><div class="fb-lrlbl">Hip Adduction (Nm/kg)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fhaddl" step="0.01" placeholder="—"></div><div><span>R</span><input type="number" id="fhaddr" step="0.01" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_si"><div class="fb-lrlbl">Shoulder I Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsil" placeholder="—"></div><div><span>R</span><input type="number" id="fsir" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_sy"><div class="fb-lrlbl">Shoulder Y Test (N)</div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsyl" placeholder="—"></div><div><span>R</span><input type="number" id="fsyr" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_ser"><div class="fb-lrlbl">Shoulder ER Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fserl" placeholder="—"></div><div><span>R</span><input type="number" id="fserr" placeholder="—"></div></div></div>
+      <div class="fb-lr" id="isoi_sir"><div class="fb-lrlbl">Shoulder IR Strength (N) <span style="font-weight:400;color:#7a8fa6;font-size:8px;">90° abd</span></div><div class="fb-lrrow"><div><span>L</span><input type="number" id="fsirl" placeholder="—"></div><div><span>R</span><input type="number" id="fsirr" placeholder="—"></div></div></div>
     </div>
     <div class="fb-sh">IMTP</div>
     <div class="fb-grid fb-g4">
@@ -858,7 +869,7 @@ function applyFormData(data){
     if(el.type==="checkbox")el.checked=val;
     else el.value=val;
   });
-  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();
+  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();syncIsoSel();
 }
 function saveState(){
   localStorage.setItem(SAVE_KEY,JSON.stringify(collectFormData()));
@@ -1140,6 +1151,18 @@ function syncFTSel(){
 }
 function ftIsSelected(id){const c=document.getElementById("ftsel_"+id);return!c||c.checked;}
 
+// Isokinetic dynamometry tests are selectable the same way — lower limb is
+// pre-checked (highest yield for most sports' landing/cutting mechanics),
+// shoulder tests are opt-in for overhead/throwing/racquet/swimming athletes.
+const ISO_KEYS=["ke","kf","habd","hadd","si","sy","ser","sir"];
+function syncIsoSel(){
+  ISO_KEYS.forEach(k=>{
+    const c=document.getElementById("isosel_"+k),row=document.getElementById("isoi_"+k);
+    if(c&&row)row.classList.toggle("hidden",!c.checked);
+  });
+}
+function isoIsSelected(key){const c=document.getElementById("isosel_"+key);return!c||c.checked;}
+
 // ── Keyboard shortcut P/F on injury tab ──────────────────────────────────────
 document.addEventListener("keydown",function(e){
   const panel=document.getElementById("tab1");
@@ -1231,7 +1254,7 @@ const DOMAIN_ICONS={
   strength:`<svg class="sic" viewBox="0 0 34 34" fill="none"><rect x="3" y="14" width="4" height="6" rx="1" fill="#c6f135"/><rect x="8" y="11" width="3" height="12" rx="1" fill="#c6f135"/><rect x="12" y="15" width="10" height="4" rx="1" fill="#c6f135"/><rect x="23" y="11" width="3" height="12" rx="1" fill="#c6f135"/><rect x="27" y="14" width="4" height="6" rx="1" fill="#c6f135"/></svg>`,
   energy:`<svg class="sic" viewBox="0 0 34 34" fill="none"><path d="M3 18h6l3-8 5 16 3-8h11" stroke="#c6f135" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 };
-function sidebarShell(iconKey,label,score,whyText,refHd,refRows,tag){
+function sidebarShell(iconKey,label,score,whyText,refHd,refRows,tag,extraBlock){
   return`<div class="psidebar">
     <div>
       <div class="shd">${DOMAIN_ICONS[iconKey]}<div class="shd-lbl">${label}</div></div>
@@ -1245,6 +1268,7 @@ function sidebarShell(iconKey,label,score,whyText,refHd,refRows,tag){
       <div class="sref-hd">${refHd}</div>
       ${refRows}
     </div>
+    ${extraBlock||""}
     ${tag?`<div class="stag">${tag}</div>`:""}
   </div>`;
 }
@@ -1726,10 +1750,18 @@ function gen(){
   const cmjH=nv("fcmjh"),cmjRPP=nv("fcmjrpp"),sjH=nv("fsjh");
   const eur=(cmjH&&sjH)?cmjH/sjH:null;
   const rsi=nv("frsi"),bj=nv("fbj"),slL=nv("fslbl"),slR=nv("fslbr");
-  const keL=nv("fkel"),keR=nv("fker"),kfL=nv("fkfl"),kfR=nv("fkfr");
-  const habdL=nv("fhabdl"),habdR=nv("fhabdr"),haddL=nv("fhaddl"),haddR=nv("fhaddr");
-  const siL=nv("fsil"),siR=nv("fsir"),syL=nv("fsyl"),syR=nv("fsyr");
-  const serL=nv("fserl"),serR=nv("fserr"),sirL=nv("fsirl"),sirR=nv("fsirr");
+  // An unticked isokinetic test is left out of the report even if it has a
+  // value typed in — same "checkbox is the source of truth" rule Functional
+  // Strength already uses, so unchecking one after entering a number that
+  // shouldn't count works the way it visibly looks like it should.
+  const keL=isoIsSelected("ke")?nv("fkel"):0,keR=isoIsSelected("ke")?nv("fker"):0;
+  const kfL=isoIsSelected("kf")?nv("fkfl"):0,kfR=isoIsSelected("kf")?nv("fkfr"):0;
+  const habdL=isoIsSelected("habd")?nv("fhabdl"):0,habdR=isoIsSelected("habd")?nv("fhabdr"):0;
+  const haddL=isoIsSelected("hadd")?nv("fhaddl"):0,haddR=isoIsSelected("hadd")?nv("fhaddr"):0;
+  const siL=isoIsSelected("si")?nv("fsil"):0,siR=isoIsSelected("si")?nv("fsir"):0;
+  const syL=isoIsSelected("sy")?nv("fsyl"):0,syR=isoIsSelected("sy")?nv("fsyr"):0;
+  const serL=isoIsSelected("ser")?nv("fserl"):0,serR=isoIsSelected("ser")?nv("fserr"):0;
+  const sirL=isoIsSelected("sir")?nv("fsirl"):0,sirR=isoIsSelected("sir")?nv("fsirr"):0;
   const imtp=nv("fimtp"),rfd=nv("frfd");
   const fd=FT().map(t=>{
     if(!ftIsSelected(t.id))return null;
@@ -2260,50 +2292,37 @@ function gen(){
         const bench=t.hint?t.hint.replace(/^ASCA benchmark:\s*/,""):(fw[t.id]?`${fw[t.id][0]}× BW good`:fr[t.id]?`>${fr[t.id][0]}${t.u==="reps"?" reps":t.u==="sec"?"s":t.u} good`:"Tracking only");
         return srefRow(t.l,bench,col);
       }).join("");
+      // Youth 1's readiness screen rides along in the sidebar instead of
+      // getting its own report page — on its own that page was little more
+      // than a mostly-empty score card, and it belongs next to the other
+      // functional-competency data anyway (see the tab move above).
+      const readinessBlock=isY1?`<div style="background:#131b24;border:1px solid #1c2733;border-left:3px solid ${readinessBand?readinessBand.col:"#3a4f63"};padding:10px 12px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:6px;">Youth 1 → 2 Readiness</div>
+        ${readinessTotal!==null?`
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:${readinessBand.col};">${readinessTotal}<span style="font-size:11px;color:#7a8fa6;">/12</span></span>
+            <span style="font-size:9px;color:#7a8fa6;">${readinessScored.length}/4 scored</span>
+          </div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${readinessBand.col};">${readinessBand.lbl}</div>
+        `:`<div style="font-size:10px;color:#7a8fa6;">Not yet scored — see the 4-movement screen above.</div>`}
+      </div>`:null;
       return sidebarShell("strength","Strength",S.str,
         ASSESS_TYPE==="youth"
           ?"Functional strength underpins force production for every other domain — and for youth specifically, the ASCA benchmarks alongside each test are competency gates to clear before loaded barbell work is introduced."
           :"Functional strength underpins force production for every other domain — the benchmarks alongside each test below show where loaded or bodyweight capacity is the limiting factor.",
         ASSESS_TYPE==="youth"?"ASCA Test Battery":"Test Battery",rows,
-        "Blue = tracked, no norm published. Green/amber/red = rated vs benchmark.");
+        "Blue = tracked, no norm published. Green/amber/red = rated vs benchmark.",
+        readinessBlock);
     })()}</div>
   </div>
   ${foot()}
 </div>
 `;
 
-  const pnumReadiness=isY1?++pageCount:null;
-  const pageReadiness=isY1?`
-<div class="page">
-  <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Readiness</div><div class="psub">Youth 1 → Youth 2 movement screen</div></div><div class="pnum">Page ${pnumReadiness}</div></div>
-  <div class="pbody">
-    <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming. Each movement is scored 0–3. Optional — the band below is a practical starting point, not a published cut-off.</div>
-    </div>
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
-      ${cardGrid(readinessItems.map(readinessRow),"")}
-    </div>
-    ${readinessTotal!==null?`
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
-      <div style="display:flex;align-items:stretch;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:18px 24px;">
-        <div style="flex-shrink:0;text-align:center;padding-right:20px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness Score</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:16px;color:#7a8fa6;">/12</span></div>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:6px;">${readinessBand.lbl}</div>
-          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;">${readinessScored.length}/4 movements scored${readinessScored.length<4?" (partial — score all 4 for a complete picture)":""}.</div>
-        </div>
-      </div>
-    </div>`:`
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
-      <div class="nbox" style="color:#7a8fa6;">Not yet assessed — score the 4 movements above on the Strength tab to generate a readiness band.</div>
-    </div>`}
-  </div>
-  ${foot()}
-</div>
-`:"";
+  // Readiness no longer gets its own report page — see the sidebar block
+  // built into pageStrength above, which folds the score/band in next to
+  // the other functional-competency data instead of spending a whole page
+  // (previously often near-empty) on a single summary card.
 
   const pnumEnergy=incEnergy?++pageCount:null;
   const pageEnergy=`
@@ -2464,7 +2483,7 @@ function gen(){
         </div>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:4px;">${readinessBand.lbl}</div>
-          <div style="font-size:11px;color:#7a8fa6;">Youth 1 → Youth 2 movement screen (AIMS-adapted) — ${readinessScored.length}/4 movements scored${readinessScored.length<4?", partial":""}. See the Readiness page for the full breakdown.</div>
+          <div style="font-size:11px;color:#7a8fa6;">Youth 1 → Youth 2 movement screen (AIMS-adapted) — ${readinessScored.length}/4 movements scored${readinessScored.length<4?", partial":""}. See the Strength page for the score band.</div>
         </div>
       </div>
     </div>`:""}
@@ -2529,7 +2548,6 @@ function gen(){
     (incMobility?pageMobility:"")+
     (incPower?pagePower:"")+
     (incStrength?pageStrength:"")+
-    pageReadiness+
     (incEnergy?pageEnergy:"")+
     pageSummary+
     pageClinicalSummary;
