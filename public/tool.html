@@ -541,16 +541,6 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div id="mobilityQualList" class="qr-list"></div>
     </div>
     <div class="fb-card" style="max-width:600px;"><label>Mobility Notes</label><textarea id="fmobc" placeholder="Clinical observations..."></textarea></div>
-    <div id="readinessWrap" class="hidden">
-      <div class="fb-sh">Youth 1 → Youth 2 Readiness (optional)</div>
-      <div class="nbox" style="margin-bottom:14px;">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming. Score each 0–3. Optional — leave blank to leave it off the report. The suggested band below is a practical starting point, not a published cut-off — adjust it to your own judgement.</div>
-      <div class="fb-grid fb-g4">
-        <div class="fb-card"><label>Overhead Squat</label><select id="fr_osq"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
-        <div class="fb-card"><label>Push-Up</label><select id="fr_pushup"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
-        <div class="fb-card"><label>Lunge</label><select id="fr_lunge"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
-        <div class="fb-card"><label>Front Brace + Shoulder Touch</label><select id="fr_brace"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
-      </div>
-    </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(1)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(3)">Next: Power →</button></div>
   </div>
 
@@ -606,6 +596,16 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
     <div class="nbox" style="margin-bottom:12px;">Untick a test the athlete didn't do — same as the Report Sections checkboxes, it just leaves that test out of the report.</div>
     <div class="ft-grid" id="ftSelGrid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;"></div>
     <div class="fb-grid fb-g4" id="finputs"></div>
+    <div id="readinessWrap" class="hidden">
+      <div class="fb-sh">Youth 1 → Youth 2 Readiness (optional)</div>
+      <div class="nbox" style="margin-bottom:14px;">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming — a functional-competency gate alongside the strength tests above, not a mobility measure. Score each 0–3. Optional — leave blank to leave it off the report. The suggested band below is a practical starting point, not a published cut-off — adjust it to your own judgement.</div>
+      <div class="fb-grid fb-g4">
+        <div class="fb-card"><label>Overhead Squat</label><select id="fr_osq"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+        <div class="fb-card"><label>Push-Up</label><select id="fr_pushup"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+        <div class="fb-card"><label>Lunge</label><select id="fr_lunge"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+        <div class="fb-card"><label>Front Brace + Shoulder Touch</label><select id="fr_brace"><option value="">— Not scored —</option><option value="0">0 — Unable to perform</option><option value="1">1 — Major compensations</option><option value="2">2 — Minor compensations</option><option value="3">3 — Performed correctly</option></select></div>
+      </div>
+    </div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(3)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(5)">Next: Energy Systems →</button></div>
   </div>
 
@@ -1479,11 +1479,13 @@ function fcard(item,bw,compact){
   // The rating badge moves out of its usual absolute top-right corner (which
   // overlaps long labels like "Max Push-Ups" at this width) into the label row.
   if(compact){
+    // Label, badge and value each get their own line — stacking instead of
+    // sharing a row means a long label (e.g. "SL Calf Raise L") and a long
+    // badge ("Developing") can never compete for the same narrow width and
+    // overflow the card, no matter how few columns this row ends up with.
     return`<div class="mc" style="border-left-color:${col};padding:10px 12px;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">
-        <div class="ml" style="margin-bottom:0;">${item.label}</div>
-        ${bdgLbl?`<span class="rb ${bdgCls}" style="flex-shrink:0;">${bdgLbl}</span>`:""}
-      </div>
+      <div class="ml" style="margin-bottom:0;">${item.label}</div>
+      ${bdgLbl?`<span class="rb ${bdgCls}" style="margin-top:4px;">${bdgLbl}</span>`:""}
       <div class="mv" style="color:${col};font-size:24px;margin-top:4px;">${item.val}</div>
       <div class="mu">${item.u}</div>
       ${hint}
@@ -1983,39 +1985,6 @@ function gen(){
 </div>
 `;
 
-  const pnumReadiness=isY1?++pageCount:null;
-  const pageReadiness=isY1?`
-<div class="page">
-  <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Readiness</div><div class="psub">Youth 1 → Youth 2 movement screen</div></div><div class="pnum">Page ${pnumReadiness}</div></div>
-  <div class="pbody">
-    <div class="psec" style="flex:0 0 auto;">
-      <div class="nbox">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming. Each movement is scored 0–3. Optional — the band below is a practical starting point, not a published cut-off.</div>
-    </div>
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
-      ${cardGrid(readinessItems.map(readinessRow),"")}
-    </div>
-    ${readinessTotal!==null?`
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
-      <div style="display:flex;align-items:stretch;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:18px 24px;">
-        <div style="flex-shrink:0;text-align:center;padding-right:20px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness Score</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:16px;color:#7a8fa6;">/12</span></div>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:6px;">${readinessBand.lbl}</div>
-          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;">${readinessScored.length}/4 movements scored${readinessScored.length<4?" (partial — score all 4 for a complete picture)":""}.</div>
-        </div>
-      </div>
-    </div>`:`
-    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
-      <div class="nbox" style="color:#7a8fa6;">Not yet assessed — score the 4 movements above on the Mobility tab to generate a readiness band.</div>
-    </div>`}
-  </div>
-  ${foot()}
-</div>
-`:"";
-
   const pnumPower=incPower?++pageCount:null;
   const pagePower=`
 <div class="page">
@@ -2249,13 +2218,13 @@ function gen(){
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
       <div class="nbox" style="margin-bottom:12px;">Rated as <strong>relative strength</strong> (kg ÷ BW). BW: ${bw?bw+" kg":"not entered"}.</div>
-      ${fd.length>0?(()=>{
-        // Main column is narrower now that the page carries a reference sidebar,
-        // so a full battery (up to 13 tests for adults) needs a tighter grid than
-        // it did at full page width to still fit without the page clipping it.
-        const compact=fd.length>5;
-        return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(${compact?"96px":"140px"},1fr));gap:${compact?"6px":"12px"};">${fd.map(item=>fcard(item,bw,compact)).join("")}</div>`;
-      })():`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
+      ${fd.length>0?
+        // The main column is permanently narrower now that the page carries a
+        // reference sidebar, so the compact card size is used regardless of
+        // test count — even 4-5 tests at the old "wide" size could run past
+        // the bottom of the page in this narrower column.
+        `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;">${fd.map(item=>fcard(item,bw,true)).join("")}</div>`
+      :`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
     </div>
     <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${(()=>{
       const bits=[];
@@ -2303,6 +2272,39 @@ function gen(){
 </div>
 `;
 
+  const pnumReadiness=isY1?++pageCount:null;
+  const pageReadiness=isY1?`
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Readiness</div><div class="psub">Youth 1 → Youth 2 movement screen</div></div><div class="pnum">Page ${pnumReadiness}</div></div>
+  <div class="pbody">
+    <div class="psec" style="flex:0 0 auto;">
+      <div class="nbox">A 4-movement screen adapted from the AIMS (Athlete Introductory Movement Screen — Rogers et al. 2019; Duncan et al. 2024), used to gauge readiness to progress from Youth 1 to Youth 2 programming. Each movement is scored 0–3. Optional — the band below is a practical starting point, not a published cut-off.</div>
+    </div>
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      ${cardGrid(readinessItems.map(readinessRow),"")}
+    </div>
+    ${readinessTotal!==null?`
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div style="display:flex;align-items:stretch;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${readinessBand.col};padding:18px 24px;">
+        <div style="flex-shrink:0;text-align:center;padding-right:20px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Readiness Score</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;color:${readinessBand.col};line-height:1;">${readinessTotal}<span style="font-size:16px;color:#7a8fa6;">/12</span></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:${readinessBand.col};margin-bottom:6px;">${readinessBand.lbl}</div>
+          <div style="font-size:11px;color:#7a8fa6;line-height:1.6;">${readinessScored.length}/4 movements scored${readinessScored.length<4?" (partial — score all 4 for a complete picture)":""}.</div>
+        </div>
+      </div>
+    </div>`:`
+    <div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div class="nbox" style="color:#7a8fa6;">Not yet assessed — score the 4 movements above on the Strength tab to generate a readiness band.</div>
+    </div>`}
+  </div>
+  ${foot()}
+</div>
+`:"";
+
   const pnumEnergy=incEnergy?++pageCount:null;
   const pageEnergy=`
 <div class="page">
@@ -2334,16 +2336,16 @@ function gen(){
     <!-- System zone header cards -->
     <div class="psec" style="flex:0 0 auto;">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <div style="background:#131b24;border-top:3px solid #38bdf8;padding:10px 14px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">PCr — Speed</div>
+        <div style="background:#131b24;border-top:3px solid #3a4f63;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#e6edf3;margin-bottom:4px;">PCr — Speed</div>
           <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">0–10s · Explosive single efforts · ATP-PCr resynthesis</div>
         </div>
-        <div style="background:#131b24;border-top:3px solid #a78bfa;padding:10px 14px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#a78bfa;margin-bottom:4px;">Anaerobic</div>
+        <div style="background:#131b24;border-top:3px solid #3a4f63;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#e6edf3;margin-bottom:4px;">Anaerobic</div>
           <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">10–120s · High-intensity repeat efforts · Glycolytic pathway</div>
         </div>
-        <div style="background:#131b24;border-top:3px solid #2dd4bf;padding:10px 14px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">Aerobic</div>
+        <div style="background:#131b24;border-top:3px solid #3a4f63;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#e6edf3;margin-bottom:4px;">Aerobic</div>
           <div style="font-size:10px;color:#b8c8d8;line-height:1.5;">2+ min · Sustained oxidative effort · Underpins recovery</div>
         </div>
       </div>
@@ -2351,9 +2353,9 @@ function gen(){
 
     <!-- PCr test row -->
     ${sv?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #38bdf8;overflow:hidden;">
+      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #3a4f63;overflow:hidden;">
         <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:110px;flex-shrink:0;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#38bdf8;margin-bottom:4px;">${st.l}</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">${st.l}</div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:${domCol(S.spd)};line-height:1;">${sv.toFixed(2)}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${st.u}</div>
           <span class="rb ${S.spd>=7.5?"rg":S.spd>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.spd>=7.5?"Excellent":S.spd>=5?"Good":"Developing"}</span>
@@ -2371,9 +2373,9 @@ function gen(){
 
     <!-- Aerobic test row -->
     ${cv?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #2dd4bf;overflow:hidden;">
+      <div style="display:flex;gap:0;background:#131b24;border:1px solid #1c2733;border-left:4px solid #3a4f63;overflow:hidden;">
         <div style="padding:14px 18px;border-right:1px solid #1c2733;display:flex;flex-direction:column;justify-content:center;min-width:110px;flex-shrink:0;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4bf;margin-bottom:4px;">${ct.l}</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">${ct.l}</div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:${domCol(S.cap)};line-height:1;">${cv}</div>
           <div style="font-size:11px;color:#7a8fa6;margin-top:2px;">${ct.u}</div>
           <span class="rb ${S.cap>=7.5?"rg":S.cap>=5?"ra":"rp"}" style="margin-top:6px;align-self:flex-start;">${S.cap>=7.5?"Excellent":S.cap>=5?"Good":"Developing"}</span>
@@ -2396,12 +2398,12 @@ function gen(){
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;margin-bottom:6px;">Domain Profile</div>
           ${energyZoneBars(S.spd,S_ana,S.cap)}
         </div>
-        <div style="background:#131b24;border-left:3px solid #38bdf8;padding:10px 14px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#38bdf8;margin-bottom:5px;">PCr / Speed Interpretation</div>
+        <div style="background:#131b24;border-left:3px solid #3a4f63;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:5px;">PCr / Speed Interpretation</div>
           <div style="font-size:10px;color:#b8c8d8;line-height:1.6;">${sv?(S.spd>=7.5?"Elite-level acceleration.":S.spd>=5?"Good acceleration.":"Developing acceleration."):"Enter speed result to generate interpretation."}</div>
         </div>
-        <div style="background:#131b24;border-left:3px solid #2dd4bf;padding:10px 14px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#2dd4bf;margin-bottom:5px;">Aerobic Interpretation</div>
+        <div style="background:#131b24;border-left:3px solid #3a4f63;padding:10px 14px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:5px;">Aerobic Interpretation</div>
           <div style="font-size:10px;color:#b8c8d8;line-height:1.6;">${cv?(S.cap>=7.5?"Elite aerobic capacity.":S.cap>=5?"Good aerobic capacity.":"Developing aerobic capacity."):"Enter aerobic result to generate interpretation."}</div>
         </div>
       </div>
@@ -2525,9 +2527,9 @@ function gen(){
 
   pages.innerHTML=pageCover+pageAthlete+
     (incMobility?pageMobility:"")+
-    pageReadiness+
     (incPower?pagePower:"")+
     (incStrength?pageStrength:"")+
+    pageReadiness+
     (incEnergy?pageEnergy:"")+
     pageSummary+
     pageClinicalSummary;
