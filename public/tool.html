@@ -2486,6 +2486,13 @@ function gen(){
 </div>
 `;
 
+  // Summary and Clinical Summary used to be two pages that both opened with
+  // the identical overall-score headline and both listed Key Development
+  // Areas (once with detail, once as a stripped-down "Priority Focus" title
+  // list) — real duplication, not just similar framing. Merged into one
+  // page: score/radar first, then the clinician's own narrative (if any),
+  // then the development priorities once, then the sign-off line.
+  const hasSummary=!!v("fsummary");
   const pnumSummary=++pageCount;
   const pageSummary=`
 <div class="page">
@@ -2526,54 +2533,18 @@ function gen(){
         </div>
       </div>
     </div>`:""}
+    ${hasSummary?`<div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:8px;">Clinician Narrative</div>
+      <div style="background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;">
+        <div style="font-size:12px;color:#b8c8d8;line-height:1.7;white-space:pre-line;">${v("fsummary")}</div>
+      </div>
+    </div>`:""}
     <div class="psec">
       <div class="slbl" style="margin-bottom:12px;">Key Development Areas</div>
       ${kdas.length?`<div style="display:flex;flex-direction:column;gap:10px;height:100%;">${kdas.map(([t,d],i)=>`<div style="flex:1;background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;display:flex;align-items:center;gap:14px;min-height:0;"><div style="width:34px;height:34px;border-radius:50%;background:#c6f135;color:#0d1117;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div><div style="flex:1;min-width:0;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:#ffffff;letter-spacing:1px;margin-bottom:5px;">${t}</div>${d?`<div style="font-size:12px;color:#b8c8d8;line-height:1.5;">${d}</div>`:""}</div></div>`).join("")}</div>`:`<div style="background:#131b24;border-left:4px solid #2a3a4a;padding:18px;color:#7a8fa6;font-size:11px;">Add key development areas in the sidebar.</div>`}
     </div>
-  </div>
-  ${foot()}
-</div>
-
-  `;
-
-  // Clinical Summary — the full write-up gets its own page with room to breathe,
-  // rather than being squeezed into a box on the Summary page next to the score/radar.
-  const hasSummary=!!v("fsummary");
-  const pnumClinicalSummary=hasSummary?++pageCount:null;
-  const pageClinicalSummary=hasSummary?`
-<div class="page">
-  <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Clinical Summary</div><div class="psub">Full interpretation and recommended focus</div></div><div class="pnum">Page ${pnumClinicalSummary}</div></div>
-  <div class="pbody">
     <div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;gap:20px;align-items:stretch;background:#131b24;border:1px solid #1c2733;overflow:hidden;">
-        <div style="width:130px;flex-shrink:0;background:#1c2733;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 10px;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Overall</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:52px;font-weight:900;line-height:1;color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div>
-          <div style="font-size:10px;color:#7a8fa6;">out of 10</div>
-        </div>
-        <div style="flex:1;min-width:0;padding:26px 30px 26px 4px;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;font-style:italic;color:#ffffff;line-height:1.25;">${S.ov!==null?(S.ov>=7.5?"Strong overall athlete.":S.ov>=5?"Good foundation — targeted development will drive significant gains.":"Key areas identified for focused development."):"Clinical Summary"}</div>
-        </div>
-      </div>
-    </div>
-    <div class="psec" style="flex:0 0 auto;margin-top:16px;">
-      <div class="slbl" style="margin-bottom:10px;">Clinician Narrative</div>
-      <div style="background:#131b24;border-left:4px solid #c6f135;padding:24px 28px;">
-        <div style="font-size:13px;color:#b8c8d8;line-height:1.9;white-space:pre-line;max-width:680px;">${v("fsummary")}</div>
-      </div>
-    </div>
-    ${kdas.length?`<div class="psec" style="flex:1;margin-top:18px;">
-      <div class="slbl" style="margin-bottom:10px;">Priority Focus — Next Training Block</div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        ${kdas.map(([t,d],i)=>`<div style="display:flex;align-items:center;gap:14px;background:#131b24;border:1px solid #1c2733;padding:10px 16px;">
-          <div style="width:24px;height:24px;border-radius:50%;background:#c6f135;color:#0d1117;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#ffffff;">${t}</div>
-        </div>`).join("")}
-      </div>
-    </div>`:""}
-    <div class="psec" style="flex:0 0 auto;margin-top:auto;padding-top:20px;">
-      <div style="border-top:1px solid #1c2733;padding-top:14px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="border-top:1px solid #1c2733;padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
         <div style="font-size:10px;color:#7a8fa6;">Assessed by ${v("fclin")||"—"} on ${dateStr}</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;">Get Better. Get Moving. Get Strong.</div>
       </div>
@@ -2581,15 +2552,14 @@ function gen(){
   </div>
   ${foot()}
 </div>
-`:"";
+  `;
 
   pages.innerHTML=pageCover+pageAthlete+
     (incMobility?pageMobility:"")+
     (incPower?pagePower:"")+
     (incStrength?pageStrength:"")+
     (incEnergy?pageEnergy:"")+
-    pageSummary+
-    pageClinicalSummary;
+    pageSummary;
 
   // Inline SVG radar — no Chart.js dependency, instant render
   (()=>{
