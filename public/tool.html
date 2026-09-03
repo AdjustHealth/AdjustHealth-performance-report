@@ -252,7 +252,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   justify-content:flex-start;
   overflow:hidden;
 }
-.psec+.psec{border-top:1px solid #1c2733;padding-top:12px;margin-top:12px;}
+.psec+.psec{border-top:1px solid #1c2733;padding-top:9px;margin-top:9px;}
 
 /* Domain pages (Mobility/Power/Strength/Energy) split into a main results
    column + a persistent reference sidebar. The sidebar's own content (score
@@ -621,13 +621,21 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
   </div>
 
   <div class="fb-panel" id="tab5">
-    <div class="nbox hidden" id="youthNoteEnergy" style="margin-bottom:14px;border-left-color:#f5a623;">No credible youth norm exists for sprint or aerobic/anaerobic testing, so the menu is trimmed to the simplest option per test and each is rated by your own clinical judgement alongside the number.</div>
+    <div class="nbox hidden" id="youthNoteEnergy" style="margin-bottom:14px;border-left-color:#f5a623;">No credible youth norm exists for sprint or aerobic/anaerobic testing, so the menu is trimmed to the simplest option per test and each is rated by your own clinical judgement alongside the number. Energy systems testing is entirely optional for youth — untick anything you didn't get to.</div>
+    <div class="ft-grid" id="energySelGrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px;">
+      <div class="ft-chip"><input type="checkbox" id="energysel_spd" checked onchange="syncEnergySel()"><label for="energysel_spd">Speed / PCr</label></div>
+      <div class="ft-chip"><input type="checkbox" id="energysel_cap" checked onchange="syncEnergySel()"><label for="energysel_cap">Aerobic Capacity</label></div>
+      <div class="ft-chip"><input type="checkbox" id="energysel_ana" checked onchange="syncEnergySel()"><label for="energysel_ana">Anaerobic</label></div>
+    </div>
+    <div id="energyi_spd">
     <div class="fb-sh">Speed — PCr System</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Test Type</label><select id="fspdtype" onchange="onSpd()"><option value="10m">10m Sprint</option><option value="20m">20m Sprint</option><option value="40m">40m Sprint</option><option value="505">505 Agility</option><option value="lane">Lane Agility</option></select></div>
       <div class="fb-card"><label id="fspdlbl">10m Sprint (sec)</label><input id="fspdval" type="number" step="0.01" placeholder="—"></div>
       <div class="fb-card hidden" id="qr-spd-card"><label>Clinical Rating</label><div class="qr-row" id="qr-spd"><div class="qr-chip" data-r="p" onclick="setQual('spd','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('spd','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('spd','g')">Good</div><input type="hidden" id="mq_spd"></div></div>
     </div>
+    </div>
+    <div id="energyi_cap">
     <div class="fb-sh">Aerobic Capacity</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Test Type</label><select id="fcaptype" onchange="onCap()"><option value="mas">Treadmill Ramp MAS (km/h)</option><option value="wb">Watt Bike 3min Peak (W)</option><option value="run6">6min Run Time Trial (m)</option><option value="row">2km Row (min)</option><option value="yoyo">Yo-Yo IRT Level 1</option><option value="cooper">Cooper 12min Run (m)</option></select></div>
@@ -635,6 +643,8 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card" id="fcapnoteCard" style="display:flex;align-items:center;"><div id="fcapnote" style="font-size:11px;color:#7a8fa6;font-style:italic;line-height:1.5;">Start 8km/h +1km/h per min.</div></div>
       <div class="fb-card hidden" id="qr-cap-card"><label>Clinical Rating</label><div class="qr-row" id="qr-cap"><div class="qr-chip" data-r="p" onclick="setQual('cap','p')">Poor</div><div class="qr-chip" data-r="a" onclick="setQual('cap','a')">Average</div><div class="qr-chip" data-r="g" onclick="setQual('cap','g')">Good</div><input type="hidden" id="mq_cap"></div></div>
     </div>
+    </div>
+    <div id="energyi_ana">
     <div class="fb-sh">Anaerobic — Run (optional)</div>
     <div class="fb-grid fb-g3" style="max-width:700px;">
       <div class="fb-card"><label>Run Test</label><select id="fanatype" onchange="onAna()"><option value="rsa">RSA 5×30m</option></select></div>
@@ -647,6 +657,8 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-card"><label>Bike Test</label><select id="fanabtype" onchange="onAnaB()"><option value="wb10">Watt Bike 10s Peak</option></select></div>
       <div class="fb-card"><label id="fanaBlbl">Peak Power (W)</label><input id="fanabval" type="number" placeholder="—"></div>
     </div>
+    </div>
+    <div class="fb-card" style="max-width:600px;"><label>Observations</label><textarea id="fenergyc" placeholder="e.g. Sprint done for observational purposes only — technique/effort notes, context on conditions, etc."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(4)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(6)">Next: Summary →</button></div>
   </div>
 
@@ -869,7 +881,7 @@ function applyFormData(data){
     if(el.type==="checkbox")el.checked=val;
     else el.value=val;
   });
-  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();syncIsoSel();
+  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();syncIsoSel();syncEnergySel();
 }
 function saveState(){
   localStorage.setItem(SAVE_KEY,JSON.stringify(collectFormData()));
@@ -1163,6 +1175,18 @@ function syncIsoSel(){
 }
 function isoIsSelected(key){const c=document.getElementById("isosel_"+key);return!c||c.checked;}
 
+// Energy Systems sub-tests (Speed/Aerobic/Anaerobic) are independently
+// selectable too — most youth sessions won't get to any of them, and a
+// clinician who only ran the sprint shouldn't have to look at the other two.
+const ENERGY_KEYS=["spd","cap","ana"];
+function syncEnergySel(){
+  ENERGY_KEYS.forEach(k=>{
+    const c=document.getElementById("energysel_"+k),row=document.getElementById("energyi_"+k);
+    if(c&&row)row.classList.toggle("hidden",!c.checked);
+  });
+}
+function energyIsSelected(key){const c=document.getElementById("energysel_"+key);return!c||c.checked;}
+
 // ── Keyboard shortcut P/F on injury tab ──────────────────────────────────────
 document.addEventListener("keydown",function(e){
   const panel=document.getElementById("tab1");
@@ -1203,7 +1227,13 @@ const qScore=r=>r==="g"?9:r==="a"?5.5:r==="p"?2:null; // numeric equivalent of a
 const rCol=r=>r==="g"?"#4cdb7a":r==="a"?"#f5a623":"#e05252";
 const rCls=r=>r==="g"?"rg":r==="a"?"ra":"rp";
 const rLbl=r=>r==="g"?"Good":r==="a"?"Average":"Poor";
-const domCol=s=>s===null?"#7a8fa6":s>=7.5?"#c6f135":s>=5?"#f5a623":"#e05252";
+// Green/amber/red is the ONE rating language used throughout the report —
+// domain-level scores used to show "good" as the brand lime accent, which
+// collided with lime's other job as pure decoration (dividers, headers,
+// buttons), making it unclear whether a given lime element was a rating or
+// just styling. Domain scores now use the same green as every individual
+// test badge, so color means exactly one thing everywhere on the page.
+const domCol=s=>s===null?"#7a8fa6":s>=7.5?"#4cdb7a":s>=5?"#f5a623":"#e05252";
 const lsi=(a,b)=>(!a||!b)?null:Math.round((Math.min(a,b)/Math.max(a,b))*100);
 const lsiCls=v=>v===null?"rn":v>=90?"rg":v>=85?"ra":"rp";
 
@@ -1279,8 +1309,8 @@ function srefRow(label,val,col){
 function energyZoneBars(spdScore,anaScore,capScore){
   const W=200,H=150,pad=18,barW=44,gap=16,baseline=H-28;
   const zones=[
-    {lbl:"PCr",score:spdScore,col:spdScore===null?"#2a3a4a":spdScore>=7.5?"#c6f135":spdScore>=5?"#f5a623":"#e05252"},
-    {lbl:"Anaerob.",score:anaScore,col:anaScore===null?"#2a3a4a":"#a78bfa"},
+    {lbl:"PCr",score:spdScore,col:spdScore===null?"#2a3a4a":spdScore>=7.5?"#4cdb7a":spdScore>=5?"#f5a623":"#e05252"},
+    {lbl:"Anaerob.",score:anaScore,col:anaScore===null?"#2a3a4a":anaScore>=7.5?"#4cdb7a":anaScore>=5?"#f5a623":"#e05252"},
     {lbl:"Aerobic",score:capScore,col:capScore===null?"#2a3a4a":capScore>=7.5?"#4cdb7a":capScore>=5?"#f5a623":"#e05252"}
   ];
   const maxH=baseline-22;
@@ -1322,12 +1352,12 @@ function lrBarRow(label,lV,rV,nm){
   const pct=val=>Math.max(4,Math.min(100,(val/maxRef)*100));
   const fmt=val=>Math.round(val*100)/100;
   const bar=(val,rating,has)=>`<div style="flex:1;height:16px;background:#1c2733;border-radius:3px;overflow:hidden;">${has?`<div style="height:100%;width:${pct(val)}%;background:${rCol(rating)};border-radius:3px;"></div>`:""}</div>`;
-  return`<div style="margin-bottom:14px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+  return`<div style="margin-bottom:9px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#b8c8d8;">${label}</div>
       <span class="rb ${lsiCls(ls)}">LSI ${ls!==null?ls+"%":"—"}</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
       <div style="width:14px;font-size:9px;font-weight:700;color:#7a8fa6;">L</div>
       ${bar(lV,rL,hL)}
       <div style="width:58px;font-size:12px;font-weight:700;text-align:right;color:${hL?rCol(rL):"#7a8fa6"};">${hL?fmt(lV)+nm.u:"—"}</div>
@@ -1357,12 +1387,12 @@ function lrBarRowN(label,lV,rV,unit){
   const pct=val=>Math.max(4,Math.min(100,(val/ref)*100));
   const fmt=val=>Math.round(val*100)/100;
   const bar=(val,has)=>`<div style="flex:1;height:16px;background:#1c2733;border-radius:3px;overflow:hidden;">${has?`<div style="height:100%;width:${pct(val)}%;background:#5b7a99;border-radius:3px;"></div>`:""}</div>`;
-  return`<div style="margin-bottom:14px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+  return`<div style="margin-bottom:9px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <div style="font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#b8c8d8;">${label}</div>
       <span class="rb ${lsiCls(ls)}">LSI ${ls!==null?ls+"%":"—"}</span>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
       <div style="width:14px;font-size:9px;font-weight:700;color:#7a8fa6;">L</div>
       ${bar(lV,hL)}
       <div style="width:58px;font-size:12px;font-weight:700;text-align:right;color:${hL?"#ffffff":"#7a8fa6"};">${hL?fmt(lV)+unit:"—"}</div>
@@ -1507,12 +1537,14 @@ function fcard(item,bw,compact){
     // sharing a row means a long label (e.g. "SL Calf Raise L") and a long
     // badge ("Developing") can never compete for the same narrow width and
     // overflow the card, no matter how few columns this row ends up with.
-    return`<div class="mc" style="border-left-color:${col};padding:10px 12px;">
+    // The benchmark hint is dropped here — it's the same text already shown
+    // for every test in the sidebar's Test Battery reference, and cutting a
+    // full wrapped line off up to 13 cards is real headroom on a full battery.
+    return`<div class="mc" style="border-left-color:${col};padding:8px 10px;">
       <div class="ml" style="margin-bottom:0;">${item.label}</div>
       ${bdgLbl?`<span class="rb ${bdgCls}" style="margin-top:4px;">${bdgLbl}</span>`:""}
-      <div class="mv" style="color:${col};font-size:24px;margin-top:4px;">${item.val}</div>
+      <div class="mv" style="color:${col};font-size:22px;margin-top:3px;">${item.val}</div>
       <div class="mu">${item.u}</div>
-      ${hint}
     </div>`;
   }
   const badge=bdgLbl?`<span class="mc-bdg rb ${bdgCls}">${bdgLbl}</span>`:"";
@@ -1600,18 +1632,18 @@ function collectFindings(){
   // Energy Systems — no credible youth norm exists for any of these, so each is
   // graded from the clinician's own chip pick rather than an adult threshold.
   if(ASSESS_TYPE==="youth"){
-    const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk),spdR=v("mq_spd");
+    const sk=v("fspdtype")||"10m",sv=energyIsSelected("spd")?nv("fspdval"):0,st=SPDC(sk),spdR=v("mq_spd");
     if(sv&&spdR)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,subjective:true,rating:spdR,score:qScore(spdR)});
-    const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck),capR=v("mq_cap");
+    const ck=v("fcaptype")||"mas",cv=energyIsSelected("cap")?nv("fcapval"):0,ct=CAPC(ck),capR=v("mq_cap");
     if(cv&&capR)list.push({domain:"Energy Systems",label:ct.l,val:cv,unit:" "+ct.u,subjective:true,rating:capR,score:qScore(capR)});
-    const ak=v("fanatype")||"rsa",av=nv("fanabest"),at=ANAC(ak),anaR=v("mq_ana");
+    const ak=v("fanatype")||"rsa",av=energyIsSelected("ana")?nv("fanabest"):0,at=ANAC(ak),anaR=v("mq_ana");
     if(av&&anaR)list.push({domain:"Energy Systems",label:at.l,val:av,unit:" "+at.u,subjective:true,rating:anaR,score:qScore(anaR)});
   }else{
-    const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
+    const sk=v("fspdtype")||"10m",sv=energyIsSelected("spd")?nv("fspdval"):0,st=SPDC(sk);
     if(sv)list.push({domain:"Energy Systems",label:st.l,val:sv,unit:" "+st.u,good:st.good,avg:st.avg,lo:true,rating:rat(sv,{good:st.good,avg:st.avg,lo:true}),score:sc(sv,st.good,st.avg,true)});
-    const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
+    const ck=v("fcaptype")||"mas",cv=energyIsSelected("cap")?nv("fcapval"):0,ct=CAPC(ck);
     if(cv)list.push({domain:"Energy Systems",label:ct.l,val:cv,unit:" "+ct.u,good:ct.good,avg:ct.avg,lo:!ct.hi,rating:rat(cv,{good:ct.good,avg:ct.avg,lo:!ct.hi}),score:sc(cv,ct.good,ct.avg,!ct.hi)});
-    const ak=v("fanatype")||"rsa",av=nv("fanabest"),at=ANAC(ak);
+    const ak=v("fanatype")||"rsa",av=energyIsSelected("ana")?nv("fanabest"):0,at=ANAC(ak);
     if(av)list.push({domain:"Energy Systems",label:at.l,val:av,unit:" "+at.u,good:at.good,avg:at.avg,lo:at.lo,rating:rat(av,{good:at.good,avg:at.avg,lo:at.lo}),score:sc(av,at.good,at.avg,at.lo)});
   }
 
@@ -1771,10 +1803,13 @@ function gen(){
     const label=rmType?`${rmType} ${t.l}`:t.l;
     return{...t,val,rmType,scoreVal,label};
   }).filter(Boolean);
-  const sk=v("fspdtype")||"10m",sv=nv("fspdval"),st=SPDC(sk);
-  const ck=v("fcaptype")||"mas",cv=nv("fcapval"),ct=CAPC(ck);
-  const ak=v("fanatype")||"rsa",av=nv("fanabest"),adec=nv("fanadec"),at=ANAC(ak);
-  const abk=v("fanabtype")||"wb10",abv=nv("fanabval"),abt=ANAC(abk);
+  // An unticked Energy Systems sub-test is left out of the report even if it
+  // has a value typed in — same "checkbox is the source of truth" rule the
+  // other selectable sections already use.
+  const sk=v("fspdtype")||"10m",sv=energyIsSelected("spd")?nv("fspdval"):0,st=SPDC(sk);
+  const ck=v("fcaptype")||"mas",cv=energyIsSelected("cap")?nv("fcapval"):0,ct=CAPC(ck);
+  const ak=v("fanatype")||"rsa",av=energyIsSelected("ana")?nv("fanabest"):0,adec=energyIsSelected("ana")?nv("fanadec"):0,at=ANAC(ak);
+  const abk=v("fanabtype")||"wb10",abv=energyIsSelected("ana")?nv("fanabval"):0,abt=ANAC(abk);
   const S_ana_run=av?Math.round(sc(av,at.good,at.avg,at.lo)*10)/10:null;
   const S_ana_bike=abv?Math.round(sc(abv,abt.good,abt.avg,abt.lo)*10)/10:null;
   const S_ana=ASSESS_TYPE==="youth"?(av?qScore(v("mq_ana")):null):(S_ana_run!==null&&S_ana_bike!==null?Math.round((S_ana_run+S_ana_bike)/2*10)/10:S_ana_run!==null?S_ana_run:S_ana_bike);
@@ -2099,9 +2134,9 @@ function gen(){
     ${rsi?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl">Reactive Strength — Drop Jump RSI Mod</div>
       <div class="sprow">
-        ${speedo(rsi,0,2.0,"",rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252",200,158)}
+        ${speedo(rsi,0,2.0,"",rsi>=POWD().rsi.good?"#4cdb7a":rsi>=POWD().rsi.avg?"#f5a623":"#e05252",200,158)}
         <div class="spinfo">
-          <div class="spbig" style="color:${rsi>=POWD().rsi.good?"#c6f135":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"};">${rsi.toFixed(2)}<span style="font-size:18px;color:#7a8fa6;font-weight:400;"> RSI Mod</span></div>
+          <div class="spbig" style="color:${rsi>=POWD().rsi.good?"#4cdb7a":rsi>=POWD().rsi.avg?"#f5a623":"#e05252"};">${rsi.toFixed(2)}<span style="font-size:18px;color:#7a8fa6;font-weight:400;"> RSI Mod</span></div>
           <div class="spnote">Measures reactive strength.</div>
           <div class="bmg">
             <div class="bm" style="border-color:#4cdb7a;"><div class="bml" style="color:#4cdb7a;">Excellent</div><div class="bmv">&gt;1.50</div></div>
@@ -2165,13 +2200,13 @@ function gen(){
       <div class="nbox">No validated youth dynamometer norms exist, so isokinetic figures are shown as real numbers with L/R comparison rather than a Good/Average/Poor judgement. <strong>Overall Strength</strong> below is calculated automatically from the Functional Strength tests, which do have published ASCA competency benchmarks.</div>
     </div>
     ${S.str!==null?`<div class="psec" style="flex:0 0 auto;">
-      <div style="display:flex;align-items:center;gap:16px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${domCol(S.str)};padding:16px 20px;">
-        <div style="flex-shrink:0;text-align:center;padding-right:16px;border-right:1px solid #1c2733;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:4px;">Overall Strength</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:${domCol(S.str)};line-height:1;">${S.str.toFixed(1)}<span style="font-size:14px;color:#7a8fa6;">/10</span></div>
-          <div style="margin-top:4px;"><span class="rb ${S.str>=7.5?"rg":S.str>=5?"ra":"rp"}">${S.str>=7.5?"Strong":S.str>=5?"Average":"Focus"}</span></div>
+      <div style="display:flex;align-items:center;gap:14px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${domCol(S.str)};padding:10px 16px;">
+        <div style="flex-shrink:0;text-align:center;padding-right:14px;border-right:1px solid #1c2733;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8fa6;margin-bottom:2px;">Overall Strength</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:${domCol(S.str)};line-height:1;">${S.str.toFixed(1)}<span style="font-size:12px;color:#7a8fa6;">/10</span></div>
+          <div style="margin-top:3px;"><span class="rb ${S.str>=7.5?"rg":S.str>=5?"ra":"rp"}">${S.str>=7.5?"Strong":S.str>=5?"Average":"Focus"}</span></div>
         </div>
-        <div style="flex:1;font-size:11px;color:#b8c8d8;line-height:1.6;">Calculated from Functional Strength results vs ASCA competency benchmarks (below) — isokinetic dynamometry and IMTP are tracked for reference but don't feed this score, as no published youth norm exists for either.</div>
+        <div style="flex:1;font-size:10.5px;color:#b8c8d8;line-height:1.5;">Calculated from Functional Strength results vs ASCA competency benchmarks (below) — isokinetic dynamometry and IMTP are tracked for reference but don't feed this score, as no published youth norm exists for either.</div>
       </div>
     </div>`:""}
     ${(()=>{
@@ -2189,8 +2224,8 @@ function gen(){
       ].filter(Boolean);
       if(!lowerRows.length&&!upperRows.length)return`<div class="psec" style="flex:0 0 auto;"><div class="nbox" style="color:#7a8fa6;">No isokinetic tests recorded.</div></div>`;
       return`<div class="psec" style="flex:0 0 auto;">
-      <div class="slbl" style="margin-bottom:8px;">Isokinetic Dynamometry — L / R Comparison</div>
-      <div style="background:#131b24;border:1px solid #1c2733;padding:20px 20px 6px;">
+      <div class="slbl" style="margin-bottom:6px;">Isokinetic Dynamometry — L / R Comparison</div>
+      <div style="background:#131b24;border:1px solid #1c2733;padding:12px 14px 4px;">
         ${lowerRows.length?`<div class="bargrid-hd">Lower Limb</div><div class="bargrid">${lowerRows.join("")}</div>`:""}
         ${upperRows.length?`<div class="bargrid-hd">Upper Limb</div><div class="bargrid">${upperRows.join("")}</div>`:""}
       </div>
@@ -2226,10 +2261,10 @@ function gen(){
     ${(imtp||rfd)?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">IMTP — Isometric Mid-Thigh Pull</div>
       ${cardGrid([
-        imtp?(ASSESS_TYPE==="youth"?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">Relative Peak Force</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${imtp.toFixed(2)}<span style="font-size:13px;color:#7a8fa6;"> N/kg</span></div>
-          <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">No validated youth norm — recorded for tracking.</div>
+        imtp?(ASSESS_TYPE==="youth"?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:2px;">Relative Peak Force</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:#ffffff;">${imtp.toFixed(2)}<span style="font-size:12px;color:#7a8fa6;"> N/kg</span></div>
+          <div style="font-size:9px;color:#7a8fa6;margin-top:2px;">No validated youth norm — recorded for tracking.</div>
         </div>`:`<div style="background:#131b24;border-left:4px solid ${imtp>=(v("fsex")==="f"?2.5:3.0)?"#4cdb7a":imtp>=(v("fsex")==="f"?2.0:2.5)?"#f5a623":"#e05252"};padding:14px;display:flex;gap:12px;align-items:center;">
           ${gauge(imtp,v("fsex")==="f"?2.5:3.0,v("fsex")==="f"?2.0:2.5,"N/kg")}
           <div>
@@ -2239,26 +2274,26 @@ function gen(){
             <div style="font-size:10px;font-style:italic;margin-top:4px;color:${imtp>=3.0?"#4cdb7a":imtp>=2.5?"#f5a623":"#e05252"};">${imtp>=3.0?"✓ Excellent isometric strength.":imtp>=2.5?"→ Good isometric strength.":"↓ Developing isometric strength."}</div>
           </div>
         </div>`):null,
-        rfd?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:14px;">
-          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:3px;">RFD 0–200ms</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:700;color:#ffffff;">${rfd.toLocaleString()}<span style="font-size:13px;color:#7a8fa6;"> N/s</span></div>
-          <div style="font-size:10px;color:#7a8fa6;margin-top:3px;">Rate of force development. Elite: &gt;5,000 N/s.</div>
-          <div style="font-size:10px;font-style:italic;margin-top:4px;color:${rfd>=5000?"#4cdb7a":rfd>=3500?"#f5a623":"#e05252"};">${rfd>=5000?"✓ Excellent RFD.":rfd>=3500?"→ Good RFD.":"↓ Below elite benchmark."}</div>
+        rfd?`<div style="background:#131b24;border-left:4px solid #c6f135;padding:10px 12px;">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#7a8fa6;margin-bottom:2px;">RFD 0–200ms</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:#ffffff;">${rfd.toLocaleString()}<span style="font-size:12px;color:#7a8fa6;"> N/s</span></div>
+          <div style="font-size:9px;color:#7a8fa6;margin-top:2px;">Rate of force development. Elite: &gt;5,000 N/s.</div>
+          ${ASSESS_TYPE==="youth"?"":`<div style="font-size:10px;font-style:italic;margin-top:4px;color:${rfd>=5000?"#4cdb7a":rfd>=3500?"#f5a623":"#e05252"};">${rfd>=5000?"✓ Excellent RFD.":rfd>=3500?"→ Good RFD.":"↓ Below elite benchmark."}</div>`}
         </div>`:null
       ],"No IMTP data recorded.")}
     </div>`:""}
     <div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Functional Strength</div>
-      <div class="nbox" style="margin-bottom:12px;">Rated as <strong>relative strength</strong> (kg ÷ BW). BW: ${bw?bw+" kg":"not entered"}.</div>
+      <div class="nbox" style="margin-bottom:8px;">Rated as <strong>relative strength</strong> (kg ÷ BW). BW: ${bw?bw+" kg":"not entered"}.</div>
       ${fd.length>0?
         // The main column is permanently narrower now that the page carries a
         // reference sidebar, so the compact card size is used regardless of
         // test count — even 4-5 tests at the old "wide" size could run past
         // the bottom of the page in this narrower column.
-        `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;">${fd.map(item=>fcard(item,bw,true)).join("")}</div>`
+        `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:4px;">${fd.map(item=>fcard(item,bw,true)).join("")}</div>`
       :`<div style="padding:12px;color:#7a8fa6;background:#131b24;font-size:11px;">Select functional tests in the sidebar to display results here.</div>`}
     </div>
-    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:12px 16px;"><div class="slbl" style="margin-bottom:8px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.7;">${(()=>{
+    <div class="psec" style="flex:0 0 auto;"><div style="background:#131b24;border-left:4px solid #c6f135;padding:9px 14px;"><div class="slbl" style="margin-bottom:5px;">Strength & Functional Interpretation</div><div style="font-size:11px;color:#b8c8d8;line-height:1.6;">${(()=>{
       const bits=[];
       const lsis=[["Knee ext",keL,keR],["Knee flex",kfL,kfR],["Hip abd",habdL,habdR]].filter(([,l,r])=>l&&r).map(([n,l,r])=>[n,lsi(l,r)]);
       const asym=lsis.filter(([,v])=>v<90);
@@ -2428,6 +2463,10 @@ function gen(){
       </div>
     </div>
 `}
+    ${v("fenergyc")?`<div class="psec" style="flex:0 0 auto;">
+      <div class="slbl" style="margin-bottom:6px;">Observations</div>
+      <div class="nbox" style="white-space:pre-line;">${v("fenergyc")}</div>
+    </div>`:""}
     </div>${(()=>{
       const energyScores=[S.spd,S_ana,S.cap].filter(x=>x!==null&&x!==undefined);
       const overall=energyScores.length?Math.round((energyScores.reduce((a,b)=>a+b,0)/energyScores.length)*10)/10:null;
@@ -2465,7 +2504,7 @@ function gen(){
       <div style="display:grid;grid-template-columns:1fr 240px;gap:20px;">
         <div>
           <div class="slbl" style="margin-bottom:10px;">Domain Scores</div>
-          ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Capacity",S.cap]].map(([lbl,s])=>`<div class="sbrow"><div class="sblbl">${lbl}</div><div class="sbtrk"><div class="sbfil" style="width:${s!==null?s*10:0}%;background:${s!==null?(s>=5?"#c6f135":"#e05252"):"#7a8fa6"};"></div></div><div class="sbnums"><div class="sbval" style="color:${s!==null?(s>=5?"#c6f135":"#e05252"):"#7a8fa6"};">${s!==null?s.toFixed(1):"—"}<span style="font-size:9px;color:#7a8fa6;">/10</span></div>${s!==null?`<span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span>`:""}</div></div>`).join("")}
+          ${[["Mobility",S.mob],["Power",S.pow],["Strength",S.str],["Speed",S.spd],["Aerobic Capacity",S.cap]].map(([lbl,s])=>`<div class="sbrow"><div class="sblbl">${lbl}</div><div class="sbtrk"><div class="sbfil" style="width:${s!==null?s*10:0}%;background:${domCol(s)};"></div></div><div class="sbnums"><div class="sbval" style="color:${domCol(s)};">${s!==null?s.toFixed(1):"—"}<span style="font-size:9px;color:#7a8fa6;">/10</span></div>${s!==null?`<span class="rb ${s>=7.5?"rg":s>=5?"ra":"rp"}">${s>=7.5?"Strong":s>=5?"Avg":"Focus"}</span>`:""}</div></div>`).join("")}
           <div style="padding:7px 10px;background:#1c2733;font-size:9px;color:#7a8fa6;margin-top:6px;">${ASSESS_TYPE==="youth"?"Scores mix approximate youth reference data (CMJ, Broad Jump, Mobility) with clinician-judged ratings where no youth norm exists.":"Scores vs VALD, ACSM &amp; Norkin &amp; White normative data."} <span class="rb rg">Strong</span>≥7.5 <span class="rb ra">Avg</span>5–7.4 <span class="rb rp">Focus</span>&lt;5</div>
         </div>
         <div>
