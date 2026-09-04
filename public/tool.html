@@ -2490,15 +2490,14 @@ function gen(){
   // the identical overall-score headline and both listed Key Development
   // Areas (once with detail, once as a stripped-down "Priority Focus" title
   // list) — real duplication, not just similar framing. Merged into one
-  // page: score/radar first, then the clinician's own narrative (if any),
-  // then the development priorities once, then the sign-off line.
+  // page — score/radar, then the clinician's own narrative (if any), then
+  // the development priorities once, then the sign-off line — but a long
+  // narrative can genuinely outgrow a single page, so the two content
+  // blocks below are measured against the real page height and only split
+  // onto a second page if they don't actually fit, rather than always
+  // paying for two pages or silently clipping a long write-up.
   const hasSummary=!!v("fsummary");
-  const pnumSummary=++pageCount;
-  const pageSummary=`
-<div class="page">
-  <div class="pstripe"></div>
-  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">Performance profile — vs published normative data</div></div><div class="pnum">Page ${pnumSummary}</div></div>
-  <div class="pbody">
+  const summaryTopSec=`
     <div class="psec" style="flex:0 0 auto;">
       <div class="hero">
         <div class="hnum"><div class="hlbl">Overall</div><div class="hval" style="color:${domCol(S.ov)};">${S.ov!==null?S.ov.toFixed(1):"—"}</div><div class="hsub">out of 10</div></div>
@@ -2532,7 +2531,8 @@ function gen(){
           <div style="font-size:11px;color:#7a8fa6;">Youth 1 → Youth 2 movement screen (AIMS-adapted) — ${readinessScored.length}/4 movements scored${readinessScored.length<4?", partial":""}. See the Strength page for the score band.</div>
         </div>
       </div>
-    </div>`:""}
+    </div>`:""}`;
+  const summaryBottomSec=`
     ${hasSummary?`<div class="psec" style="flex:0 0 auto;">
       <div class="slbl" style="margin-bottom:8px;">Clinician Narrative</div>
       <div style="background:#131b24;border-left:4px solid #c6f135;padding:14px 18px;">
@@ -2548,11 +2548,44 @@ function gen(){
         <div style="font-size:10px;color:#7a8fa6;">Assessed by ${v("fclin")||"—"} on ${dateStr}</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c6f135;">Get Better. Get Moving. Get Strong.</div>
       </div>
-    </div>
+    </div>`;
+  function summaryPageShell(pnum,subtitle,bodyHtml){
+    return`
+<div class="page">
+  <div class="pstripe"></div>
+  <div class="phdr"><div><div class="ptitle">Summary</div><div class="psub">${subtitle}</div></div><div class="pnum">Page ${pnum}</div></div>
+  <div class="pbody">${bodyHtml}
   </div>
   ${foot()}
 </div>
   `;
+  }
+  // Render off-screen and measure against the real page height rather than
+  // guessing from narrative length — accurate regardless of what pushed it
+  // over (a long write-up, several development areas, a readiness band).
+  function fitsOnePage(pageHtml){
+    const test=document.createElement("div");
+    test.style.cssText="position:absolute;top:-99999px;left:-99999px;visibility:hidden;pointer-events:none;";
+    test.innerHTML=pageHtml;
+    document.body.appendChild(test);
+    const body=test.querySelector(".pbody");
+    const fits=!body||body.scrollHeight<=body.clientHeight+1;
+    document.body.removeChild(test);
+    return fits;
+  }
+  const pnumSummaryTry=pageCount+1;
+  const oneSummaryPage=summaryPageShell(pnumSummaryTry,"Performance profile — vs published normative data",summaryTopSec+summaryBottomSec);
+  let pageSummary;
+  if(fitsOnePage(oneSummaryPage)){
+    pageCount=pnumSummaryTry;
+    pageSummary=oneSummaryPage;
+  }else{
+    const pnumA=pageCount+1,pnumB=pageCount+2;
+    pageCount=pnumB;
+    pageSummary=
+      summaryPageShell(pnumA,"Performance profile — vs published normative data",summaryTopSec)+
+      summaryPageShell(pnumB,"Clinician narrative & development priorities",summaryBottomSec);
+  }
 
   pages.innerHTML=pageCover+pageAthlete+
     (incMobility?pageMobility:"")+
