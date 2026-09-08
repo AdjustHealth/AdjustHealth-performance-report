@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { sql, isDbConfigured } from "@/lib/db";
 import { isAuthConfigured } from "@/lib/auth";
-import { signOut } from "@/lib/actions";
+import { signOut, getCurrentUserName } from "@/lib/actions";
 import DeleteAssessmentButton from "@/components/DeleteAssessmentButton";
 import SetupNotice from "@/components/SetupNotice";
 
@@ -71,6 +71,8 @@ export default async function HomePage({
   if (!isDbConfigured() || !isAuthConfigured()) return <SetupNotice />;
   const { filter } = await searchParams;
   const activeFilter = filter || "all";
+  const currentUser = await getCurrentUserName();
+  const clinicianParam = currentUser ? `&clinician=${encodeURIComponent(currentUser)}` : "";
 
   let assessments: Row[] = [];
   let error: string | null = null;
@@ -104,15 +106,22 @@ export default async function HomePage({
             Performance Report
           </div>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <Link href="/athletes" className="btn" style={{ padding: "7px 14px", fontSize: 12 }}>
-            Athletes
-          </Link>
-          <form action={signOut}>
-            <button type="submit" className="btn">
-              Sign Out
-            </button>
-          </form>
+        <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+          {currentUser && (
+            <div className="muted" style={{ fontSize: 12 }}>
+              Signed in as <strong style={{ color: "#e6edf3" }}>{currentUser}</strong>
+            </div>
+          )}
+          <div style={{ display: "flex", gap: 10 }}>
+            <Link href="/athletes" className="btn" style={{ padding: "7px 14px", fontSize: 12 }}>
+              Athletes
+            </Link>
+            <form action={signOut}>
+              <button type="submit" className="btn">
+                Sign Out
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -130,7 +139,7 @@ export default async function HomePage({
         {ASSESSMENT_TYPES.map((t) => (
           <a
             key={t.key}
-            href={`/assessment/new?type=${t.type}${t.tier ? `&tier=${t.tier}` : ""}`}
+            href={`/assessment/new?type=${t.type}${t.tier ? `&tier=${t.tier}` : ""}${clinicianParam}`}
             className="card"
             style={{
               padding: 20,

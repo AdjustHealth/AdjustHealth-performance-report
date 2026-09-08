@@ -4,7 +4,13 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { sql } from "@/lib/db";
-import { createSessionToken, SESSION_COOKIE, SESSION_COOKIE_MAX_AGE_SECONDS } from "@/lib/auth";
+import {
+  createSessionToken,
+  findUserByPassword,
+  verifySessionToken,
+  SESSION_COOKIE,
+  SESSION_COOKIE_MAX_AGE_SECONDS,
+} from "@/lib/auth";
 
 export type AssessmentSummary = {
   athleteName: string;
@@ -77,10 +83,11 @@ export async function deleteAssessment(id: string): Promise<{ ok: true } | { err
 }
 
 export async function login(password: string): Promise<{ error: string } | void> {
-  if (password !== process.env.AUTH_PASSWORD) {
+  const name = findUserByPassword(password);
+  if (!name) {
     return { error: "Incorrect password." };
   }
-  const token = await createSessionToken();
+  const token = await createSessionToken(name);
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -96,4 +103,12 @@ export async function signOut() {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE);
   redirect("/login");
+}
+
+// Reads the signed-in user's name from their session cookie — used to show
+// "Signed in as X" and to pre-fill the Clinician field on a new assessment,
+// since the login itself already identifies who's using the tool.
+export async function getCurrentUserName(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
 }

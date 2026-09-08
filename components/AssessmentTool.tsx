@@ -22,11 +22,13 @@ export default function AssessmentTool({
   initialFormData = null,
   presetType = null,
   presetTier = null,
+  presetClinician = null,
 }: {
   assessmentId?: string | null;
   initialFormData?: Record<string, unknown> | null;
   presetType?: string | null;
   presetTier?: string | null;
+  presetClinician?: string | null;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
@@ -47,7 +49,7 @@ export default function AssessmentTool({
         );
       } else if (presetType) {
         iframeRef.current?.contentWindow?.postMessage(
-          { type: "preset", assessType: presetType, youthTier: presetTier },
+          { type: "preset", assessType: presetType, youthTier: presetTier, clinician: presetClinician },
           "*"
         );
       }
@@ -109,7 +111,7 @@ export default function AssessmentTool({
       iframeEl?.removeEventListener("load", sendInitialData);
       window.removeEventListener("message", onMessage);
     };
-  }, [id, initialFormData, presetType, presetTier, router]);
+  }, [id, initialFormData, presetType, presetTier, presetClinician, router]);
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>

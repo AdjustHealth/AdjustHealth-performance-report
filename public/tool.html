@@ -918,6 +918,13 @@ if(EMBEDDED){
       selectType(e.data.assessType);
       if(e.data.assessType==="youth"&&e.data.youthTier)selectTier(e.data.youthTier);
       continueToForm();
+      // Pre-fill Clinician from whoever's logged into the app — the login
+      // already identifies them, so no reason to make them type their own
+      // name on every new assessment.
+      if(e.data.clinician){
+        const clinEl=document.getElementById("fclin");
+        if(clinEl&&!clinEl.value)clinEl.value=e.data.clinician;
+      }
     }
   });
   const initEmbedded=()=>{

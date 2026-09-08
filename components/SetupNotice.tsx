@@ -6,11 +6,11 @@ export default function SetupNotice() {
           Not configured yet
         </div>
         <p className="muted" style={{ fontSize: 13, lineHeight: 1.7 }}>
-          This app needs a Postgres database (for saved assessments) and a shared password (for
-          sign-in). Attach a free Postgres store to this Vercel project under the project&apos;s{" "}
-          <strong>Storage</strong> tab, run the SQL in{" "}
-          <code>supabase/migrations/0001_init.sql</code> against it, then set{" "}
-          <code>DATABASE_URL</code>, <code>AUTH_PASSWORD</code>, and <code>AUTH_SECRET</code> as
+          This app needs a Postgres database (for saved assessments) and at least one named
+          account (for sign-in). Attach a free Postgres store to this Vercel project under the
+          project&apos;s <strong>Storage</strong> tab, run the SQL in{" "}
+          <code>db/migrations/0001_init.sql</code> against it, then set{" "}
+          <code>DATABASE_URL</code>, <code>AUTH_USERS</code>, and <code>AUTH_SECRET</code> as
           environment variables — locally in <code>.env.local</code>, and in Vercel under Project
           Settings → Environment Variables. See <code>SETUP.md</code> for the full walkthrough.
         </p>

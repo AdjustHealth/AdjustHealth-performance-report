@@ -15,9 +15,10 @@ Youth 2) and saving them to a database instead of a one-off PDF export.
   `postMessage` — the shell hydrates the tool with saved data on load, and the
   tool posts its current form state back up when you click **Save Assessment**.
 - **Postgres** (Vercel Postgres or Neon — whichever free option is available
-  to you) stores the saved assessments. **Auth is a single shared password**,
-  not per-user accounts — this is a one-clinician internal tool, so a signed
-  session cookie is all that's needed; see `lib/auth.ts`.
+  to you) stores the saved assessments. **Auth is named accounts stored in
+  one env var** (`AUTH_USERS`, a JSON map of name → password) — no user
+  database, just a signed session cookie that remembers which name's
+  password was entered; see `lib/auth.ts`.
 
 This split means the tool's actual clinical logic (which took a lot of back
 and forth to get right) never had to be rewritten — it's the exact same code,
@@ -27,7 +28,7 @@ just wrapped.
 
 ```bash
 npm install
-cp .env.local.example .env.local   # then fill in DATABASE_URL, AUTH_PASSWORD, AUTH_SECRET
+cp .env.local.example .env.local   # then fill in DATABASE_URL, AUTH_USERS, AUTH_SECRET
 npm run dev
 ```
 
@@ -44,6 +45,6 @@ don't need to save.
 ## Deploying
 
 Push to `main` — Vercel auto-detects the Next.js app (no `vercel.json`
-needed). Set `AUTH_PASSWORD` and `AUTH_SECRET` in the Vercel project settings
+needed). Set `AUTH_USERS` and `AUTH_SECRET` in the Vercel project settings
 (and `DATABASE_URL` too, unless you attached Vercel's own Postgres storage,
 which sets `POSTGRES_URL` automatically).
