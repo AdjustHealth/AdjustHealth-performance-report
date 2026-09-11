@@ -27,7 +27,6 @@ const ASSESSMENT_TYPES = [
     type: "performance",
     tier: null as string | null,
     name: "Performance",
-    desc: "The full adult battery — Injury Screen, Mobility, Power, Strength & Energy Systems, rated against senior athlete norms.",
   },
   {
     key: "youth1",
@@ -35,7 +34,6 @@ const ASSESSMENT_TYPES = [
     tier: "y1",
     name: "Youth 1",
     sub: "Ages 8–12",
-    desc: "Bodyweight, bands & machine-based only — no barbell testing. Includes the Youth 1 → 2 readiness screen.",
   },
   {
     key: "youth2",
@@ -43,14 +41,12 @@ const ASSESSMENT_TYPES = [
     tier: "y2",
     name: "Youth 2",
     sub: "Ages 13–18",
-    desc: "Same battery as Youth 1, with barbell testing progressively introduced under qualified coaching.",
   },
   {
     key: "movestrong",
     type: "movestrong",
     tier: null as string | null,
     name: "MoveStrong",
-    desc: "Adjust Health's own protocol, built from the ONero & LiftMore trials.",
   },
 ];
 
@@ -160,9 +156,6 @@ export default async function HomePage({
                   {t.sub}
                 </span>
               )}
-            </div>
-            <div className="muted" style={{ fontSize: 12, lineHeight: 1.6, flex: 1 }}>
-              {t.desc}
             </div>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#c6f135", marginTop: 4 }}>
               Start →
