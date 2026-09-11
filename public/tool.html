@@ -165,7 +165,7 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
 .fb-lr .fb-lrrow input{width:100%;background:#131b24;border:1px solid #2a3a4a;color:#fff;padding:10px 4px;font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:700;text-align:center;border-radius:4px;outline:none;transition:border-color .15s;}
 .fb-lr .fb-lrrow input:focus{border-color:#c6f135;}
 
-.inj-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px;}
+.inj-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:16px;}
 .inj-chip{background:#0d1117;border:2px solid #1c2733;border-radius:8px;padding:16px 10px;text-align:center;cursor:pointer;transition:all .15s;user-select:none;}
 .inj-chip:hover{border-color:#3a4f63;}
 .inj-chip .ic-label{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#7a8fa6;margin-bottom:10px;}
@@ -539,6 +539,15 @@ body{font-family:"Barlow",sans-serif;background:#06090d;color:#ffffff;}
       <div class="fb-sh">Mobility — Clinical Rating</div>
       <div class="nbox" style="margin-bottom:14px;">Youth mobility is rated on clinical judgement rather than goniometry — quicker to administer and just as useful at this age. One rating per joint region (not left/right) — note any asymmetry in Mobility Notes below.</div>
       <div id="mobilityQualList" class="qr-list"></div>
+      <div class="fb-sh" style="margin-top:20px;">
+        <span>Beighton Hypermobility Scale</span>
+        <label style="display:flex;align-items:center;gap:6px;font-weight:400;font-size:11px;color:#7a8fa6;text-transform:none;letter-spacing:0;"><input type="checkbox" id="beighton_on" onchange="toggleBeighton()"> Test this athlete</label>
+      </div>
+      <div id="beightonWrap" class="hidden">
+        <div class="nbox" style="margin-bottom:12px;">9-point screen for generalised joint hypermobility — tick each criterion the athlete meets (1 point each). A score of 6 or more is generally considered hypermobile at this age.</div>
+        <div class="ft-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px;" id="beightonGrid"></div>
+        <div class="fb-card" style="max-width:220px;"><label>Beighton Score</label><div id="beightonScoreVal" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;">0<span style="font-size:13px;color:#7a8fa6;">/9</span></div></div>
+      </div>
     </div>
     <div class="fb-card" style="max-width:600px;"><label>Mobility Notes</label><textarea id="fmobc" placeholder="Clinical observations..."></textarea></div>
     <div style="display:flex;gap:12px;margin-top:20px;"><button class="fb-btn fb-btn-outline" onclick="showTab(1)">← Back</button><button class="fb-btn fb-btn-primary" onclick="showTab(3)">Next: Power →</button></div>
@@ -721,7 +730,7 @@ let YOUTH_TIER="y1"; // "y1" (8-12) | "y2" (13-18) — only relevant when ASSESS
 const TYPE_LABELS={performance:"Performance Report",youth:"Youth Performance Report",movestrong:"MoveStrong Report"};
 const TYPE_COVER={performance:"Performance",youth:"Youth Performance",movestrong:"MoveStrong"};
 
-const INJ=["Neck","Back","Shoulders","Hips","Knees","Ankles"];
+const INJ=["Neck","Back","Shoulders","Upper Limb","Hips","Knees","Ankles"];
 // ROM norms — athletic population 18–35yr, field/court sport
 // Sources: Roach & Miles hip norms, Konor et al. shoulder athlete norms, Hoch & McKeon ankle DF, Norkin & White goniometry
 const ROMS_M={
@@ -881,7 +890,7 @@ function applyFormData(data){
     if(el.type==="checkbox")el.checked=val;
     else el.value=val;
   });
-  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();syncIsoSel();syncEnergySel();
+  onSpd();onCap();onAna();onAnaB();syncQualChips();syncFTSel();syncIsoSel();syncEnergySel();toggleBeighton();updateBeightonScore();
 }
 function saveState(){
   localStorage.setItem(SAVE_KEY,JSON.stringify(collectFormData()));
@@ -1023,6 +1032,7 @@ function clearForm(){
   });
   INJ.forEach(r=>{_injState[r]="none";_updateChip(r);});
   document.querySelectorAll(".ft-chip input[type=checkbox]").forEach(cb=>{cb.checked=false;cb.dispatchEvent(new Event("change"));});
+  toggleBeighton(); // beighton_on itself isn't a .ft-chip, so the line above won't re-hide beightonWrap for it
   syncQualChips();
   document.getElementById("fd").value=todayISO();
   saveState();updateProgress();
@@ -1068,6 +1078,26 @@ const MOBILITY_DESC={
   slr:"Hamstring length — Straight Leg Raise.",
   ktw:"Ankle dorsiflexion — Knee-to-Wall Test."
 };
+// Beighton Hypermobility Scale — optional 9-point screen for youth (both
+// tiers), separate from the Good/Average/Poor mobility ratings above since
+// it's presence/absence of a sign, not a range-of-motion judgement, so it
+// doesn't feed into the Mobility domain score (S.mob).
+const BEIGHTON=[["l5th","5th finger MCP >90° — L"],["r5th","5th finger MCP >90° — R"],["lthumb","Thumb to forearm — L"],["rthumb","Thumb to forearm — R"],["lelbow","Elbow hyperextension >10° — L"],["relbow","Elbow hyperextension >10° — R"],["lknee","Knee hyperextension >10° — L"],["rknee","Knee hyperextension >10° — R"],["trunk","Palms flat on floor, knees straight"]];
+function buildBeightonUI(){
+  document.getElementById("beightonGrid").innerHTML=BEIGHTON.map(([key,label])=>`<div class="ft-chip"><input type="checkbox" id="bt_${key}" onchange="updateBeightonScore()"><label for="bt_${key}">${label}</label></div>`).join("");
+}
+buildBeightonUI();
+function beightonScore(){
+  return BEIGHTON.reduce((a,[key])=>a+(document.getElementById("bt_"+key)?.checked?1:0),0);
+}
+function updateBeightonScore(){
+  document.getElementById("beightonScoreVal").innerHTML=beightonScore()+'<span style="font-size:13px;color:#7a8fa6;">/9</span>';
+  saveState();updateProgress();
+}
+function toggleBeighton(){
+  document.getElementById("beightonWrap").classList.toggle("hidden",!document.getElementById("beighton_on").checked);
+  saveState();
+}
 function buildQualUI(listId,measures){
   document.getElementById(listId).innerHTML=measures.map(([key,label])=>`
     <div class="qr-item">
@@ -1949,7 +1979,7 @@ function gen(){
         <!-- Injury screening — horizontal chips -->
         <div>
           <div class="slbl" style="margin-bottom:10px;">Injury Screening</div>
-          ${incInjury?`<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;">
+          ${incInjury?`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">
             ${INJ.map(r=>{const res=injR(r);const pass=res==="pass",fail=res==="fail";const bg=pass?"rgba(76,219,122,.12)":fail?"rgba(224,82,82,.12)":"#131b24";const border=pass?"#4cdb7a":fail?"#e05252":"#2a3a4a";const dot_col=pass?"#4cdb7a":fail?"#e05252":"#3a4f63";return`<div style="background:${bg};border:1px solid ${border};padding:10px 8px;text-align:center;"><div style="width:10px;height:10px;border-radius:50%;background:${dot_col};margin:0 auto 5px;"></div><div style="font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:${pass?"#4cdb7a":fail?"#e05252":"#7a8fa6"};">${r}</div><div style="font-size:8px;color:${dot_col};margin-top:2px;">${pass?"Pass":fail?"Fail":"—"}</div></div>`;}).join("")}
           </div>
           ${v("finjc")?`<div class="nbox" style="margin-top:8px;font-size:10px;white-space:pre-line;">${v("finjc")}</div>`:""}`:`<div style="background:#131b24;border:1px solid #1c2733;padding:16px;color:#7a8fa6;font-size:11px;height:100%;display:flex;align-items:center;">Not included in this report.</div>`}
@@ -2039,6 +2069,17 @@ function gen(){
         ${v("fmobc")?`<div class="nbox" style="white-space:pre-line;">${v("fmobc")}</div>`:""}
       </div>
     </div>
+    ${ASSESS_TYPE==="youth"&&document.getElementById("beighton_on")?.checked?(()=>{
+      const bScore=beightonScore();
+      const hyper=bScore>=6;
+      return`<div class="psec" style="flex:0 0 auto;margin-top:12px;">
+      <div class="slbl" style="margin-bottom:10px;">Beighton Hypermobility Scale</div>
+      <div style="display:flex;align-items:center;gap:20px;background:#131b24;border:1px solid #1c2733;border-left:4px solid ${hyper?"#f5a623":"#4cdb7a"};padding:18px 24px;">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:${hyper?"#f5a623":"#4cdb7a"};">${bScore}<span style="font-size:14px;color:#7a8fa6;">/9</span></span>
+        <span style="font-size:11px;color:#b8c8d8;">${hyper?"Generalised joint hypermobility likely (score ≥ 6/9) — consider load management &amp; stability-focused programming.":"No generalised hypermobility indicated."}</span>
+      </div>
+    </div>`;
+    })():""}
     </div>${(()=>{
       const regions=ASSESS_TYPE==="youth"
         ?QUAL_MOBILITY.map(([k,l])=>{const r=v("mq_"+k);return{l,tested:!!r,col:r==="g"?"#4cdb7a":r==="a"?"#f5a623":r==="p"?"#e05252":null,val:r?rLbl(r):"Untested"};})
